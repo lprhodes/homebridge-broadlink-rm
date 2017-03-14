@@ -16,6 +16,7 @@ HEX IR codes are need to be learned by the Broadlink RM device and then captured
 
 ### Tip 1
 Create an ad-hoc Wi-Fi network from your computer to your mobile phone so that all packets are going through the Wifi.
+
 ### Tip 2
 If you create an account in the e-control app you'll be able to see the packets going to a remote server pretty easily.
 
