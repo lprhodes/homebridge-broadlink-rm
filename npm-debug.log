@@ -1,0 +1,114 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/node/7.7.1_1/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'publish',
+1 verbose cli   './' ]
+2 info using npm@4.1.2
+3 info using node@v7.7.1
+4 verbose publish [ './' ]
+5 silly cache add args [ './', null ]
+6 verbose cache add spec ./
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: './',
+7 silly cache add   scope: null,
+7 silly cache add   escapedName: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: './',
+7 silly cache add   spec: '/Users/rhodesy22/Dev/homebridge-rm-mini3',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/rhodesy22/.npm/homebridge-broadlink-rm/0.2.0/package.tgz not in flight; packing
+9 verbose correctMkdir /Users/rhodesy22/.npm correctMkdir not in flight; initializing
+10 info lifecycle homebridge-broadlink-rm@0.2.0~prepublish: homebridge-broadlink-rm@0.2.0
+11 silly lifecycle homebridge-broadlink-rm@0.2.0~prepublish: no script for prepublish, continuing
+12 info lifecycle homebridge-broadlink-rm@0.2.0~prepare: homebridge-broadlink-rm@0.2.0
+13 silly lifecycle homebridge-broadlink-rm@0.2.0~prepare: no script for prepare, continuing
+14 verbose tar pack [ '/Users/rhodesy22/.npm/homebridge-broadlink-rm/0.2.0/package.tgz',
+14 verbose tar pack   '/Users/rhodesy22/Dev/homebridge-rm-mini3' ]
+15 verbose tarball /Users/rhodesy22/.npm/homebridge-broadlink-rm/0.2.0/package.tgz
+16 verbose folder /Users/rhodesy22/Dev/homebridge-rm-mini3
+17 verbose addLocalTarball adding from inside cache /Users/rhodesy22/.npm/homebridge-broadlink-rm/0.2.0/package.tgz
+18 verbose correctMkdir /Users/rhodesy22/.npm correctMkdir not in flight; initializing
+19 silly cache afterAdd homebridge-broadlink-rm@0.2.0
+20 verbose afterAdd /Users/rhodesy22/.npm/homebridge-broadlink-rm/0.2.0/package/package.json not in flight; writing
+21 verbose correctMkdir /Users/rhodesy22/.npm correctMkdir not in flight; initializing
+22 verbose afterAdd /Users/rhodesy22/.npm/homebridge-broadlink-rm/0.2.0/package/package.json written
+23 silly publish { name: 'homebridge-broadlink-rm',
+23 silly publish   version: '0.2.0',
+23 silly publish   description: 'Broadlink RM Mini 3 and Pro 3 plugin for homebridge: https://github.com/nfarina/homebridge',
+23 silly publish   license: 'ISC',
+23 silly publish   keywords: [ 'homebridge-plugin', 'broadlink', 'rm pro 3', 'rm mini 3' ],
+23 silly publish   engines: { node: '>=6.0.0', homebridge: '>=0.2.1' },
+23 silly publish   author: { name: 'lprhodes' },
+23 silly publish   repository:
+23 silly publish    { type: 'git',
+23 silly publish      url: 'git+ssh://git@github.com/lprhodes/homebridge-broadlink-rm.git' },
+23 silly publish   readme: '# Homebridge Broadlink RM\n\nBroadlink RM Mini 3 and Pro 3 plugin for [Homebridge](https://github.com/nfarina/homebridge)\n\nThis allows you to control your RM Mini 3 and Pro 3 with HomeKit and Siri.\n\n## Installation\n\n1. Install homebridge using: `sudo npm install -g homebridge`\n2. Install this plugin using: `npm install -g homebridge-broadlink-rm`\n3. Update your configuration file. (See config-sample.json)\n\n## Hex IR codes\n\nHEX IR codes are need to be learned by the Broadlink RM device and then captured in order to make this plugin work. You can use a third-party app such as Wireshark to do this.\n\n### Tip 1\nCreate an ad-hoc Wi-Fi network from your computer to your mobile phone so that all packets are going through the Wifi.\n\n### Tip 2\nIf you create an account in the e-control app you\'ll be able to see the packets going to a remote server pretty easily.\n\n## Notes\nYou can add a hex code for every temperature but simply adding hex codes for 16C and 30C (or the equivalent in F) will give you a great experience with something like an air conditioner where you just use it for a while to cool you down.\n\nThere looks to be a glitch in the Apple Home app when setting the mode to Off (nothing happens) when you\'ve turned the thermostat on by setting a specific temperature. Siri and other HomeKit apps don\'t have the same glitch. You can just select a different mode and then press Off. This only happens the first time after launching homebridge.\n\n## Thanks\nThanks to @tattn (https://github.com/tattn/homebridge-rm-mini3) and @PJCzx https://github.com/PJCzx/homebridge-thermostat who\'s time and effort got me started.\n',
+23 silly publish   readmeFilename: 'README.md',
+23 silly publish   gitHead: 'a88d29ed3bfa76774337f7c5c811ddbe01276d4c',
+23 silly publish   bugs: { url: 'https://github.com/lprhodes/homebridge-broadlink-rm/issues' },
+23 silly publish   homepage: 'https://github.com/lprhodes/homebridge-broadlink-rm#readme',
+23 silly publish   _id: 'homebridge-broadlink-rm@0.2.0',
+23 silly publish   scripts: {},
+23 silly publish   _shasum: '0278b7ef76924d8b85c4a9c021069b13f47df1a4',
+23 silly publish   _from: '.' }
+24 info lifecycle homebridge-broadlink-rm@0.2.0~prepublishOnly: homebridge-broadlink-rm@0.2.0
+25 silly lifecycle homebridge-broadlink-rm@0.2.0~prepublishOnly: no script for prepublishOnly, continuing
+26 verbose getPublishConfig undefined
+27 silly mapToRegistry name homebridge-broadlink-rm
+28 silly mapToRegistry using default registry
+29 silly mapToRegistry registry https://registry.npmjs.org/
+30 silly mapToRegistry data Result {
+30 silly mapToRegistry   raw: 'homebridge-broadlink-rm',
+30 silly mapToRegistry   scope: null,
+30 silly mapToRegistry   escapedName: 'homebridge-broadlink-rm',
+30 silly mapToRegistry   name: 'homebridge-broadlink-rm',
+30 silly mapToRegistry   rawSpec: '',
+30 silly mapToRegistry   spec: 'latest',
+30 silly mapToRegistry   type: 'tag' }
+31 silly mapToRegistry uri https://registry.npmjs.org/homebridge-broadlink-rm
+32 verbose publish registryBase https://registry.npmjs.org/
+33 silly publish uploading /Users/rhodesy22/.npm/homebridge-broadlink-rm/0.2.0/package.tgz
+34 verbose request uri https://registry.npmjs.org/homebridge-broadlink-rm
+35 verbose request sending authorization for write operation
+36 info attempt registry request try #1 at 2:36:22 pm
+37 verbose request using bearer token for auth
+38 verbose request id 4d6c451bd94424ae
+39 http request PUT https://registry.npmjs.org/homebridge-broadlink-rm
+40 http 403 https://registry.npmjs.org/homebridge-broadlink-rm
+41 verbose headers { 'content-type': 'application/json',
+41 verbose headers   'cache-control': 'max-age=300',
+41 verbose headers   'content-length': '95',
+41 verbose headers   'accept-ranges': 'bytes',
+41 verbose headers   date: 'Tue, 14 Mar 2017 03:36:23 GMT',
+41 verbose headers   via: '1.1 varnish',
+41 verbose headers   connection: 'keep-alive',
+41 verbose headers   'x-served-by': 'cache-syd1621-SYD',
+41 verbose headers   'x-cache': 'MISS',
+41 verbose headers   'x-cache-hits': '0',
+41 verbose headers   'x-timer': 'S1489462582.690783,VS0,VE739',
+41 verbose headers   vary: 'Accept-Encoding' }
+42 verbose request invalidating /Users/rhodesy22/.npm/registry.npmjs.org/homebridge-broadlink-rm on PUT
+43 error publish Failed PUT 403
+44 verbose stack Error: "You cannot publish over the previously published version 0.2.0." : homebridge-broadlink-rm
+44 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:304:12)
+44 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:292:14)
+44 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:212:14)
+44 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:186:22)
+44 verbose stack     at emitTwo (events.js:106:13)
+44 verbose stack     at Request.emit (events.js:194:7)
+44 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1081:10)
+44 verbose stack     at emitOne (events.js:96:13)
+44 verbose stack     at Request.emit (events.js:191:7)
+44 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1001:12)
+45 verbose statusCode 403
+46 verbose pkgid homebridge-broadlink-rm
+47 verbose cwd /Users/rhodesy22/Dev/homebridge-rm-mini3
+48 error Darwin 16.4.0
+49 error argv "/usr/local/Cellar/node/7.7.1_1/bin/node" "/usr/local/bin/npm" "publish" "./"
+50 error node v7.7.1
+51 error npm  v4.1.2
+52 error code E403
+53 error "You cannot publish over the previously published version 0.2.0." : homebridge-broadlink-rm
+54 error If you need help, you may report this error at:
+54 error     <https://github.com/npm/npm/issues>
+55 verbose exit [ 1, true ]
