@@ -26,4 +26,4 @@ You can add a hex code for every temperature but simply adding hex codes for 16C
 There looks to be a glitch in the Apple Home app when setting the mode to Off (nothing happens) when you've turned the thermostat on by setting a specific temperature. Siri and other HomeKit apps don't have the same glitch. You can just select a different mode and then press Off. This only happens the first time after launching homebridge.
 
 ## Thanks
-Thanks to @tattn (https://github.com/tattn/homebridge-rm-mini3) and @PJCzx https://github.com/PJCzx/homebridge-thermostat who's time and effort got me started.
+Thanks to @tattn (https://github.com/tattn/homebridge-rm-mini3) and @PJCzx (https://github.com/PJCzx/homebridge-thermostat) who's time and effort got me started.
