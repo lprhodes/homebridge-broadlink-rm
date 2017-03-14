@@ -1,0 +1,23 @@
+{
+  "name": "homebridge-broadlink-rm",
+  "version": "0.2.0",
+  "description": "Broadlink RM Mini 3 and Pro 3 plugin for homebridge: https://github.com/nfarina/homebridge",
+  "license": "ISC",
+  "keywords": [
+    "homebridge-plugin",
+    "broadlink",
+    "rm pro 3",
+    "rm mini 3"
+  ],
+  "engines": {
+    "node": ">=6.0.0",
+    "homebridge": ">=0.2.0"
+  },
+  "author": {
+    "name": "lprhodes"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lprhodes/homebridge-broadlink-rm.git"
+  }
+}
