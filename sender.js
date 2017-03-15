@@ -11,11 +11,11 @@ module.exports = (host, payload, callback) => {
 
   client.send(broadcast, 0, broadcast.length, PORT, host, (err, bytes) => {
     if (err) throw err;
-    console.log(`UDP message sent to ${host}:${PORT}`;
+    console.log(`UDP message sent to ${host}:${PORT}`);
 
     client.send(message, 0, message.length, PORT, host, (err, bytes) => {
       if (err) throw err;
-      console.log(`UDP message sent to ${host}:${PORT}`;
+      console.log(`UDP message sent to ${host}:${PORT}`);
 
       client.close();
 
