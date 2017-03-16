@@ -160,7 +160,7 @@ class ThermostatService {
     this.lastUsedTemperature = this.targetTemperature
     this.lastUsedHeatingCoolingState= this.currentHeatingCoolingState
 
-    sender(this.host, hexData.data, callback)
+    sender(this.host, hexData.data, callback, this.log)
   }
 
 	getCurrentHeatingCoolingState (callback) {
@@ -212,7 +212,7 @@ class ThermostatService {
 
     if (currentModeConfigKey === 'off') {
       this.updateServiceHeatingCoolingState(value)
-      sender(this.host, data.data.off, callback)
+      sender(this.host, data.data.off, callback, this.log)
     } else {
       this.sendTemperature(temperature, data, callback)
     }
