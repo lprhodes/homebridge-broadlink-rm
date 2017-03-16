@@ -12,13 +12,11 @@ This allows you to control your RM Mini 3 and Pro 3 with HomeKit and Siri.
 
 ## Hex IR codes
 
-HEX IR codes are need to be learned by the Broadlink RM device and then captured in order to make this plugin work. You can use a third-party app such as Wireshark to do this.
+Adding the "Broadlink RM Learner" accessory in your homebridge config will display a new switch accessory in the Home app dedicated to learning IR codes. Simply toggle the switch on, perform the IR command in front of your Broadlink RM device and copy the HEX output from the hombridge console log to wherever you want the code in the config.
 
-### Tip 1
-Create an ad-hoc Wi-Fi network from your computer to your mobile phone so that all packets are going through the Wifi.
+The switch will toggle off automatically once the IR code has been received or 10 seconds has passed.
 
-### Tip 2
-If you create an account in the e-control app you'll be able to see the packets going to a remote server pretty easily.
+You can optionally stop attempting to learn IR by toggling the switch off yourself. 
 
 ## Notes
 You can add a hex code for every temperature but simply adding hex codes for 16C and 30C (or the equivalent in F) will give you a great experience with something like an air conditioner where you just use it for a while to cool you down.

@@ -1,6 +1,7 @@
 const HKTTGen = require('./HomeKitTVTypes');
 const thermostatService = require('./ThermostatService');
 const sender = require('./sender');
+const learner = require('./learner');
 
 let Service, Characteristic;
 let HomeKitTVTypes;
@@ -13,31 +14,33 @@ module.exports = (homebridge) => {
   ThermostatService = thermostatService(homebridge)
 
   homebridge.registerAccessory('homebridge-broadlink-rm', 'Broadlink RM', BroadlinkRMAccessory);
+  homebridge.registerAccessory('homebridge-broadlink-rm', 'Broadlink RM Learner', BroadlinkRMLearnerAccessory);
 }
+
 class BroadlinkRMAccessory {
 
   constructor (log, config) {
     this.log = log;
     this.config = config;
 
-    const { host, name, data } = config
+    const { host, name, data } = config;
 
-    this.host = host
-    this.name = name
-    this.data = data
+    this.host = host;
+    this.name = name;
+    this.data = data;
   }
 
   setPowerState (powerOnHex, powerOffHex, powerOn, callback) {
     this.log(`setPowerState: ${powerOn}`);
 
-    const hexData = powerOn ? powerOnHex : powerOffHex
-    sender(this.host, hexData, callback);
+    const hexData = powerOn ? powerOnHex : powerOffHex;
+    sender(this.host, hexData, callback, this.log);
   }
 
   setChannel (payloadChannels, channel, callback) {
     this.log(`setChannel: ${channel}`);
 
-    sender(this.host, payloadChannels[channel], callback);
+    sender(this.host, payloadChannels[channel], callback, this.log);
   }
 
   identify (callback) {
@@ -59,7 +62,7 @@ class BroadlinkRMAccessory {
 
     for (var i = 0; i < this.data.length; i++) {
       const data = this.data[i];
-      const { name, type } = data
+      const { name, type } = data;
 
       if (type === 'on') {
         this.log('add switch service');
@@ -93,6 +96,64 @@ class BroadlinkRMAccessory {
         services.push(channelService);
       }
     }
+
+    return services;
+  }
+}
+
+class BroadlinkRMLearnerAccessory {
+
+  constructor (log, config) {
+    this.log = log;
+    this.config = config;
+
+    const { host, name } = config;
+
+    this.host = host;
+    this.name = name;
+
+    this.learnService = null;
+  }
+
+  toggleLearning (on, callback) {
+    // this.log(`toggleLearning: ${on ? 'on' : 'off'}`);
+    const turnOffCallback = () => {
+      this.learnService.setCharacteristic(Characteristic.On, false)
+    }
+
+    if (on) {
+      learner.start(this.host, callback, turnOffCallback, this.log);
+    } else {
+      learner.stop(this.log)
+
+      callback();
+    }
+  }
+
+  identify (callback) {
+    this.log('Identify requested!');
+
+    callback();
+  }
+
+  getServices () {
+    const services = [];
+
+    const informationService = new Service.AccessoryInformation();
+
+    informationService
+      .setCharacteristic(Characteristic.Manufacturer, 'Broadlink')
+      .setCharacteristic(Characteristic.Model, 'RM Mini 3 or Pro 3 Learner')
+      .setCharacteristic(Characteristic.SerialNumber, this.host);
+    services.push(informationService);
+
+    const switchService = new Service.Switch(this.name || 'Learn IR');
+    switchService
+      .getCharacteristic(Characteristic.On)
+      .on('set', this.toggleLearning.bind(this));
+
+    services.push(switchService);
+    this.learnService = switchService
 
     return services;
   }

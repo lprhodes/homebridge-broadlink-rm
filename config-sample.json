@@ -10,7 +10,11 @@
 
 	"platforms": [],
 
-	"accessories": [
+	"accessories": [{
+		"accessory": "Broadlink RM Learner",
+			"name": "Learn IR",
+			"host": "10.0.1.61"
+		},
 		{
 			"accessory": "Broadlink RM ",
 			"name": "Broadlink RM Pro 3",
