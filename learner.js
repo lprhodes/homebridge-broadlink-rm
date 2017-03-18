@@ -40,7 +40,7 @@ const start = (host, callback, turnOffCallback, log) => {
   client.on('message', (message, remote) => {
     const hex = message.toString('hex');
 
-    if (hex.length !== 144) {
+    if (hex.length > 144) {
       log(`Learn IR (learned hex code: ${hex})`);
       log(`Learn IR (complete)`);
 
