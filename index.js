@@ -56,7 +56,7 @@ class BroadlinkRMAccessory {
 
     informationService
       .setCharacteristic(Characteristic.Manufacturer, 'Broadlink')
-      .setCharacteristic(Characteristic.Model, 'RM Mini 3 or Pro 3')
+      .setCharacteristic(Characteristic.Model, 'RM Mini or Pro')
       .setCharacteristic(Characteristic.SerialNumber, this.host);
     services.push(informationService);
 
@@ -143,7 +143,7 @@ class BroadlinkRMLearnerAccessory {
 
     informationService
       .setCharacteristic(Characteristic.Manufacturer, 'Broadlink')
-      .setCharacteristic(Characteristic.Model, 'RM Mini 3 or Pro 3 Learner')
+      .setCharacteristic(Characteristic.Model, 'RM Mini or Pro Learner')
       .setCharacteristic(Characteristic.SerialNumber, this.host);
     services.push(informationService);
 
