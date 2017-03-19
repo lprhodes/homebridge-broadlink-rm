@@ -1,6 +1,6 @@
 # Homebridge Broadlink RM
 
-Broadlink RM Mini 3 and Pro 3 plugin for [Homebridge](https://github.com/nfarina/homebridge)
+Broadlink RM Mini and Pro plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
 This allows you to control your RM Mini 3 and Pro 3 with HomeKit and Siri.
 
