@@ -30,18 +30,26 @@ const start = (host, callback, turnOffCallback, log) => {
     if (getDataTimeout) clearTimeout(getDataTimeout);
     getDataTimeout = null;
     // log(`UDP learn server stopped on ${host}:${PORT}`);
+
+    // device.removeListener('rawData');
   }
 
-  device.on('rawData', (message) => {
-    const hex = message.toString('hex');
-    log(`Learn IR (learned hex code: ${hex})`);
-    log(`Learn IR (complete)`);
+  // There's no device.removeListener for some reason so this is a quick hack
+  // so not to duplicate the listener
+  if (!device.hasListener) {
+    device.hasListener = true
 
-    closeClient();
-    closeClient = null
+    device.on('rawData', (message) => {
+      const hex = message.toString('hex');
+      log(`Learn IR (learned hex code: ${hex})`);
+      log(`Learn IR (complete)`);
 
-    turnOffCallback()
-  });
+      closeClient();
+      closeClient = null
+
+      turnOffCallback()
+    });
+  }
 
   device.enterLearning()
   log(`Learn IR (ready)`);
