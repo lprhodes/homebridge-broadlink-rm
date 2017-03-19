@@ -141,8 +141,6 @@ class ThermostatService {
       hasTemperatureChanged = (this.targetTemperature !== defaultTemperature)
       this.log(`Update to default temperature (${defaultTemperature})`);
 
-      console.log('hexData', hexData)
-
       this.targetTemperature = defaultTemperature
     } else {
       this.targetTemperature = temperature
@@ -180,16 +178,11 @@ class ThermostatService {
 
 	setTargetHeatingCoolingState (data, value, callback) {
     // Perform the auto -> cool/heat conversion descrived in constructor()
-    console.log('this.configKeyForHeatingCoolingState(value)', this.configKeyForHeatingCoolingState(value))
     if (this.replaceAutoMode && this.configKeyForHeatingCoolingState(value) === 'auto') {
-
-      console.log('this.firstTemperatureUpdate, this.firstTemperatureUpdate')
       if (this.firstTemperatureUpdate) {
         this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, this.heatingCoolingStateForConfigKey(this.replaceAutoMode));
       } else {
         this.targetTemperature = this.lastUsedTemperature
-
-        console.log('this.lastUsedHeatingCoolingState', this.lastUsedHeatingCoolingState)
         this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, this.lastUsedHeatingCoolingState);
       }
 
