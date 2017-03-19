@@ -16,7 +16,7 @@
 			"host": "10.0.1.61"
 		},
 		{
-			"accessory": "Broadlink RM ",
+			"accessory": "Broadlink RM",
 			"name": "Broadlink RM Pro 3",
 			"host": "192.168.10.8",
 			"data": [
