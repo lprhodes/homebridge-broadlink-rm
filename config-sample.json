@@ -1,59 +1,57 @@
 {
-	"bridge": {
-		"name": "Homebridge",
-		"username": "CD:22:3D:E3:CE:30",
-		"port": 51826,
-		"pin": "031-45-156"
-	},
-
-	"description": "Homebridge",
-
-	"platforms": [],
-
-	"accessories": [{
-		"accessory": "Broadlink RM Learner",
-			"name": "Learn IR",
-			"host": "10.0.1.61"
-		},
-		{
-			"accessory": "Broadlink RM",
-			"name": "Broadlink RM Pro 3",
-			"host": "192.168.10.8",
-			"data": [
-				{
-				  "name": "TV",
-				  "type": "on",
-					"on": "2600500000012...",
-					"off": "2600500000012..."
-				},
-				{
-				  "name": "Air Conditioner",
-				  "type": "thermostat",
-					"data": {
-				    "off":  "2600500000012...",
-				    "temperature30": {
-				      "mode": "heat",
-				      "data": "2600500000012..."
-				    },
-				    "temperature16": {
-				      "mode": "cool",
-				      "data": "2600500000012..."
-				    }
-				  }
-				},
-				{
-					"type": "channel",
-					"1": "2600500000012...",
-					"2": "2600500000012...",
-					"3": "2600500000012...",
-					"4": "2600500000012...",
-					"5": "2600500000012...",
-					"6": "2600500000012...",
-					"7": "2600500000012...",
-					"8": "2600500000012...",
-					"9": "2600500000012...",
-				}
-			]
-		}
-	]
+  "bridge": {
+    "name": "Homebridge",
+    "username": "CD:22:3D:E3:CE:30",
+    "port": 51826,
+    "pin": "031-45-156"
+  },
+  "description": "Homebridge",
+  "platforms": [],
+  "accessories": [
+    {
+      "accessory": "Broadlink RM Learner",
+      "name": "Learn IR",
+      "host": "10.0.1.61"
+    },
+    {
+      "accessory": "Broadlink RM",
+      "name": "Broadlink RM Pro 3",
+      "host": "192.168.10.8",
+      "data": [
+        {
+          "name": "TV",
+          "type": "on",
+          "on": "2600500000012...",
+          "off": "2600500000012..."
+        },
+        {
+          "name": "Air Conditioner",
+          "type": "thermostat",
+          "data": {
+            "off": "2600500000012...",
+            "temperature30": {
+              "mode": "heat",
+              "data": "2600500000012..."
+            },
+            "temperature16": {
+              "mode": "cool",
+              "data": "2600500000012..."
+            }
+          }
+        },
+        {
+          "1": "2600500000012...",
+          "2": "2600500000012...",
+          "3": "2600500000012...",
+          "4": "2600500000012...",
+          "5": "2600500000012...",
+          "6": "2600500000012...",
+          "7": "2600500000012...",
+          "8": "2600500000012...",
+          "9": "2600500000012...",
+          "type": "channel"
+        }
+      ]
+    }
+  ]
 }
