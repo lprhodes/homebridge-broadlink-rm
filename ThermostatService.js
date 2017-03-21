@@ -215,10 +215,12 @@ class ThermostatService {
 	getCurrentTemperature (callback) {
 		this.log(`getCurrentTemperature (${this.targetTemperature})`);
 		const device = discoveredDevices[this.host];
-		device.on('temperature', (temp) => {
+		const updateTemperature = (temp) => {
 			this.currentTemperature = temp;
 			callback(null, this.currentTemperature);
-		});
+			device.removeListener('temperature', updateTemperature);
+		};
+		device.on('temperature', updateTemperature);
 		device.checkTemperature();
 	}
 
