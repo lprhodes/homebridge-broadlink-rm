@@ -1,4 +1,5 @@
 const sender = require('./sender');
+const discoveredDevices = require('./devices.js');
 
 let Service, Characteristic;
 
@@ -213,8 +214,14 @@ class ThermostatService {
 
 	getCurrentTemperature (callback) {
 		this.log(`getCurrentTemperature (${this.targetTemperature})`);
-
-		callback(null, this.currentTemperature); // success
+		const device = discoveredDevices[this.host];
+		const updateTemperature = (temp) => {
+			this.currentTemperature = temp;
+			callback(null, this.currentTemperature);
+			device.removeListener('temperature', updateTemperature);
+		};
+		device.on('temperature', updateTemperature);
+		device.checkTemperature();
 	}
 
 	getTargetTemperature (callback) {
