@@ -308,7 +308,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
 		log(`setTemperatureDisplayUnits from ${temperatureDisplayUnits} to ${value}`);
 
-		temperatureDisplayUnits = value;
+		config.temperatureDisplayUnits = value;
 
 		callback(null);
 	}
