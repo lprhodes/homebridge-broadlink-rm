@@ -1,6 +1,6 @@
 {
   "name": "homebridge-broadlink-rm",
-  "version": "0.2.13",
+  "version": "1.0.0",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
@@ -21,6 +21,6 @@
     "url": "git@github.com:lprhodes/homebridge-broadlink-rm.git"
   },
   "dependencies": {
-    "broadlinkjs": "^0.1.0"
+    "broadlinkjs": "git+https://github.com/clkao/broadlinkjs.git#0ed810a"
   }
 }

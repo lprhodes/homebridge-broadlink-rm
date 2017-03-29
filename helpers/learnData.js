@@ -4,9 +4,6 @@ let closeClient = null;
 let timeout = null;
 let getDataTimeout = null;
 
-const PORT = 80;
-
-
 const stop = (log) => {
   // Reset existing learn requests
   if (closeClient) {
@@ -20,8 +17,21 @@ const stop = (log) => {
 const start = (host, callback, turnOffCallback, log) => {
   stop()
 
-  const device = discoveredDevices[host];
-  if (!device) return log(`LearnIR (no device found at ${host})`);
+  // Get the Broadlink device, use the first one of no host is provided
+  let device;
+
+  if (host) {
+    device = discoveredDevices[host];
+  } else {
+    const hosts = Object.keys(discoveredDevices);
+    if (hosts.length === 0) return log(`Learn IR (no devices found)`);
+
+    device = discoveredDevices[hosts[0]];
+  }
+
+  if (!device) return log(`Learn IR (no device found at ${host})`);
+
+  let onRawData;
 
   closeClient = (err) => {
     if (timeout) clearTimeout(timeout);
@@ -29,27 +39,22 @@ const start = (host, callback, turnOffCallback, log) => {
 
     if (getDataTimeout) clearTimeout(getDataTimeout);
     getDataTimeout = null;
-    // log(`UDP learn server stopped on ${host}:${PORT}`);
 
-    // device.removeListener('rawData');
-  }
+    device.removeListener('rawData', onRawData);
+  };
 
-  // There's no device.removeListener for some reason so this is a quick hack
-  // so not to duplicate the listener
-  if (!device.hasListener) {
-    device.hasListener = true
+  onRawData = (message) => {
+    const hex = message.toString('hex');
+    log(`Learn IR (learned hex code: ${hex})`);
+    log(`Learn IR (complete)`);
 
-    device.on('rawData', (message) => {
-      const hex = message.toString('hex');
-      log(`Learn IR (learned hex code: ${hex})`);
-      log(`Learn IR (complete)`);
+    closeClient();
+    closeClient = null
 
-      closeClient();
-      closeClient = null
+    turnOffCallback()
+  };
 
-      turnOffCallback()
-    });
-  }
+  device.on('rawData', onRawData);
 
   device.enterLearning()
   log(`Learn IR (ready)`);

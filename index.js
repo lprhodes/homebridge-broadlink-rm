@@ -1,160 +1,94 @@
-const HKTTGen = require('./HomeKitTVTypes');
-const thermostatService = require('./ThermostatService');
-const sender = require('./sender');
-const learner = require('./learner');
-
-let Service, Characteristic;
-let HomeKitTVTypes;
-let ThermostatService
+const Accessory = require('./accessories');
 
 module.exports = (homebridge) => {
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
-  HomeKitTVTypes = HKTTGen(homebridge);
-  ThermostatService = thermostatService(homebridge)
+  global.Service = homebridge.hap.Service;
+  global.Characteristic = homebridge.hap.Characteristic;
 
-  homebridge.registerAccessory('homebridge-broadlink-rm', 'Broadlink RM', BroadlinkRMAccessory);
-  homebridge.registerAccessory('homebridge-broadlink-rm', 'Broadlink RM Learner', BroadlinkRMLearnerAccessory);
+  require('./services/TVChannels');
+  require('./services/UpDown');
+
+  homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
 }
 
-class BroadlinkRMAccessory {
+class BroadlinkRMPlatform {
 
-  constructor (log, config) {
+  constructor (log, config = {}) {
     this.log = log;
     this.config = config;
-
-    const { host, name, data } = config;
-
-    this.host = host;
-    this.name = name;
-    this.data = data;
   }
 
-  setPowerState (powerOnHex, powerOffHex, powerOn, callback) {
-    this.log(`setPowerState: ${powerOn}`);
+  accessories (callback) {
+    const { config, log } = this;
 
-    const hexData = powerOn ? powerOnHex : powerOffHex;
-    sender(this.host, hexData, callback, this.log);
-  }
+    const accessories = [];
 
-  setChannel (payloadChannels, channel, callback) {
-    this.log(`setChannel: ${channel}`);
+    // Add a Learn IR accessory if none exist in the config
+    const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => accessory.type === 'learn-ir') : [];
 
-    sender(this.host, payloadChannels[channel], callback, this.log);
-  }
+    if (learnIRAccessories.length === 0) {
+      const learnIRAccessory = new Accessory.LearnIR(log);
+      accessories.push(learnIRAccessory);
+    }
 
-  identify (callback) {
-    this.log('Identify requested!');
+    // Check for no accessories
+    if (!config.accessories || config.accessories.length === 0) {
+      log('No accessories have been added to the Broadlink RM config. Only the Learn IR accessory will be accessible on HomeKit.');
+      return callback(accessories);
+    }
 
-    callback();
-  }
+    // Itterate through the config accessories
+    config.accessories.forEach((accessory) => {
+      if (!accessory.type) throw new Error(`Each accessory must be configured with a "type". e.g. "switch"`);
 
-  getServices () {
-    const services = [];
+      let homeKitAccessory;
 
-    const informationService = new Service.AccessoryInformation();
-
-    informationService
-      .setCharacteristic(Characteristic.Manufacturer, 'Broadlink')
-      .setCharacteristic(Characteristic.Model, 'RM Mini or Pro')
-      .setCharacteristic(Characteristic.SerialNumber, this.host);
-    services.push(informationService);
-
-    for (var i = 0; i < this.data.length; i++) {
-      const data = this.data[i];
-      const { name, type } = data;
-
-      if (type === 'on') {
-        this.log('add switch service');
-
-        const switchService = new Service.Switch(name || this.name);
-        switchService
-          .getCharacteristic(Characteristic.On)
-          .on('set', this.setPowerState.bind(this, data.on, data.off));
-
-        services.push(switchService);
-      } else if (type === 'thermostat') {
-        this.log('add thermostat service');
-
-        const thermostatService = new ThermostatService(this.log, this.config, data).createService()
-
-        services.push(thermostatService);
-      } else if (type == 'channel') {
-        this.log('add channel service');
-
-        const channels = [ '' ];
-
-        for (var i = 1; i <= 9; i++) {
-          channels.push(data[`${i}`]);
+      switch (accessory.type) {
+        case 'air-conditioner': {
+          homeKitAccessory = new Accessory.AirCon(log, accessory)
+          break;
         }
-
-        const channelService = new HomeKitTVTypes.ChannelService(data.name || this.name);
-        channelService
-          .getCharacteristic(HomeKitTVTypes.ChannelState)
-          .on('set', this.setChannel.bind(this, channels));
-
-        services.push(channelService);
+        // case 'channel': {
+        //   homeKitAccessory = new Accessory.Channel(log, accessory)
+        //   break;
+        // }
+        case 'learn-ir': {
+          homeKitAccessory = new Accessory.LearnIR(log, accessory)
+          break;
+        }
+        case 'switch': {
+          homeKitAccessory = new Accessory.Switch(log, accessory)
+          break;
+        }
+        case 'switch-repeat': {
+          homeKitAccessory = new Accessory.SwitchRepeat(log, accessory)
+          break;
+        }
+        // case 'up-down': {
+        //   homeKitAccessory = new Accessory.UpDown(log, accessory)
+        //   break;
+        // }
+        default:
+          throw new Error(`We don't support accessories of type "${accessory.type}".`);
       }
-    }
 
-    return services;
+      if (!homeKitAccessory) return
+
+      accessories.push(homeKitAccessory);
+    })
+
+    callback(accessories);
   }
 }
 
-class BroadlinkRMLearnerAccessory {
-
-  constructor (log, config) {
-    this.log = log;
-    this.config = config;
-
-    const { host, name } = config;
-
-    this.host = host;
-    this.name = name;
-
-    this.learnService = null;
-  }
-
-  toggleLearning (on, callback) {
-    // this.log(`toggleLearning: ${on ? 'on' : 'off'}`);
-    const turnOffCallback = () => {
-      this.learnService.setCharacteristic(Characteristic.On, false)
-    }
-
-    if (on) {
-      learner.start(this.host, callback, turnOffCallback, this.log);
-    } else {
-      learner.stop(this.log)
-
-      callback();
-    }
-  }
-
-  identify (callback) {
-    this.log('Identify requested!');
-
-    callback();
-  }
-
-  getServices () {
-    const services = [];
-
-    const informationService = new Service.AccessoryInformation();
-
-    informationService
-      .setCharacteristic(Characteristic.Manufacturer, 'Broadlink')
-      .setCharacteristic(Characteristic.Model, 'RM Mini or Pro Learner')
-      .setCharacteristic(Characteristic.SerialNumber, this.host);
-    services.push(informationService);
-
-    const switchService = new Service.Switch(this.name || 'Learn IR');
-    switchService
-      .getCharacteristic(Characteristic.On)
-      .on('set', this.toggleLearning.bind(this));
-
-    services.push(switchService);
-    this.learnService = switchService
-
-    return services;
-  }
-}
+    //
+    // for (var i = 0; i < this.data.length; i++) {
+    //   const data = this.data[i];
+    //   const { name, type } = data;
+    //
+    //   if (type === 'thermostat') {
+    //     this.log('add thermostat service');
+    //
+    //     const thermostatService = new ThermostatService(this.log, this.config, data).createService()
+    //
+    //     services.push(thermostatService);
+    //   }

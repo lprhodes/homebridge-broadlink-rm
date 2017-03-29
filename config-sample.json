@@ -1,55 +1,67 @@
 {
-  "bridge": {
-    "name": "Homebridge",
-    "username": "CD:22:3D:E3:CE:30",
-    "port": 51826,
-    "pin": "031-45-156"
+  "bridge":{
+    "name":"Homebridge",
+    "username":"CD:22:3D:E3:CE:30",
+    "port":51826,
+    "pin":"031-45-156"
   },
-  "description": "Homebridge",
-  "platforms": [],
-  "accessories": [
+  "description":"Homebridge",
+  "accessories":[
+
+  ],
+  "platforms":[
     {
-      "accessory": "Broadlink RM Learner",
-      "name": "Learn IR",
-      "host": "10.0.1.61"
-    },
-    {
-      "accessory": "Broadlink RM",
-      "name": "Broadlink RM Pro 3",
-      "host": "192.168.10.8",
-      "data": [
+      "platform":"BroadlinkRM",
+      "name":"Broadlink RM",
+      "accessories":[
         {
-          "name": "TV",
-          "type": "on",
-          "on": "2600500000012...",
-          "off": "2600500000012..."
-        },
-        {
-          "name": "Air Conditioner",
-          "type": "thermostat",
-          "data": {
-            "off": "2600500000012...",
-            "temperature30": {
-              "mode": "heat",
-              "data": "2600500000012..."
-            },
-            "temperature16": {
-              "mode": "cool",
-              "data": "2600500000012..."
-            }
+          "name":"TV On/Off",
+          "type":"switch",
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012..."
           }
         },
         {
-          "1": "2600500000012...",
-          "2": "2600500000012...",
-          "3": "2600500000012...",
-          "4": "2600500000012...",
-          "5": "2600500000012...",
-          "6": "2600500000012...",
-          "7": "2600500000012...",
-          "8": "2600500000012...",
-          "9": "2600500000012...",
-          "type": "channel"
+          "name":"Channel Up",
+          "type":"switch-repeat",
+          "sendCount":1,
+          "data":"2600500000012..."
+        },
+        {
+          "name":"Channel Down",
+          "type":"switch-repeat",
+          "sendCount":1,
+          "data":"2600500000012..."
+        },
+        {
+          "name":"Volume Up",
+          "type":"switch-repeat",
+          "sendCount":5,
+          "interval":0.3,
+          "data":"2600500000012..."
+        },
+        {
+          "name":"Volume Down",
+          "type":"switch-repeat",
+          "sendCount":5,
+          "interval":0.3,
+          "data":"2600500000012..."
+        },
+        {
+          "name":"Air Conditioner",
+          "type":"air-conditioner",
+          "data":{
+            "off":"2600500000012...",
+            "temperature30":{
+              "pseudo-mode":"heat",
+              "data":"2600500000012..."
+            },
+            "temperature16":{
+              "pseudo-mode":"cool",
+              "data":"2600500000012..."
+            }
+          }
         }
       ]
     }
