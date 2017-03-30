@@ -19,6 +19,17 @@ module.exports = (host, payload, callback, log) => {
 
   if (!device) return log(`Send data (no device found at ${host})`);
 
+  const macAddressParts = device.mac.toString('hex').match(/[\s\S]{1,2}/g) || []
+  const macAddress = macAddressParts.join(':')
+
+  if (!device.sendData) {
+    log(`[ERROR] The device at ${device.host.address} (${macAddress}) doesn't support the sending of IR or RF codes.`);
+
+    if (callback) callback();
+
+    return
+  }
+
   if (payload.includes('5aa5aa555')) {
     log('[ERROR] This type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn IR" accessory to find new (decrypted) codes.');
 
@@ -30,8 +41,6 @@ module.exports = (host, payload, callback, log) => {
   const packet = new Buffer(payload, 'hex');
   device.sendData(packet);
 
-  const macAddressParts = device.mac.toString('hex').match(/[\s\S]{1,2}/g) || []
-  const macAddress = macAddressParts.join(':')
   log(`Payload message sent to Broadlink RM device (${device.host.address}; ${macAddress})`);
 
   if (callback) callback()
