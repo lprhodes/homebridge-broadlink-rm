@@ -7,7 +7,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   constructor (log, config) {
     super(log, config)
 
-    const { defaultCoolTemperature, defaultHeatTemperature, heatTemperature, minTemperature, maxTemperature, replaceAutoMode, units } = config
+    const { defaultCoolTemperature, defaultHeatTemperature, heatTemperature, minTemperature, maxTemperature, psuedoDeviceTemperature, replaceAutoMode, units } = config
 
     this.log = log;
     this.currentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.OFF
@@ -35,6 +35,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // after launching Homebridge. The rest of the time we'll use your last known
     // temperature
     config.replaceAutoMode = replaceAutoMode || 'cool'
+
+    if (config.psuedoDeviceTemperature > config.minTemperature) throw new Error(`The psuedoDeviceTemperature (${psuedoDeviceTemperature}) must be less than the minTemperature (${minTemperature})`)
 
     this.callbackQueue = {}
   }
@@ -218,8 +220,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
 	}
 
 	getCurrentTemperature (callback) {
-    const { host, log } = this;
- 		log(`getCurrentTemperature`);
+    const { config, host, log } = this;
+    const { minTemperature, psuedoDeviceTemperature } = config
+
+    // Some devices don't include a thermometer
+    if (psuedoDeviceTemperature !== undefined) {
+      log('getCurrentTemperature (ignored)')
+      return callback()
+    }
 
     let device;
 
@@ -228,18 +236,18 @@ class AirConAccessory extends BroadlinkRMAccessory {
     } else {
       const hosts = Object.keys(discoveredDevices)
       if (hosts.length === 0) {
-        log(`Get temperature (no devices found)`);
+        log(`getCurrentTemperature (no devices found)`);
 
-        return callback(0)
+        return callback(null, 0)
       }
 
       device = discoveredDevices[hosts[0]];
     }
 
     if (!device) {
-      log(`Get temperature (no device found at ${host})`);
+      log(`getCurrentTemperature (no device found at ${host})`);
 
-      return callback(0)
+      return callback(null, 0)
     }
 
     const callbackIdentifier = Date.now()

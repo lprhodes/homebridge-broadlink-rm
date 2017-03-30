@@ -88,6 +88,7 @@ defaultCoolTemperature (optional) | The temperature that will be requested when 
 defaultHeatTemperature (optional) | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30
 heatTemperature (optional) | The temperature at which we change the UI to show that we're heating. Also used to determine whether "defaultCoolTemperature" or "defaultHeatTemperature" is used. | 20 | 22
 replaceAutoMode (optional) | When we turn on the thermostat with Siri it sets the mode as "auto" which isn't  supported at this time so we set the mode to "cool" or "heat" instead depending on the value of this key. | "heat" | "cool"
+psuedoDeviceTemperature (optional) | Some RM devices don't have a built in thermometer, when set this setting prevents the accessory from trying to use it and uses the value provided instead. | 0 | 0
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 #### "data" key-value object
