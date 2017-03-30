@@ -1,12 +1,12 @@
 const sendData = require('../helpers/sendData');
 const BroadlinkRMAccessory = require('./accessory');
 
-class SwitchRepeatAccessory extends BroadlinkRMAccessory {
+class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
   constructor (log, config, thermostatData) {
     super(log, config, thermostatData)
 
-    this.sendCount = 0
+    this.sendIndex = 0
     this.switchState = 0
   }
 
@@ -23,7 +23,7 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
       callback()
     } else {
       if (this.performSendTimeout) clearTimeout(this.performSendTimeout)
-      this.sendCount = 0
+      this.sendIndex = 0
 
       callback()
     }
@@ -39,22 +39,25 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
     const { config, log } = this
     let { interval, sendCount } = config
 
+    if (!Array.isArray(hexData)) return log('The "switch-multi" type requires the config value for "data" an array of hex strings.')
+
     if (!interval) interval = 1
 
-    sendData(host, hexData, null, log);
-    this.sendCount++
+    sendData(host, hexData[this.sendIndex], null, log);
 
-    if (this.sendCount >= sendCount) {
+    if (this.sendIndex >= hexData.length -1) {
       if (this.performSendTimeout) clearTimeout(this.performSendTimeout)
-      this.sendCount = 0
+      this.sendIndex = 0
 
       setTimeout(() => {
         this.switchService.setCharacteristic(Characteristic.On, 0);
       }, 100)
+
       return
     }
 
     this.performSendTimeout = setTimeout(() => {
+      this.sendIndex++
       this.performSend(host, hexData)
     }, interval * 1000)
   }
@@ -76,4 +79,4 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
   }
 }
 
-module.exports = SwitchRepeatAccessory
+module.exports = SwitchMultiAccessory

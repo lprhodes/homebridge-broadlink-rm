@@ -49,6 +49,16 @@
           "data":"2600500000012..."
         },
         {
+          "name":"Entertainment",
+          "type":"switch-multi",
+          "interval":0.5,
+          "data": [
+            "2600500000012...",
+            "2600500000012...",
+            "2600500000012..."
+          ]
+        },
+        {
           "name":"Air Conditioner",
           "type":"air-conditioner",
           "data":{
