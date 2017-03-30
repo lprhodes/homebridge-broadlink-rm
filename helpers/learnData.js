@@ -26,10 +26,20 @@ const start = (host, callback, turnOffCallback, log) => {
     const hosts = Object.keys(discoveredDevices);
     if (hosts.length === 0) return log(`Learn IR (no devices found)`);
 
-    device = discoveredDevices[hosts[0]];
+    for (let i = 0; i < hosts.length; i++) {
+      let currentDevice = discoveredDevices[hosts[i]];
+
+      if (currentDevice.enterLearning) {
+        device = currentDevice
+
+        break;
+      }
+    }
   }
 
   if (!device) return log(`Learn IR (no device found at ${host})`);
+
+  if (!device.enterLearning) return log(`Learn IR (IR learning not supported for device at ${host})`);
 
   let onRawData;
 
