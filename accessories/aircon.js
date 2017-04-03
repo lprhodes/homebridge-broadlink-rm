@@ -72,6 +72,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
       .on('get', this.getTemperatureDisplayUnits.bind(this))
       .on('set', this.setTemperatureDisplayUnits.bind(this));
 
+    //
+    // service
+    //   .getCharacteristic(Characteristic.On)
+    //   .on('get', this.getOnOffState.bind(this))
+    //   .on('set', this.setOnOffState.bind(this));
+
     service
       .getCharacteristic(Characteristic.Name)
       .on('get', this.getName.bind(this, name));
@@ -158,12 +164,31 @@ class AirConAccessory extends BroadlinkRMAccessory {
     sendData(host, hexData.data, callback, log)
   }
 
+  setOnOffState (newState, callback) {
+    const { log } = this
+    log(`setOnOffState: ${newState}`);
+
+    setTimeout(() => {
+      this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, this.heatingCoolingStateForConfigKey('auto'));
+    }, 100)
+
+    callback()
+  }
+
+  getOnOffState (callback) {
+    this.log(`getSwitchState: ${this.switchState}`);
+
+    callback(null, this.switchState)
+  }
+
 	getCurrentHeatingCoolingState (callback) {
 		this.log('getCurrentHeatingCoolingState');
 
     this.updateServiceHeatingCoolingState(this.currentHeatingCoolingState)
 
-    callback(null, this.currentHeatingCoolingState); // success
+    let off = (!this.lastUsedHeatingCoolingState || (this.lastUsedHeatingCoolingState === this.heatingCoolingStateForConfigKey('off')))
+
+    callback(null, !off);
 	}
 
 	getTargetHeatingCoolingState (callback) {
@@ -226,7 +251,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Some devices don't include a thermometer
     if (psuedoDeviceTemperature !== undefined) {
       log('getCurrentTemperature (ignored)')
-      return callback()
+      return callback(null, psuedoDeviceTemperature)
     }
 
     let device;
