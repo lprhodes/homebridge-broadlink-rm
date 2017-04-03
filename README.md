@@ -32,14 +32,7 @@ key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
 type (required) | The type of accessory. i.e. "learn-ir" | "learn-ir" | -
-data (required) | Hex data stored as a key-value JSON object. | See below. | -
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-
-#### "data" key-value object
-key | description
---- | -----------
-on | A hex code string to be sent when the switch is changed to the on position.
-off | A hex code string to be sent when the switch is changed to the off position.
 
 ### "switch"
 
@@ -66,7 +59,7 @@ Turn the switch on and the switch will send each hex code in the provided array 
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV Volume Up" | -
-type (required) | The type of accessory. i.e. "switch-repeat" | "switch-repeat" | -
+type (required) | The type of accessory. i.e. "switch-multi" | "switch-multi" | -
 data (required) | Hex data stored as an array of strings. | [ "26005800000..." ] | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
