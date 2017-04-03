@@ -7,7 +7,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   constructor (log, config) {
     super(log, config)
 
-    const { defaultCoolTemperature, defaultHeatTemperature, heatTemperature, minTemperature, maxTemperature, psuedoDeviceTemperature, replaceAutoMode, units } = config
+    const { defaultCoolTemperature, defaultHeatTemperature, heatTemperature, minTemperature, maxTemperature, pseudoDeviceTemperature, replaceAutoMode, units } = config
 
     this.log = log;
     this.currentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.OFF
@@ -36,7 +36,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // temperature
     config.replaceAutoMode = replaceAutoMode || 'cool'
 
-    if (config.psuedoDeviceTemperature > config.minTemperature) throw new Error(`The psuedoDeviceTemperature (${psuedoDeviceTemperature}) must be less than the minTemperature (${minTemperature})`)
+    if (config.pseudoDeviceTemperature > config.minTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be less than the minTemperature (${minTemperature})`)
 
     this.callbackQueue = {}
   }
@@ -246,12 +246,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
 	getCurrentTemperature (callback) {
     const { config, host, log } = this;
-    const { minTemperature, psuedoDeviceTemperature } = config
+    const { minTemperature, pseudoDeviceTemperature } = config
 
     // Some devices don't include a thermometer
-    if (psuedoDeviceTemperature !== undefined) {
+    if (pseudoDeviceTemperature !== undefined) {
       log('getCurrentTemperature (ignored)')
-      return callback(null, psuedoDeviceTemperature)
+      return callback(null, pseudoDeviceTemperature)
     }
 
     let device;
