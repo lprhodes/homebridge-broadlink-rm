@@ -3,11 +3,11 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
-  setSwitchState (hexData) {
+  async setSwitchState (hexData) {
     const { host } = this;
 
     if (this.switchState) {
-      this.performSend(host, setSwitchState);
+      this.performSend(host, hexData);
     } else {
       if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
 
@@ -54,7 +54,7 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
       characteristicType: Characteristic.On,
       propertyName: 'switchState',
       onHex: data,
-      setValuePromise: this.setSwitchState
+      setValuePromise: this.setSwitchState.bind(this)
     });
 
     services.push(service);

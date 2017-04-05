@@ -3,28 +3,30 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class FanAccessory extends BroadlinkRMAccessory {
 
-  setFanSpeed (currentStatus, callback) {
+  async setFanSpeed (hexData) {
     const { data, host, log } = this;
 
     const allHexKeys = Object.keys(data);
 
-    // Create an array of temperatures specified in the data config
-    const foundTemperatures = [];
+    // Create an array of speeds specified in the data config
+    const foundSpeeds = [];
 
-    allHexKeys.forEach(() => {
-      const parts = key.split('temperature');
+    allHexKeys.forEach((key) => {
+      const parts = key.split('fanSpeed');
 
       if (parts.length !== 2) return;
+
+      foundSpeeds.push(parts[1])
     })
 
-    // Find temperature closest to the one requested
-    const closest = foundTemperatures.reduce((prev, curr) => Math.abs(curr - this.fanSpeed) < Math.abs(prev - this.fanSpeed) ? curr : prev);
+    // Find speed closest to the one requested
+    const closest = foundSpeeds.reduce((prev, curr) => Math.abs(curr - this.fanSpeed) < Math.abs(prev - this.fanSpeed) ? curr : prev);
     log(`setFanSpeed: (closest: ${closest})`);
 
-    // Get the closest temperature's hex data
-    const hexData = data[`temperature${closest}`];
+    // Get the closest speed's hex data
+    hexData = data[`fanSpeed${closest}`];
 
-    sendData(host, swingToggle, callback, log);
+    sendData(host, hexData, log);
   }
 
   getServices () {
@@ -70,7 +72,7 @@ class FanAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.RotationSpeed,
       propertyName: 'fanSpeed',
-      setValuePromise: this.setFanSpeed
+      setValuePromise: this.setFanSpeed.bind(this)
     });
 
     services.push(service);

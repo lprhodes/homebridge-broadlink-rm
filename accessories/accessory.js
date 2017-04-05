@@ -33,7 +33,7 @@ class BroadlinkRMAccessory {
 
   async setCharacteristicValue (props, on, callback) {
     try {
-      const { propertyName, onHex, offHex, setTogglePromise } = props;
+      const { propertyName, onHex, offHex, setValuePromise } = props;
       const { host, log } = this;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
@@ -44,14 +44,16 @@ class BroadlinkRMAccessory {
       const hexData = on ? onHex : offHex;
 
       if (setValuePromise) {
-        await setTogglePromise(hexData);
+        await setValuePromise(hexData);
       } else if (hexData) {
         sendData(host, hexData, log);
       }
 
       callback(null, this[propertyName]);
     } catch (err) {
-      throw new Error(err)
+      console.log('setCharacteristicValue err', err)
+
+      callback(err)
     }
   }
 
