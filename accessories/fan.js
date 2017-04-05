@@ -16,8 +16,9 @@ class FanAccessory extends BroadlinkRMAccessory {
 
       if (parts.length !== 2) return;
 
-      foundTemperatures.push(parseInt(parts[1]));
-    });
+  setSwingMode (currentStatus, callback) {
+    const { data, host, log } = this
+    const { swingToggle } = data
 
     // Find temperature closest to the one requested
     const closest = foundTemperatures.reduce((prev, curr) => Math.abs(curr - this.fanSpeed) < Math.abs(prev - this.fanSpeed) ? curr : prev);
