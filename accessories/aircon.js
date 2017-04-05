@@ -36,8 +36,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // temperature
     config.replaceAutoMode = replaceAutoMode || 'cool'
 
-    if (config.pseudoDeviceTemperature < config.minTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be more than the minTemperature (${minTemperature})`)
-    if (config.pseudoDeviceTemperature > config.maxTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be less than the maxTemperature (${minTemperature})`)
+    if (config.pseudoDeviceTemperature < config.minTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be more than the minTemperature (${config.minTemperature})`)
+    if (config.pseudoDeviceTemperature > config.maxTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be less than the maxTemperature (${config.maxTemperature})`)
 
     this.callbackQueue = {}
   }
@@ -131,7 +131,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       hexData = data[`temperature${defaultTemperature}`]
 
       if (!hexData) {
-        const error = Error(`You need to provide a hex code for the given mode/temperature
+        const error = Error(`You need to set the defaultHeatTemperature and defaultCoolTemperature or provide a hex code for the given mode/temperature:
           ({ "temperature${this.targetTemperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })
           or at the very least, the default mode/temperature
           ({ "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })`)
@@ -266,7 +266,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       if (hosts.length === 0) {
         log(`getCurrentTemperature (no devices found)`);
 
-        return callback(null, 0)
+        return callback(null, this.minTemperature)
       }
 
       device = discoveredDevices[hosts[0]];
@@ -310,6 +310,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
 	}
 
   processQueuedCallbacks () {
+    const { config } = this
+    const { minTemperature, maxTemperature } = config
+
+    if (this.currentTemperature < minTemperature) throw new Error(`The current temperature (${this.currentTemperature}) must be more than the minTemperature (${minTemperature})`)
+    if (this.currentTemperature > maxTemperature) throw new Error(`The current temperature (${this.currentTemperature}) must be less than the maxTemperature (${maxTemperature})`)
+
+
     Object.keys(this.callbackQueue).forEach((callbackIdentifier) => {
       const callback = this.callbackQueue[callbackIdentifier]
       callback(null, this.currentTemperature);
@@ -324,7 +331,21 @@ class AirConAccessory extends BroadlinkRMAccessory {
 	}
 
 	setTargetTemperature (value, callback) {
+    const { config } = this
+    const { minTemperature, maxTemperature } = config
+
 		this.log(`setTargetTemperature (${value})`);
+
+    let error
+
+    if (this.currentTemperature < minTemperature) error = new Error(`The target temperature (${value}) must be more than the minTemperature (${minTemperature})`)
+    if (this.currentTemperature > maxTemperature) error = new Error(`The target temperature (${value}) must be less than the maxTemperature (${maxTemperature})`)
+
+    if (error) {
+  		this.log(`setTargetTemperature (${error.message})`);
+
+      return callback(error)
+    }
 
     this.sendTemperature(value, callback)
 	}

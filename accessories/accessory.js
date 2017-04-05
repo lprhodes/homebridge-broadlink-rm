@@ -61,7 +61,7 @@ class BroadlinkRMAccessory {
     const { log } = this;
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-    log(`get${capitalizedPropertyName}: ${this[propertyName]}`);
+    log(`get${capitalizedPropertyName}: ${this[propertyName] || 0}`);
 
     callback(null, this[propertyName]);
   }
