@@ -23,7 +23,7 @@ class FanAccessory extends BroadlinkRMAccessory {
     sendData(host, hexData, callback, log);
   }
 
-  setSwingMode (toggleSwingHex, currentStatus, callback) {
+  setSwingMode (currentStatus, callback) {
     const { data, host, log } = this
     const { swingToggle } = data
 
@@ -36,13 +36,13 @@ class FanAccessory extends BroadlinkRMAccessory {
 
   setRotationSpeed (currentStatus, callback) {
     const { data, host, log } = this
-    const { swingToggle } = data
+    const { speedToggle } = data
 
     log(`setRotationSpeed: ${currentStatus}`);
 
     this.rotationSpeed = currentStatus
 
-    sendData(host, swingToggle, callback, log);
+    sendData(host, speedToggle, callback, log);
   }
 
   getSwitchState (callback) {
@@ -66,6 +66,15 @@ class FanAccessory extends BroadlinkRMAccessory {
   getServices () {
     const services = super.getServices();
     const { data, name } = this;
+
+	// Until FanV2 service is supported completely in Home app, we have to add legacy service
+	const legacyService = new Service.Fan(name);
+    this.addNameService(legacyService);
+    legacyService.getCharacteristic(Characteristic.On)
+      .on('set', this.setSwitchState.bind(this))
+      .on('get', this.getSwitchState.bind(this));
+
+    services.push(legacyService);
 
     const service = new Service.Fanv2(name);
     this.addNameService(service);
