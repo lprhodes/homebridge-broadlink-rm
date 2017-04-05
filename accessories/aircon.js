@@ -161,7 +161,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.lastUsedTemperature = this.targetTemperature
     this.lastUsedHeatingCoolingState= this.currentHeatingCoolingState
 
-    sendData(host, hexData.data, callback, log)
+    sendData(host, hexData.data, log)
+    callback()
   }
 
   setOnOffState (newState, callback) {
@@ -238,7 +239,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (currentModeConfigKey === 'off') {
       this.updateServiceHeatingCoolingState(value)
-      sendData(host, data.off, callback, log)
+      sendData(host, data.off, log)
+      callback()
     } else {
       this.sendTemperature(temperature, callback)
     }

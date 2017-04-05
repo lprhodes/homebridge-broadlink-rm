@@ -3,63 +3,47 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config, thermostatData) {
-    super(log, config, thermostatData)
+  async setSwitchState () {
+    const { data, host } = this;
 
-    this.sendIndex = 0
-    this.switchState = 0
-  }
+    this.sendIndex = this.sendIndex || 0
 
-  setSwitchState (on, callback) {
-    const { data, host, log } = this
-
-    log(`setSwitchState: ${on}`);
-
-    this.switchState = on
-
-    if (on) {
+    if (this.switchState) {
       this.performSend(host, data);
-
-      callback()
     } else {
       if (this.performSendTimeout) clearTimeout(this.performSendTimeout)
+
       this.sendIndex = 0
-
-      callback()
     }
-  }
-
-  getSwitchState (callback) {
-    this.log(`getSwitchState: ${this.switchState}`);
-
-    callback(null, this.switchState)
   }
 
   performSend (host, hexData) {
-    const { config, log } = this
-    let { interval, sendCount } = config
+    const { config, log } = this;
+    let { interval, sendCount } = config;
 
     if (!Array.isArray(hexData)) return log('The "switch-multi" type requires the config value for "data" an array of hex strings.')
 
-    if (!interval) interval = 1
+    if (!interval) interval = 1;
 
-    sendData(host, hexData[this.sendIndex], null, log);
+    sendData(host, hexData[this.sendIndex], log);
 
     if (this.sendIndex >= hexData.length -1) {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout)
-      this.sendIndex = 0
+      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
+
+      this.sendIndex = 0;
 
       setTimeout(() => {
         this.switchService.setCharacteristic(Characteristic.On, 0);
-      }, 100)
+      }, 100);
 
-      return
+      return;
     }
 
     this.performSendTimeout = setTimeout(() => {
-      this.sendIndex++
-      this.performSend(host, hexData)
-    }, interval * 1000)
+      this.sendIndex++;
+
+      this.performSend(host, hexData);
+    }, interval * 1000);
   }
 
   getServices () {
@@ -68,16 +52,21 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
     const service = new Service.Switch(name);
     this.addNameService(service);
-    service.getCharacteristic(Characteristic.On)
-      .on('set', this.setSwitchState.bind(this))
-      .on('get', this.getSwitchState.bind(this));
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.On,
+      propertyName: 'switchState',
+      onHex: data,
+      setValuePromise: this.setSwitchState.bind(this)
+    })
 
     services.push(service);
 
-    this.switchService = service
+    this.switchService = service;
 
     return services;
   }
 }
 
-module.exports = SwitchMultiAccessory
+module.exports = SwitchMultiAccessory;

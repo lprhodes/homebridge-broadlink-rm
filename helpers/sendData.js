@@ -2,7 +2,7 @@ const assert = require('assert')
 
 const discoveredDevices = require('./devices.js');
 
-module.exports = (host, payload, callback, log) => {
+module.exports = (host, payload, log) => {
   assert(payload && typeof payload === 'string', 'HEX value is missing')
 
   // Get the Broadlink device, use the first one of no host is provided
@@ -25,15 +25,11 @@ module.exports = (host, payload, callback, log) => {
   if (!device.sendData) {
     log(`[ERROR] The device at ${device.host.address} (${macAddress}) doesn't support the sending of IR or RF codes.`);
 
-    if (callback) callback();
-
     return
   }
 
   if (payload.includes('5aa5aa555')) {
     log('[ERROR] This type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn IR" accessory to find new (decrypted) codes.');
-
-    if (callback) callback();
 
     return
   }
@@ -42,6 +38,4 @@ module.exports = (host, payload, callback, log) => {
   device.sendData(packet);
 
   log(`Payload message sent to Broadlink RM device (${device.host.address}; ${macAddress})`);
-
-  if (callback) callback()
 }
