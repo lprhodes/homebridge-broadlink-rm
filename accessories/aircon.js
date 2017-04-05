@@ -11,7 +11,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     this.log = log;
     this.currentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.OFF
-    this.targetTemperature = minTemperature
+    this.targetTemperature = minTemperature || 0
     this.firstTemperatureUpdate = true
 
     config.minTemperature = minTemperature || 0
@@ -35,6 +35,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // after launching Homebridge. The rest of the time we'll use your last known
     // temperature
     config.replaceAutoMode = replaceAutoMode || 'cool'
+
+    if (config.pseudoDeviceTemperature < config.minTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be more than the minTemperature (${minTemperature})`)
+    if (config.pseudoDeviceTemperature > config.maxTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be less than the maxTemperature (${minTemperature})`)
 
     this.callbackQueue = {}
   }
@@ -246,7 +249,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
 	getCurrentTemperature (callback) {
     const { config, host, log } = this;
-    const { minTemperature, pseudoDeviceTemperature } = config
+    const { pseudoDeviceTemperature } = config
 
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) {
