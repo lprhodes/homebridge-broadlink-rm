@@ -67,6 +67,15 @@ class FanAccessory extends BroadlinkRMAccessory {
     const services = super.getServices();
     const { data, name } = this;
 
+	// Until FanV2 service is supported completely in Home app, we have to add legacy service
+	const legacyService = new Service.Fan(name);
+    this.addNameService(legacyService);
+    legacyService.getCharacteristic(Characteristic.On)
+      .on('set', this.setSwitchState.bind(this))
+      .on('get', this.getSwitchState.bind(this));
+
+    services.push(legacyService);
+
     const service = new Service.Fanv2(name);
     this.addNameService(service);
 
