@@ -4,6 +4,10 @@ Broadlink RM Mini and Pro plugin for [Homebridge](https://github.com/nfarina/hom
 
 This allows you to control your RM Mini and Pro with HomeKit and Siri.
 
+## Requirements
+
+- Node.js >= 7.6
+
 ## Installation
 
 1. Install homebridge using: `sudo npm install -g homebridge`
