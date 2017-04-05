@@ -3,48 +3,49 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class FanAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config, thermostatData) {
-    super(log, config, thermostatData)
+  setFanSpeed (currentStatus, callback) {
+    const { data, host, log } = this;
 
-    this.switchState = 0
-    this.swingMode = 0
-    this.rotationSpeed = 0
-  }
+    const allHexKeys = Object.keys(data);
 
-  setRotationSpeed (currentStatus, callback) {
-    const { data, host, log } = this
-    const { swingToggle } = data
+    // Create an array of temperatures specified in the data config
+    const foundTemperatures = [];
 
-    log(`setRotationSpeed: ${currentStatus}`);
+    allHexKeys.forEach(() => {
+      const parts = key.split('temperature');
 
-    this.rotationSpeed = currentStatus
+      if (parts.length !== 2) return;
+    })
+
+    // Find temperature closest to the one requested
+    const closest = foundTemperatures.reduce((prev, curr) => Math.abs(curr - this.fanSpeed) < Math.abs(prev - this.fanSpeed) ? curr : prev);
+    log(`setFanSpeed: (closest: ${closest})`);
+
+    // Get the closest temperature's hex data
+    const hexData = data[`temperature${closest}`];
 
     sendData(host, swingToggle, callback, log);
-  }
-
-  getSwitchState (callback) {
-    this.log(`getSwitchState: ${this.switchState}`);
-
-    callback(null, this.switchState)
-  }
-
-  getSwingMode (callback) {
-    this.log(`getSwingMode: ${this.swingMode}`);
-
-    callback(null, this.swingMode)
-  }
-
-  getRotationSpeed (callback) {
-    this.log(`getRotationSpeed: ${this.rotationSpeed}`);
-
-    callback(null, this.rotationSpeed)
   }
 
   getServices () {
     const services = super.getServices();
     const { data, name } = this;
-    const { on, off, swingToggle } = data
+    const { on, off, swingToggle } = data;
 
+	// Until FanV2 service is supported completely in Home app, we have to add legacy service
+	const legacyService = new Service.Fan(name);
+    this.addNameService(legacyService);
+    this.createToggleCharacteristic({
+      legacyService,
+      characteristicType: Characteristic.On,
+      propertyName: 'switchState',
+      onHex: on,
+      offHex: off
+    });
+
+    services.push(legacyService);
+
+    // Fanv2 service
     const service = new Service.Fanv2(name);
     this.addNameService(service);
 
@@ -54,7 +55,7 @@ class FanAccessory extends BroadlinkRMAccessory {
       propertyName: 'switchState',
       onHex: on,
       offHex: off
-    })
+    });
 
     this.createToggleCharacteristic({
       service,
@@ -62,11 +63,14 @@ class FanAccessory extends BroadlinkRMAccessory {
       propertyName: 'swingMode',
       onHex: swingToggle,
       offHex: swingToggle
-    })
+    });
 
-    this.createToggleCharacteristic(Characteristic.RotationSpeed)
-      .on('set', this.setRotationSpeed.bind(this))
-      .on('get', this.getRotationSpeed.bind(this));
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.RotationSpeed,
+      propertyName: 'fanSpeed',
+      setValuePromise: this.setFanSpeed
+    });
 
     services.push(service);
 
@@ -74,4 +78,4 @@ class FanAccessory extends BroadlinkRMAccessory {
   }
 }
 
-module.exports = FanAccessory
+module.exports = FanAccessory;

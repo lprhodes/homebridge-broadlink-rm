@@ -31,39 +31,39 @@ class BroadlinkRMAccessory {
     service.getCharacteristic(Characteristic.Name).on('get', this.getName.bind(this, name));
   }
 
-  async setToggleValue (props, on, callback) {
-    const { propertyName, onHex, offHex, setTogglePromise } = props
-    const { host, log } = this
+  async setCharacteristicValue (props, on, callback) {
+    const { propertyName, onHex, offHex, setTogglePromise } = props;
+    const { host, log } = this;
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
     log(`set${capitalizedPropertyName}: ${currentStatus}`);
 
-    this[propertyName] = on
+    this[propertyName] = on;
 
-    const hexData = on ? onHex : offHex
+    const hexData = on ? onHex : offHex;
 
-    if (setTogglePromise) {
-      await setTogglePromise(hexData)
+    if (setValuePromise) {
+      await setTogglePromise(hexData);
 
-      callback(null, this[propertyName])
-    } else {
+      callback(null, this[propertyName]);
+    } else if (hexData) {
       sendData(host, hexData, callback, log);
     }
   }
 
-  getToggleValue (propertyName, callback) {
-    const { log } = this
+  getCharacteristicValue (propertyName, callback) {
+    const { log } = this;
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
     log(`get${capitalizedPropertyName}: ${currentStatus}`);
 
-    callback(null, this[propertyName])
+    callback(null, this[propertyName]);
   }
 
-  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, setTogglePromise }) {
+  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, setValuePromise }) {
     service.getCharacteristic(characteristicType)
-      .on('set', this.setToggleValue.bind(this, { propertyName, onHex, offHex, setTogglePromise }))
-      .on('get', this.getToggleValue.bind(this, propertyName));
+      .on('set', this.setCharacteristicValue.bind(this, { propertyName, onHex, offHex, setValuePromise }))
+      .on('get', this.getCharacteristicValue.bind(this, propertyName));
   }
 
   getServices () {
@@ -77,4 +77,4 @@ class BroadlinkRMAccessory {
   }
 }
 
-module.exports = BroadlinkRMAccessory
+module.exports = BroadlinkRMAccessory;
