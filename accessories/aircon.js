@@ -36,8 +36,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // temperature
     config.replaceAutoMode = replaceAutoMode || 'cool'
 
-    if (config.pseudoDeviceTemperature > config.minTemperature) throw new Error(`The pseudoDeviceTemperature (${pseudoDeviceTemperature}) must be less than the minTemperature (${minTemperature})`)
-
     this.callbackQueue = {}
   }
 
