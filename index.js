@@ -71,6 +71,10 @@ class BroadlinkRMPlatform {
         //   homeKitAccessory = new Accessory.UpDown(log, accessory)
         //   break;
         // }
+        case 'fan': {
+          homeKitAccessory = new Accessory.Fan(log, accessory)
+          break
+        }
         default:
           throw new Error(`We don't support accessories of type "${accessory.type}".`);
       }
