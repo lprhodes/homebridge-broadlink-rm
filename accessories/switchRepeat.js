@@ -7,32 +7,17 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
     super(log, config, thermostatData)
 
     this.sendCount = 0
-    this.switchState = 0
   }
 
-  setSwitchState (on, callback) {
-    const { data, host, log } = this
+  setSwitchState (hexData) {
+    const { host } = this
 
-    log(`setSwitchState: ${on}`);
-
-    this.switchState = on
-
-    if (on) {
-      this.performSend(host, data);
-
-      callback()
+    if (this.switchState) {
+      this.performSend(host, setSwitchState);
     } else {
       if (this.performSendTimeout) clearTimeout(this.performSendTimeout)
       this.sendCount = 0
-
-      callback()
     }
-  }
-
-  getSwitchState (callback) {
-    this.log(`getSwitchState: ${this.switchState}`);
-
-    callback(null, this.switchState)
   }
 
   performSend (host, hexData) {
@@ -65,9 +50,14 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
     const service = new Service.Switch(name);
     this.addNameService(service);
-    service.getCharacteristic(Characteristic.On)
-      .on('set', this.setSwitchState.bind(this))
-      .on('get', this.getSwitchState.bind(this));
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.On,
+      propertyName: 'switchState',
+      onHex: data,
+      setTogglePromise: this.setSwitchState
+    })
 
     services.push(service);
 

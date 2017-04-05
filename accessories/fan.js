@@ -11,29 +11,6 @@ class FanAccessory extends BroadlinkRMAccessory {
     this.rotationSpeed = 0
   }
 
-  setSwitchState (currentStatus, callback) {
-    const { data, host, log } = this
-    const { on, off } = data
-
-    log(`setSwitchState: ${currentStatus}`);
-
-    const hexData = currentStatus ? on : off;
-    this.switchState = currentStatus
-
-    sendData(host, hexData, callback, log);
-  }
-
-  setSwingMode (toggleSwingHex, currentStatus, callback) {
-    const { data, host, log } = this
-    const { swingToggle } = data
-
-    log(`setSwingMode: ${currentStatus}`);
-
-    this.swingMode = currentStatus
-
-    sendData(host, swingToggle, callback, log);
-  }
-
   setRotationSpeed (currentStatus, callback) {
     const { data, host, log } = this
     const { swingToggle } = data
@@ -66,21 +43,30 @@ class FanAccessory extends BroadlinkRMAccessory {
   getServices () {
     const services = super.getServices();
     const { data, name } = this;
+    const { on, off, swingToggle } = data
 
     const service = new Service.Fanv2(name);
     this.addNameService(service);
 
-    service.getCharacteristic(Characteristic.Active)
-    .on('set', this.setSwitchState.bind(this))
-    .on('get', this.getSwitchState.bind(this));
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.Active,
+      propertyName: 'switchState',
+      onHex: on,
+      offHex: off
+    })
 
-    service.getCharacteristic(Characteristic.RotationSpeed)
-    .on('set', this.setRotationSpeed.bind(this))
-    .on('get', this.getRotationSpeed.bind(this));
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.SwingMode,
+      propertyName: 'swingMode',
+      onHex: swingToggle,
+      offHex: swingToggle
+    })
 
-    service.getCharacteristic(Characteristic.SwingMode)
-    .on('set', this.setSwingMode.bind(this))
-    .on('get', this.getSwingMode.bind(this));
+    this.createToggleCharacteristic(Characteristic.RotationSpeed)
+      .on('set', this.setRotationSpeed.bind(this))
+      .on('get', this.getRotationSpeed.bind(this));
 
     services.push(service);
 
