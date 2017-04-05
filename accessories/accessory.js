@@ -32,22 +32,26 @@ class BroadlinkRMAccessory {
   }
 
   async setCharacteristicValue (props, on, callback) {
-    const { propertyName, onHex, offHex, setTogglePromise } = props;
-    const { host, log } = this;
+    try {
+      const { propertyName, onHex, offHex, setTogglePromise } = props;
+      const { host, log } = this;
 
-    const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-    log(`set${capitalizedPropertyName}: ${currentStatus}`);
+      const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
+      log(`set${capitalizedPropertyName}: ${on}`);
 
-    this[propertyName] = on;
+      this[propertyName] = on;
 
-    const hexData = on ? onHex : offHex;
+      const hexData = on ? onHex : offHex;
 
-    if (setValuePromise) {
-      await setTogglePromise(hexData);
+      if (setValuePromise) {
+        await setTogglePromise(hexData);
+      } else if (hexData) {
+        sendData(host, hexData, log);
+      }
 
       callback(null, this[propertyName]);
-    } else if (hexData) {
-      sendData(host, hexData, callback, log);
+    } catch (err) {
+      throw new Error(err)
     }
   }
 
@@ -55,7 +59,7 @@ class BroadlinkRMAccessory {
     const { log } = this;
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-    log(`get${capitalizedPropertyName}: ${currentStatus}`);
+    log(`get${capitalizedPropertyName}: ${this[propertyName]}`);
 
     callback(null, this[propertyName]);
   }

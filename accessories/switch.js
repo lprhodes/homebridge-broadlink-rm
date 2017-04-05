@@ -1,4 +1,3 @@
-const sendData = require('../helpers/sendData');
 const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchAccessory extends BroadlinkRMAccessory {

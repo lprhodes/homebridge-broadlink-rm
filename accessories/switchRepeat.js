@@ -21,7 +21,7 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
     if (!interval) interval = 1;
 
-    sendData(host, hexData, null, log);
+    sendData(host, hexData, log);
 
     this.sendCount++;
 

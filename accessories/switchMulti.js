@@ -22,7 +22,7 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
     if (!interval) interval = 1;
 
-    sendData(host, hexData[this.sendIndex], null, log);
+    sendData(host, hexData[this.sendIndex], log);
 
     if (this.sendIndex >= hexData.length -1) {
       if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
