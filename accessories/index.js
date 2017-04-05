@@ -5,6 +5,7 @@ const SwitchAccessory = require('./switch');
 const SwitchMultiAccessory = require('./switchMulti');
 const SwitchRepeatAccessory = require('./switchRepeat');
 const UpDownAccessory = require('./upDown');
+const FanAccessory = require('./fan');
 
 module.exports = {
   AirCon: AirConAccessory,
@@ -13,5 +14,6 @@ module.exports = {
   Switch: SwitchAccessory,
   SwitchMulti: SwitchMultiAccessory,
   SwitchRepeat: SwitchRepeatAccessory,
-  UpDown: UpDownAccessory
+  UpDown: UpDownAccessory,
+  Fan: FanAccessory
 }
