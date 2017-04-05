@@ -78,6 +78,32 @@ sendCount (optional) | The number of times the hex code should be sent. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
+
+### "fan"
+
+Turn the fan on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
+
+Additionally, Siri supports the toggling of the swing mode and setting of the fan speed as a %.
+
+If you don't specify every fan speed then the accessory will choose the hex code of the fan speed closest to the one requested. e.g. If you only specify fan speeds of 10%, 50% and 100% then ask "Set Fan to 40%" then the hex code for 50% will be used.
+
+key | description | example | default
+--- | ----------- | ------- | -------
+name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
+type (required) | The type of accessory. i.e. "switch" | "switch" | -
+data (required) | Hex data stored as a key-value JSON object. | See below. | -
+host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
+
+#### "data" key-value object
+
+key | description
+--- | -----------
+on | A hex code string to be sent when the switch is changed to the on position.
+off | A hex code string to be sent when the switch is changed to the off position.
+swingToggle | A hex code string used to toggle the swing mode on/off.
+fanSpeedX | A hex code string where X is any fan speed you wish to support e.g. "fanSpeed100".
+
+
 ### "air-conditioner"
 
 This allows you to send a hex code for any temperature that you've defined a hex code for. If you simply want to heat up or cool down a room (and not learn every single temperature code) you can just set hex codes for the lowest and highest temperatures and those will be used whatever temperature you request.
@@ -98,12 +124,14 @@ pseudoDeviceTemperature (optional) | Some RM devices don't have a built in therm
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 #### "data" key-value object
+
 key | description
 --- | -----------
 off | A hex code string to be sent when the air conditioner is asked to be turned off.
-temperatureX | A key-value JSON object where X is any required temperature e.g. "temperature30".
+temperatureX | A hex code string where X is any temperature you wish to support e.g. "temperature30".
 
 #### "temperatureX" key-value object
+
 key | description
 --- | -----------
 data | Hex data stored as string.
@@ -123,4 +151,5 @@ If you wish to have multiple Learn IR accessories (e.g. for each device) then yo
 
 
 ## Thanks
+
 Thanks to @tattn (https://github.com/tattn/homebridge-rm-mini3), @PJCzx (https://github.com/PJCzx/homebridge-thermostat) @momodalo (https://github.com/momodalo/broadlinkjs) whose time and effort got me started.
