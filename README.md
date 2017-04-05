@@ -31,7 +31,7 @@ You shouldn't need to use this accessory type as we add one automatically but if
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
-type (required) | The type of accessory. i.e. "learn-ir" | "learn-ir" | -
+type (required) | The type of accessory. | "learn-ir" | -
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 ### "switch"
@@ -41,7 +41,7 @@ Turn the switch on and the "on" hex code is sent, turn it off and the "off" hex 
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
-type (required) | The type of accessory. i.e. "switch" | "switch" | -
+type (required) | The type of accessory. | "switch" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
@@ -59,7 +59,7 @@ Turn the switch on and the switch will send each hex code in the provided array 
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV Volume Up" | -
-type (required) | The type of accessory. i.e. "switch-multi" | "switch-multi" | -
+type (required) | The type of accessory. | "switch-multi" | -
 data (required) | Hex data stored as an array of strings. | [ "26005800000..." ] | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
@@ -72,7 +72,7 @@ Turn the switch on and the switch will repeatedly send the hex code until it rea
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV Volume Up" | -
-type (required) | The type of accessory. i.e. "switch-repeat" | "switch-repeat" | -
+type (required) | The type of accessory. | "switch-repeat" | -
 data (required) | Hex data stored as string. | 26005800000... | -
 sendCount (optional) | The number of times the hex code should be sent. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
@@ -90,7 +90,7 @@ If you don't specify every fan speed then the accessory will choose the hex code
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
-type (required) | The type of accessory. i.e. "switch" | "switch" | -
+type (required) | The type of accessory. | "fan" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
@@ -111,7 +111,7 @@ This allows you to send a hex code for any temperature that you've defined a hex
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV Volume Up" | -
-type (required) | The type of accessory. i.e. "air-conditioner" | "air-conditioner" | -
+type (required) | The type of accessory. | "air-conditioner" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 minTemperature (optional) | The number of times the hex code should be sent. | 14 | 0
 maxTemperature (optional) | The amount of time between each send of a hex code in seconds. | 28 | 30
