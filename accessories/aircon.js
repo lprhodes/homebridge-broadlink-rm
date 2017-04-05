@@ -11,7 +11,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     this.log = log;
     this.currentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.OFF
-    this.targetTemperature = 0
+    this.targetTemperature = minTemperature
     this.firstTemperatureUpdate = true
 
     config.minTemperature = minTemperature || 0
