@@ -7,7 +7,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     const services = super.getServices();
 
     const { data, name } = this;
-    const { on, off } = data
+    const { on, off } = data;
 
     const service = new Service.Switch(name);
     this.addNameService(service);
@@ -18,7 +18,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       propertyName: 'switchState',
       onHex: on,
       offHex: off
-    })
+    });
 
     services.push(service);
 
@@ -26,4 +26,4 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   }
 }
 
-module.exports = SwitchAccessory
+module.exports = SwitchAccessory;
