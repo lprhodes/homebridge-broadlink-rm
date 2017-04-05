@@ -23,7 +23,7 @@ class FanAccessory extends BroadlinkRMAccessory {
     sendData(host, hexData, callback, log);
   }
 
-  setSwingMode (toggleSwingHex, currentStatus, callback) {
+  setSwingMode (currentStatus, callback) {
     const { data, host, log } = this
     const { swingToggle } = data
 
@@ -36,13 +36,13 @@ class FanAccessory extends BroadlinkRMAccessory {
 
   setRotationSpeed (currentStatus, callback) {
     const { data, host, log } = this
-    const { swingToggle } = data
+    const { speedToggle } = data
 
     log(`setRotationSpeed: ${currentStatus}`);
 
     this.rotationSpeed = currentStatus
 
-    sendData(host, swingToggle, callback, log);
+    sendData(host, speedToggle, callback, log);
   }
 
   getSwitchState (callback) {
