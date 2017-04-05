@@ -9,12 +9,13 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     this.switchState = 0
   }
 
-  setSwitchState (onHex, offHex, currentStatus, callback) {
-    const { host, log } = this
+  setSwitchState (currentStatus, callback) {
+    const { data, host, log } = this
+    const { on, off } = data
 
     log(`setSwitchState: ${currentStatus}`);
 
-    const hexData = currentStatus ? onHex : offHex;
+    const hexData = currentStatus ? on : off;
     this.switchState = currentStatus
 
     sendData(host, hexData, callback, log);
@@ -28,13 +29,14 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
   getServices () {
     const services = super.getServices();
-    const { data, name } = this;
+    const { name } = this;
 
     const service = new Service.Switch(name);
     this.addNameService(service);
     service.getCharacteristic(Characteristic.On)
-      .on('set', this.setSwitchState.bind(this, data.on, data.off))
+      .on('set', this.setSwitchState.bind(this))
       .on('get', this.getSwitchState.bind(this));
+
     services.push(service);
 
     return services;

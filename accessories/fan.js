@@ -11,49 +11,55 @@ class FanAccessory extends BroadlinkRMAccessory {
     this.rotationSpeed = 0
   }
 
-  setSwitchState (onHex, offHex, currentStatus, callback) {
-    const { host, log } = this
+  setSwitchState (currentStatus, callback) {
+    const { data, host, log } = this
+    const { on, off } = data
 
     log(`setSwitchState: ${currentStatus}`);
 
-    const hexData = currentStatus ? onHex : offHex;
+    const hexData = currentStatus ? on : off;
     this.switchState = currentStatus
 
     sendData(host, hexData, callback, log);
   }
 
   setSwingMode (toggleSwingHex, currentStatus, callback) {
-    const { host, log } = this
+    const { data, host, log } = this
+    const { swingToggle } = data
 
     log(`setSwingMode: ${currentStatus}`);
 
-    const hexData = toggleSwingHex;
     this.swingMode = currentStatus
 
-    sendData(host, hexData, callback, log);
+    sendData(host, swingToggle, callback, log);
   }
 
-  setRotationSpeed (toggleSpeedHex, currentStatus, callback) {
-    const { host, log } = this
+  setRotationSpeed (currentStatus, callback) {
+    const { data, host, log } = this
+    const { swingToggle } = data
 
     log(`setRotationSpeed: ${currentStatus}`);
 
-    const hexData = toggleSpeedHex
     this.rotationSpeed = currentStatus
 
-    sendData(host, hexData, callback, log);
+    sendData(host, swingToggle, callback, log);
   }
 
   getSwitchState (callback) {
     this.log(`getSwitchState: ${this.switchState}`);
+
     callback(null, this.switchState)
   }
+
   getSwingMode (callback) {
     this.log(`getSwingMode: ${this.swingMode}`);
+
     callback(null, this.swingMode)
   }
+
   getRotationSpeed (callback) {
     this.log(`getRotationSpeed: ${this.rotationSpeed}`);
+
     callback(null, this.rotationSpeed)
   }
 
@@ -65,15 +71,15 @@ class FanAccessory extends BroadlinkRMAccessory {
     this.addNameService(service);
 
     service.getCharacteristic(Characteristic.Active)
-    .on('set', this.setSwitchState.bind(this, data.on, data.off))
+    .on('set', this.setSwitchState.bind(this))
     .on('get', this.getSwitchState.bind(this));
 
     service.getCharacteristic(Characteristic.RotationSpeed)
-    .on('set', this.setRotationSpeed.bind(this, data.speedToggle))
+    .on('set', this.setRotationSpeed.bind(this))
     .on('get', this.getRotationSpeed.bind(this));
 
     service.getCharacteristic(Characteristic.SwingMode)
-    .on('set', this.setSwingMode.bind(this, data.swingToggle))
+    .on('set', this.setSwingMode.bind(this))
     .on('get', this.getSwingMode.bind(this));
 
     services.push(service);

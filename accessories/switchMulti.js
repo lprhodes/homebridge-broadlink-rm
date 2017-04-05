@@ -10,15 +10,15 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
     this.switchState = 0
   }
 
-  setSwitchState (hexData, on, callback) {
-    const { host, log } = this
+  setSwitchState (on, callback) {
+    const { data, host, log } = this
 
     log(`setSwitchState: ${on}`);
 
     this.switchState = on
 
     if (on) {
-      this.performSend(host, hexData);
+      this.performSend(host, data);
 
       callback()
     } else {
@@ -69,8 +69,9 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
     const service = new Service.Switch(name);
     this.addNameService(service);
     service.getCharacteristic(Characteristic.On)
-      .on('set', this.setSwitchState.bind(this, data))
+      .on('set', this.setSwitchState.bind(this))
       .on('get', this.getSwitchState.bind(this));
+
     services.push(service);
 
     this.switchService = service
