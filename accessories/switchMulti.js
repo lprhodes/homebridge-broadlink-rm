@@ -19,7 +19,7 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
   performSend (host, hexData) {
     const { config, log } = this;
-    let { interval, sendCount } = config;
+    let { disableAutomaticTurnOff, interval, sendCount } = config;
 
     if (!Array.isArray(hexData)) return log('The "switch-multi" type requires the config value for "data" an array of hex strings.')
 
@@ -32,9 +32,11 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
       this.sendIndex = 0;
 
-      setTimeout(() => {
-        this.switchService.setCharacteristic(Characteristic.On, 0);
-      }, 100);
+      if (!disableAutomaticTurnOff) {
+        setTimeout(() => {
+          this.switchService.setCharacteristic(Characteristic.On, 0);
+        }, 100);
+      }
 
       return;
     }

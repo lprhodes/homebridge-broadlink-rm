@@ -17,7 +17,7 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
   performSend (host, hexData) {
     const { config, log } = this;
-    let { interval, sendCount } = config;
+    let { disableAutomaticTurnOff, interval, sendCount } = config;
 
     this.sendCount = this.sendCount || 0;
     interval = interval || 1;
@@ -31,9 +31,11 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
       this.sendCount = 0;
 
-      setTimeout(() => {
-        this.switchService.setCharacteristic(Characteristic.On, 0);
-      }, 100);
+      if (!disableAutomaticTurnOff) {
+        setTimeout(() => {
+          this.switchService.setCharacteristic(Characteristic.On, 0);
+        }, 100);
+      }
 
       return;
     }
