@@ -1,5 +1,5 @@
 const BroadlinkRMAccessory = require('./accessory');
-const discoveredDevices = require('../helpers/devices.js');
+const getDevice = require('../helpers/getDevice');
 const sendData = require('../helpers/sendData');
 
 class AirConAccessory extends BroadlinkRMAccessory {
@@ -162,7 +162,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.lastUsedTemperature = this.targetTemperature
     this.lastUsedHeatingCoolingState= this.currentHeatingCoolingState
 
-    sendData(host, hexData.data, log)
+    sendData({ host, hexData: hexData.data, log })
     callback()
   }
 
@@ -188,9 +188,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     this.updateServiceHeatingCoolingState(this.currentHeatingCoolingState)
 
-    let off = (!this.lastUsedHeatingCoolingState || (this.lastUsedHeatingCoolingState === this.heatingCoolingStateForConfigKey('off')))
-
-    callback(null, !off);
+    callback(null, this.currentHeatingCoolingState);
 	}
 
 	getTargetHeatingCoolingState (callback) {
@@ -240,7 +238,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (currentModeConfigKey === 'off') {
       this.updateServiceHeatingCoolingState(value)
-      sendData(host, data.off, log)
+      sendData({ host, hexData: data.off, log })
       callback()
     } else {
       this.sendTemperature(temperature, callback)
@@ -257,26 +255,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return callback(null, pseudoDeviceTemperature)
     }
 
-    let device;
-
-    if (host) {
-      device = discoveredDevices[host];
-    } else {
-      const hosts = Object.keys(discoveredDevices)
-      if (hosts.length === 0) {
-        log(`getCurrentTemperature (no devices found)`);
-
-        return callback(null, this.minTemperature)
-      }
-
-      device = discoveredDevices[hosts[0]];
-    }
-
-    if (!device) {
-      log(`getCurrentTemperature (no device found at ${host})`);
-
-      return callback(null, 0)
-    }
+    const device = getDevice({ host, log })
+    if (!device) return callback(null, pseudoDeviceTemperature || 0)
 
     const callbackIdentifier = Date.now()
     this.callbackQueue[callbackIdentifier] = callback

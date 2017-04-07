@@ -1,41 +1,19 @@
 const assert = require('assert')
 
-const discoveredDevices = require('./devices.js');
+const getDevice = require('./getDevice');
 
-module.exports = (host, payload, log) => {
-  assert(payload && typeof payload === 'string', 'HEX value is missing')
+module.exports = ({ host, hexData, log }) => {
+  assert(hexData && typeof hexData === 'string', 'HEX value is missing')
 
-  // Get the Broadlink device, use the first one of no host is provided
-  let device;
+  // Get the Broadlink device
+  const device = getDevice({ host, log })
+  if (!device) return log(`sendData(no device found at ${host})`);
 
-  if (host) {
-    device = discoveredDevices[host];
-  } else {
-    const hosts = Object.keys(discoveredDevices);
-    if (hosts.length === 0) return log(`Send data (no devices found)`);
+  if (!device.sendData) return log(`[ERROR] The device at ${device.host.address} (${device.host.macAddress}) doesn't support the sending of IR or RF codes.`);
+  if (hexData.includes('5aa5aa555')) return log('[ERROR] This type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn IR" accessory to find new (decrypted) codes.');
 
-    device = discoveredDevices[hosts[0]];
-  }
+  const hexDataBuffer = new Buffer(hexData, 'hex');
+  device.sendData(hexDataBuffer);
 
-  if (!device) return log(`Send data (no device found at ${host})`);
-
-  const macAddressParts = device.mac.toString('hex').match(/[\s\S]{1,2}/g) || []
-  const macAddress = macAddressParts.join(':')
-
-  if (!device.sendData) {
-    log(`[ERROR] The device at ${device.host.address} (${macAddress}) doesn't support the sending of IR or RF codes.`);
-
-    return
-  }
-
-  if (payload.includes('5aa5aa555')) {
-    log('[ERROR] This type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn IR" accessory to find new (decrypted) codes.');
-
-    return
-  }
-
-  const packet = new Buffer(payload, 'hex');
-  device.sendData(packet);
-
-  log(`Payload message sent to Broadlink RM device (${device.host.address}; ${macAddress})`);
+  log(`Hex sent to Broadlink RM device (${device.host.address}; ${device.host.macAddress})`);
 }

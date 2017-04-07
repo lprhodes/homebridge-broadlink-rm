@@ -46,7 +46,7 @@ class BroadlinkRMAccessory {
       if (setValuePromise) {
         await setValuePromise(hexData);
       } else if (hexData) {
-        sendData(host, hexData, log);
+        sendData({ host, hexData, log });
       }
 
       callback(null, this[propertyName]);

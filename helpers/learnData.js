@@ -1,4 +1,4 @@
-const discoveredDevices = require('./devices.js');
+const getDevice = require('./getDevice');
 
 let closeClient = null;
 let timeout = null;
@@ -17,28 +17,9 @@ const stop = (log) => {
 const start = (host, callback, turnOffCallback, log) => {
   stop()
 
-  // Get the Broadlink device, use the first one of no host is provided
-  let device;
-
-  if (host) {
-    device = discoveredDevices[host];
-  } else {
-    const hosts = Object.keys(discoveredDevices);
-    if (hosts.length === 0) return log(`Learn IR (no devices found)`);
-
-    for (let i = 0; i < hosts.length; i++) {
-      let currentDevice = discoveredDevices[hosts[i]];
-
-      if (currentDevice.enterLearning) {
-        device = currentDevice
-
-        break;
-      }
-    }
-  }
-
-  if (!device) return log(`Learn IR (no device found at ${host})`);
-
+  // Get the Broadlink device
+  const device = getDevice({ host, log, learnOnly: true })
+  if (!device) return;
   if (!device.enterLearning) return log(`Learn IR (IR learning not supported for device at ${host})`);
 
   let onRawData;

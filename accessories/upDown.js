@@ -18,7 +18,7 @@ class UpDownAccessory extends BroadlinkRMAccessory {
       type='down'
     }
 
-    sendData(host, hexData[type], callback, log);
+    sendData({ host, hexData: hexData[type], log });
   }
 
   getServices () {

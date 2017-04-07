@@ -26,7 +26,7 @@ class FanAccessory extends BroadlinkRMAccessory {
     // Get the closest speed's hex data
     hexData = data[`fanSpeed${closest}`];
 
-    sendData(host, hexData, log);
+    sendData({ host, hexData, log });
   }
 
   getServices () {
