@@ -1,48 +1,33 @@
 const sendData = require('../helpers/sendData');
+const delayForDuration = require('../helpers/delayForDuration')
 const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
-  async setSwitchState (hexData) {
-    const { host } = this;
-
-    if (this.switchState) {
-      this.performSend(host, hexData);
-    } else {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
-
-      this.sendCount = 0;
-    }
+  async setSwitchState () {
+    if (this.switchState) this.performSend();
   }
 
-  performSend (host, hexData) {
-    const { config, log } = this;
+  async performSend (hexData) {
+    const { config, data, host, log } = this;
     let { disableAutomaticOff, interval, sendCount } = config;
 
-    this.sendCount = this.sendCount || 0;
     interval = interval || 1;
 
-    sendData({ host, hexData, log });
+    console.log('sendCount', sendCount)
 
-    this.sendCount++;
+    // Itterate through each hex config in the array
+    for (let index = 0; index < sendCount; index++) {
+      sendData({ host, hexData: data, log });
 
-    if (this.sendCount >= sendCount) {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
-
-      this.sendCount = 0;
-
-      if (!disableAutomaticOff) {
-        setTimeout(() => {
-          this.switchService.setCharacteristic(Characteristic.On, 0);
-        }, 100);
-      }
-
-      return;
+      if (index < sendCount - 1) await delayForDuration(interval);
     }
 
-    this.performSendTimeout = setTimeout(() => {
-      this.performSend(host, hexData);
-    }, interval * 1000);
+    if (!disableAutomaticOff) {
+      await delayForDuration(0.1);
+
+      this.switchService.setCharacteristic(Characteristic.On, 0);
+    }
   }
 
   getServices () {

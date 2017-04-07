@@ -1,51 +1,39 @@
 const sendData = require('../helpers/sendData');
+const delayForDuration = require('../helpers/delayForDuration')
 const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
-  async setSwitchState () {
-    const { data, host } = this;
+  constructor (log, config = {}) {
+    super(log, config)
 
-    this.sendIndex = this.sendIndex || 0
+    const { data } = this
 
-    if (this.switchState) {
-      this.performSend(host, data);
-    } else {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout)
-
-      this.sendIndex = 0
-    }
+    if (!Array.isArray(data)) return log('The "switch-multi" type requires the config value for "data" to be an array of hex codes.')
   }
 
-  performSend (host, hexData) {
-    const { config, log } = this;
-    let { disableAutomaticOff, interval, sendCount } = config;
+  async setSwitchState () {
+    if (this.switchState) this.performSend();
+  }
 
-    if (!Array.isArray(hexData)) return log('The "switch-multi" type requires the config value for "data" an array of hex strings.')
+  async performSend () {
+    const { config, data, host, interval, log } = this;
+    let { disableAutomaticOff } = config;
 
-    if (!interval) interval = 1;
+    // Itterate through each hex config in the array
+    for (let index = 0; index < data.length; index++) {
+      const hexData = data[index]
 
-    sendData({ host, hexData: hexData[this.sendIndex], log });
+      sendData({ host, hexData, log });
 
-    if (this.sendIndex >= hexData.length -1) {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
-
-      this.sendIndex = 0;
-
-      if (!disableAutomaticOff) {
-        setTimeout(() => {
-          this.switchService.setCharacteristic(Characteristic.On, 0);
-        }, 100);
-      }
-
-      return;
+      if (index < data.length - 1) await delayForDuration(interval);
     }
 
-    this.performSendTimeout = setTimeout(() => {
-      this.sendIndex++;
+    if (!disableAutomaticOff) {
+      await delayForDuration(0.1);
 
-      this.performSend(host, hexData);
-    }, interval * 1000);
+      this.switchService.setCharacteristic(Characteristic.On, 0);
+    }
   }
 
   getServices () {
