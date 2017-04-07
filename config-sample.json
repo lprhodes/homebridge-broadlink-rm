@@ -59,6 +59,23 @@
           ]
         },
         {
+          "name":"Entertainment 2",
+          "type":"switch-multi-repeat",
+          "interval":2,
+          "data": [
+            {
+              "data": "2600500000012...",
+              "sendCount": 2,
+              "interval": 0.3
+            },
+            {
+              "data": "2600500000012...",
+              "sendCount": 2,
+              "interval": 5
+            }
+          ]
+        },
+        {
           "name":"Air Conditioner",
           "type":"air-conditioner",
           "data":{

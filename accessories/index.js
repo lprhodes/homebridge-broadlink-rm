@@ -3,6 +3,7 @@ const ChannelAccessory = require('./channel');
 const LearnIRAccessory = require('./learnIR');
 const SwitchAccessory = require('./switch');
 const SwitchMultiAccessory = require('./switchMulti');
+const SwitchMultiRepeatAccessory = require('./switchMultiRepeat');
 const SwitchRepeatAccessory = require('./switchRepeat');
 const UpDownAccessory = require('./upDown');
 const FanAccessory = require('./fan');
@@ -13,6 +14,7 @@ module.exports = {
   LearnIR: LearnIRAccessory,
   Switch: SwitchAccessory,
   SwitchMulti: SwitchMultiAccessory,
+  SwitchMultiRepeat: SwitchMultiRepeatAccessory,
   SwitchRepeat: SwitchRepeatAccessory,
   UpDown: UpDownAccessory,
   Fan: FanAccessory

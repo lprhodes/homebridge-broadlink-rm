@@ -63,6 +63,10 @@ class BroadlinkRMPlatform {
           homeKitAccessory = new Accessory.SwitchMulti(log, accessory)
           break;
         }
+        case 'switch-multi-repeat': {
+          homeKitAccessory = new Accessory.SwitchMultiRepeat(log, accessory)
+          break;
+        }
         case 'switch-repeat': {
           homeKitAccessory = new Accessory.SwitchRepeat(log, accessory)
           break;
