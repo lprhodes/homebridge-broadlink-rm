@@ -66,7 +66,7 @@ name (required) | A descriptor for the accessory that will show in HomeKit apps.
 type (required) | The type of accessory. | "switch-multi" | -
 data (required) | Hex data stored as an array of strings. | [ "26005800000..." ] | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
-disableAutomaticTurnOff (optional) | Stop the switch from turning off automatically when complete. | true | false
+disableAutomaticOff (optional) | Stop the switch from turning off automatically when complete. | true | false
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 
@@ -81,7 +81,7 @@ type (required) | The type of accessory. | "switch-repeat" | -
 data (required) | Hex data stored as string. | 26005800000... | -
 sendCount (optional) | The number of times the hex code should be sent. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
-disableAutomaticTurnOff (optional) | Stop the switch from turning off automatically when complete. | true | false
+disableAutomaticOff (optional) | Stop the switch from turning off automatically when complete. | true | false
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 
