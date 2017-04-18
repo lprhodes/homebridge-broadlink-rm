@@ -86,6 +86,50 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       propertyName: 'currentPosition',
     });
 
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.PositionState,
+      propertyName: 'positionState',
+      defaultValue: Characteristic.PositionState.STOPPED
+    });
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.CurrentHorizontalTiltAngle,
+      propertyName: 'currentHorizontalTiltAngle',
+    });
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.CurrentVerticalTiltAngle,
+      propertyName: 'currentVerticalTiltAngle',
+    });
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.TargetHorizontalTiltAngle,
+      propertyName: 'targetHorizontalTiltAngle',
+    });
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.TargetVerticalTiltAngle,
+      propertyName: 'targetVerticalTiltAngle',
+    });
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.HoldPosition,
+      propertyName: 'holdPosition',
+    });
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.ObstructionDetected,
+      propertyName: 'obstructionDetected',
+      defaultValue: false
+    });
+
     this.windowCoveringService = service;
 
     services.push(service);
