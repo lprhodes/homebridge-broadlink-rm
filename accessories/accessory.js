@@ -14,30 +14,32 @@ class BroadlinkRMAccessory {
   }
 
   identify (callback) {
-    this.log(`Identify requested for ${this.name}`);
+    const { name } = this
+
+    this.log(`Identify requested for ${name}`);
 
     callback();
   }
 
-  getName (name, callback) {
-		this.log(`getName: ${name}`);
+  getName (callback) {
+    const { name } = this
+
+		this.log(`${name} getName: ${name}`);
 
 		callback(null, name);
 	}
 
   addNameService (service) {
-    const { name } = this
-
-    service.getCharacteristic(Characteristic.Name).on('get', this.getName.bind(this, name));
+    service.getCharacteristic(Characteristic.Name).on('get', this.getName.bind(this));
   }
 
   async setCharacteristicValue (props, value, callback) {
     try {
       const { propertyName, onHex, offHex, setValuePromise } = props;
-      const { host, log } = this;
+      const { host, log, name } = this;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-      log(`set${capitalizedPropertyName}: ${value}`);
+      log(`${name} set${capitalizedPropertyName}: ${value}`);
 
       const previousValue = this[propertyName];
       this[propertyName] = value;
@@ -59,19 +61,27 @@ class BroadlinkRMAccessory {
     }
   }
 
-  getCharacteristicValue (propertyName, callback) {
-    const { log } = this;
+  getCharacteristicValue (propertyName, defaultValue, callback) {
+    const { log, name } = this;
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-    log(`get${capitalizedPropertyName}: ${this[propertyName] || 0}`);
 
-    callback(null, this[propertyName]);
+    let value = this[propertyName]
+
+    if (value === undefined) {
+      value = (defaultValue !== undefined) ? defaultValue : 0
+
+      if (value === 'undefined') value = undefined
+    }
+
+    log(`${name} get${capitalizedPropertyName}: ${value}`);
+    callback(null, value);
   }
 
-  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, setValuePromise }) {
+  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, setValuePromise, defaultValue }) {
     service.getCharacteristic(characteristicType)
       .on('set', this.setCharacteristicValue.bind(this, { propertyName, onHex, offHex, setValuePromise }))
-      .on('get', this.getCharacteristicValue.bind(this, propertyName));
+      .on('get', this.getCharacteristicValue.bind(this, propertyName, defaultValue));
   }
 
   createDefaultValueGetCharacteristic ({ service, characteristicType, propertyName }) {
