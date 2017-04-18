@@ -14,10 +14,12 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     if (hexData) sendData({ host, hexData, log });
 
+    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
+
     if (this.switchState && !disableAutomaticOff) {
-      delayForDuration(onDuration).then(() => {
+      this.autoOffTimeout = setTimeout(() => {
         this.switchService.setCharacteristic(Characteristic.On, 0);
-      })
+      }, onDuration * 1000);
     }
   }
 
