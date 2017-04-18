@@ -40,50 +40,22 @@ class BroadlinkRMPlatform {
     config.accessories.forEach((accessory) => {
       if (!accessory.type) throw new Error(`Each accessory must be configured with a "type". e.g. "switch"`);
 
-      let homeKitAccessory;
-
-      switch (accessory.type) {
-        case 'air-conditioner': {
-          homeKitAccessory = new Accessory.AirCon(log, accessory)
-          break;
-        }
-        // case 'channel': {
-        //   homeKitAccessory = new Accessory.Channel(log, accessory)
-        //   break;
-        // }
-        case 'learn-ir': {
-          homeKitAccessory = new Accessory.LearnIR(log, accessory)
-          break;
-        }
-        case 'switch': {
-          homeKitAccessory = new Accessory.Switch(log, accessory)
-          break;
-        }
-        case 'switch-multi': {
-          homeKitAccessory = new Accessory.SwitchMulti(log, accessory)
-          break;
-        }
-        case 'switch-multi-repeat': {
-          homeKitAccessory = new Accessory.SwitchMultiRepeat(log, accessory)
-          break;
-        }
-        case 'switch-repeat': {
-          homeKitAccessory = new Accessory.SwitchRepeat(log, accessory)
-          break;
-        }
-        // case 'up-down': {
-        //   homeKitAccessory = new Accessory.UpDown(log, accessory)
-        //   break;
-        // }
-        case 'fan': {
-          homeKitAccessory = new Accessory.Fan(log, accessory)
-          break
-        }
-        default:
-          throw new Error(`We don't support accessories of type "${accessory.type}".`);
+      const classTypes = {
+        'air-conditioner': Accessory.AirCon,
+        'learn-ir': Accessory.LearnIR,
+        'switch': Accessory.Switch,
+        'garage-door-opener': Accessory.GarageDoorOpener,
+        'switch-multi': Accessory.SwitchMulti,
+        'switch-multi-repeat': Accessory.SwitchMultiRepeat,
+        'switch-repeat': Accessory.SwitchRepeat,
+        'fan': Accessory.Fan,
+        'light': Accessory.Light,
+        'window-covering': Accessory.WindowCovering,
       }
 
-      if (!homeKitAccessory) return
+      if (!classTypes[accessory.type]) throw new Error(`We don't support accessories of type "${accessory.type}".`);
+
+      const homeKitAccessory = new classTypes[accessory.type](log, accessory)
 
       accessories.push(homeKitAccessory);
     })

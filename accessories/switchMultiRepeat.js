@@ -1,5 +1,5 @@
 const sendData = require('../helpers/sendData');
-const delayForDuration = require('../helpers/delayForDuration')
+const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchMultiAccessory extends BroadlinkRMAccessory {
@@ -19,7 +19,7 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
     if (this.switchState) this.performSend();
   }
 
-  async performSend (hexConfig) {
+  async performSend () {
     const { config, data, log } = this;
     let { disableAutomaticOff, interval, sendCount } = config;
 

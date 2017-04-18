@@ -76,6 +76,25 @@
           ]
         },
         {
+          "name":"Light",
+          "type":"light",
+          "defaultBrightness": 70,
+          "useLastKnownBrightness": true,
+          "data":{
+            "off":"2600500000012...",
+            "brightness10": "2600500000012...",
+            "brightness20": "2600500000012...",
+            "brightness30": "2600500000012...",
+            "brightness40": "2600500000012...",
+            "brightness50": "2600500000012...",
+            "brightness60": "2600500000012...",
+            "brightness70": "2600500000012...",
+            "brightness80": "2600500000012...",
+            "brightness90": "2600500000012...",
+            "brightness100": "2600500000012..."
+          }
+        },
+        {
           "name":"Air Conditioner",
           "type":"air-conditioner",
           "data":{
@@ -107,6 +126,27 @@
             "fanSpeed80": "2600500000012...",
             "fanSpeed90": "2600500000012...",
             "fanSpeed100": "2600500000012..."
+          }
+        },
+        {
+          "name":"Garage Door",
+          "type":"garage-door-opener",
+          "openCloseDuration":8,
+          "data":{
+            "open":"2600500000012...",
+            "close":"2600500000012...",
+            "lock":"2600500000012...",
+            "unlock":"2600500000012..."
+          }
+        },
+        {
+          "name":"Blind",
+          "type":"window-covering",
+          "percentageChangePerSend":10,
+          "interval": 0.5,
+          "data":{
+            "open":"2600500000012...",
+            "close":"2600500000012..."
           }
         }
       ]

@@ -31,20 +31,22 @@ class BroadlinkRMAccessory {
     service.getCharacteristic(Characteristic.Name).on('get', this.getName.bind(this, name));
   }
 
-  async setCharacteristicValue (props, on, callback) {
+  async setCharacteristicValue (props, value, callback) {
     try {
       const { propertyName, onHex, offHex, setValuePromise } = props;
       const { host, log } = this;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-      log(`set${capitalizedPropertyName}: ${on}`);
+      log(`set${capitalizedPropertyName}: ${value}`);
 
-      this[propertyName] = on;
+      const previousValue = this[propertyName];
+      this[propertyName] = value;
 
-      const hexData = on ? onHex : offHex;
+      // Set toggle data if this is a toggle
+      const hexData = value ? onHex : offHex;
 
       if (setValuePromise) {
-        await setValuePromise(hexData);
+        await setValuePromise(hexData, previousValue);
       } else if (hexData) {
         sendData({ host, hexData, log });
       }
@@ -70,6 +72,15 @@ class BroadlinkRMAccessory {
     service.getCharacteristic(characteristicType)
       .on('set', this.setCharacteristicValue.bind(this, { propertyName, onHex, offHex, setValuePromise }))
       .on('get', this.getCharacteristicValue.bind(this, propertyName));
+  }
+
+  createDefaultValueGetCharacteristic ({ service, characteristicType, propertyName }) {
+    service.getCharacteristic(characteristicType)
+      .on('get', (callback) => {
+        const value = this.data[propertyName] || 0;
+
+        callback(null, value);
+      });
   }
 
   getServices () {
