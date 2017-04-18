@@ -184,10 +184,8 @@ host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.
 
 key | description
 --- | -----------
-on | A hex code string to be sent when the switch is changed to the on position.
-off | A hex code string to be sent when the switch is changed to the off position.
-swingToggle | A hex code string used to toggle the swing mode on/off.
-fanSpeedX | A hex code string where X is any fan speed you wish to support e.g. "fanSpeed100".
+open | A hex code string to be sent when the window-covering is requested to open.
+close | A hex code string to be sent when the window-covering is requested to close.
 
 
 ### air-conditioner
