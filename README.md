@@ -58,6 +58,8 @@ key | description | example | default
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
 type (required) | The type of accessory. | "switch" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
+disableAutomaticOff (optional) | Stop the switch from turning off automatically after a given amount of time. | false | true
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 #### "data" key-value object
@@ -135,6 +137,8 @@ type (required) | The type of accessory. | "light" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 defaultBrightness (optional) | The default brightness to be set when you turn the light on. | 70 | 100
 useLastKnownBrightness (optional) | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true
+disableAutomaticOff (optional) | Stop the light from turning off automatically after a given amount of time. | false | true
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 #### "data" key-value object

@@ -5,11 +5,13 @@ class LightAccessory extends BroadlinkRMAccessory {
 
   async setLightState (hexData, previousValue) {
     const { config, data, host, log } = this;
-    let { defaultBrightness, useLastKnownBrightness } = config
+    let { defaultBrightness, useLastKnownBrightness } = config;
 
-    if (!defaultBrightness) defaultBrightness = 100
+    if (!defaultBrightness) defaultBrightness = 100;
 
     if (this.lightState) {
+      this.resetAutoOffTimeout();
+
       if (!previousValue) {
         if (useLastKnownBrightness && this.brightness > 0) {
           log(`setLightState: (use last known brightness)`);
@@ -26,15 +28,18 @@ class LightAccessory extends BroadlinkRMAccessory {
         }
       }
     } else {
+      this.stopAutoOffTimeout();
+
       sendData({ host, hexData, log });
     }
   }
 
   async setBrightness (hexData) {
     const { data, host, log } = this;
-    const { off } = data
+    const { off } = data;
 
     if (this.brightness > 0) {
+
 
       const allHexKeys = Object.keys(data);
 
@@ -55,13 +60,40 @@ class LightAccessory extends BroadlinkRMAccessory {
 
       // Get the closest brightness's hex data
       hexData = data[`brightness${closest}`];
+
+      this.resetAutoOffTimeout();
     } else {
       log(`setLightState: off`);
 
+      this.stopAutoOffTimeout();
       hexData = off;
     }
 
     sendData({ host, hexData, log });
+  }
+
+  stopAutoOffTimeout () {
+    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
+  }
+
+  resetAutoOffTimeout () {
+    const { config, data, host, log } = this;
+    let { disableAutomaticOff, onDuration } = config;
+
+    // Set defaults
+    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
+    if (!onDuration) onDuration = 60;
+
+    this.stopAutoOffTimeout();
+
+    console.log('disableAutomaticOff ',disableAutomaticOff)
+    if (disableAutomaticOff) return;
+    console.log('Turn off in ' + onDuration)
+
+    this.autoOffTimeout = setTimeout(() => {
+      console.log('Turn off')
+      this.lightService.setCharacteristic(Characteristic.On, 0);
+    }, onDuration * 1000)
   }
 
   getServices () {

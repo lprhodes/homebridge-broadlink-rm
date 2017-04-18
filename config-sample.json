@@ -15,6 +15,16 @@
       "name":"Broadlink RM",
       "accessories":[
         {
+          "name":"Auto-off Switch",
+          "type":"switch",
+          "disableAutomaticOff": false,
+          "onDuration": 5,
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012..."
+          }
+        },
+        {
           "name":"TV On/Off",
           "type":"switch",
           "data":{
@@ -80,6 +90,8 @@
           "type":"light",
           "defaultBrightness": 70,
           "useLastKnownBrightness": true,
+          "disableAutomaticOff": false,
+          "onDuration": 5,
           "data":{
             "off":"2600500000012...",
             "brightness10": "2600500000012...",
