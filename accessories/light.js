@@ -86,12 +86,9 @@ class LightAccessory extends BroadlinkRMAccessory {
 
     this.stopAutoOffTimeout();
 
-    console.log('disableAutomaticOff ',disableAutomaticOff)
     if (disableAutomaticOff) return;
-    console.log('Turn off in ' + onDuration)
 
     this.autoOffTimeout = setTimeout(() => {
-      console.log('Turn off')
       this.lightService.setCharacteristic(Characteristic.On, 0);
     }, onDuration * 1000)
   }
