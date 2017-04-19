@@ -5,7 +5,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async setTargetPosition (hexData, previousValue) {
-    const { config, data, log } = this;
+    const { config, data, log, name } = this;
     const { open, close } = data;
     let { percentageChangePerSend } = config;
 
@@ -27,7 +27,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
       this.targetPosition = previousValue;
 
-      log(`setTargetPosition: (rounding to multiple of percentageChangePerSend; ${roundedTargetPosition})`);
+      log(`${name} setTargetPosition: (rounding to multiple of percentageChangePerSend; ${roundedTargetPosition})`);
 
       setTimeout(() => {
         this.windowCoveringService.setCharacteristic(Characteristic.TargetPosition, roundedTargetPosition);
@@ -40,15 +40,21 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     hexData = opening ? open : close
 
+try {
     this.openOrClose({ hexData, opening, sendCount, previousValue }) // Perform this asynchronously i.e. without await
+  } catch (err) {
+    console.log(err)
+  }
   }
 
   async openOrClose ({ hexData, opening, sendCount, previousValue }) {
-    const { config, host, log } = this
-    let { percentageChangePerSend, interval } = config;
+    let { config, data, host, name, log } = this;
+    let { percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose } = config;
+    const { off } = data;
 
     if (!interval) percentageChangePerSend = 0.5;
     if (!percentageChangePerSend) percentageChangePerSend = 10;
+    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
 
     let currentValue = previousValue;
 
@@ -60,6 +66,21 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
       sendData({ host, hexData, log });
       this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, currentValue);
+
+      if (!disableAutomaticOff) {
+        if (!onDuration) onDuration = opening ? onDurationOpen : onDurationClose;
+        if (!onDuration) onDuration = 2;
+
+        log(`${name} setTargetPosition: waiting ${onDuration}s for auto-off`);
+        await delayForDuration(onDuration);
+
+        if (!off) throw new Error('An "off" hex code must be set if "disableAutomaticOff" is set to false.')
+
+        log(`${name} setTargetPosition: auto-off`);
+        sendData({ host, hexData: off, log });
+      }
+
+      log(`${name} setTargetPosition: waiting ${interval}s for next send`);
 
       if (index < sendCount) await delayForDuration(interval);
     }

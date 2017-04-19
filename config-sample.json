@@ -160,6 +160,29 @@
             "open":"2600500000012...",
             "close":"2600500000012..."
           }
+        },
+        {
+          "name":"Blind 2",
+          "type":"window-covering",
+          "percentageChangePerSend":100,
+          "data":{
+            "open":"2600500000012...",
+            "close":"2600500000012..."
+          }
+        },
+        {
+          "name":"Blind 3",
+          "type":"window-covering",
+          "percentageChangePerSend":10,
+          "interval": 0.5,
+          "disableAutomaticOff": false,
+          "onDurationOpen": 2,
+          "onDurationClose": 2,
+          "data":{
+            "open":"2600500000012...",
+            "close":"2600500000012...",
+            "off":"2600500000012..."
+          }
         }
       ]
     }
