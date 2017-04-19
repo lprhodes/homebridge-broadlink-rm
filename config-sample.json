@@ -178,6 +178,7 @@
           "disableAutomaticOff": false,
           "onDurationOpen": 2,
           "onDurationClose": 2,
+          "hold": true,
           "data":{
             "open":"2600500000012...",
             "close":"2600500000012...",

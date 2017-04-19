@@ -6,84 +6,147 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async setTargetPosition (hexData, previousValue) {
     const { config, data, log, name } = this;
-    const { open, close } = data;
-    let { percentageChangePerSend } = config;
+    const { open, close, off } = data;
 
-    if (!previousValue) previousValue = 0
+    if (off && this.operationID ) {
+      log(`${name} setTargetPosition: cancel last operation`)
+      this.stop();
+    }
+
+    this.operationID = Date.now();
+    const currentOperationID = this.operationID;
+
+    if (!this.currentPosition) this.currentPosition = 0;
+
+    let { percentageChangePerSend } = config;
     if (!percentageChangePerSend) percentageChangePerSend = 10;
 
-    let difference = this.targetPosition - previousValue;
+    let difference = this.targetPosition - this.currentPosition;
 
-    const opening = (difference > 0);
-    if (!opening) difference = -1 * difference;
+    this.opening = (difference > 0);
+    if (!this.opening) difference = -1 * difference;
 
     // If the target position is not a multiple of the percentageChangePerSend
     // value then make it so
     if (this.targetPosition % percentageChangePerSend !== 0) {
       let roundedTargetPosition;
 
-      if (opening) roundedTargetPosition = Math.ceil(this.targetPosition / percentageChangePerSend) * percentageChangePerSend;
-      if (!opening) roundedTargetPosition = Math.floor(this.targetPosition / percentageChangePerSend) * percentageChangePerSend;
+      if (this.opening) roundedTargetPosition = Math.ceil(this.targetPosition / percentageChangePerSend) * percentageChangePerSend;
+      if (!this.opening) roundedTargetPosition = Math.floor(this.targetPosition / percentageChangePerSend) * percentageChangePerSend;
 
       this.targetPosition = previousValue;
 
-      log(`${name} setTargetPosition: (rounding to multiple of percentageChangePerSend; ${roundedTargetPosition})`);
+      log(`${name} setTargetPosition: (rounding to multiple of percentageChangePerSend; ${roundedTargetPosition}) ${currentOperationID}`);
 
       setTimeout(() => {
+        if (currentOperationID !== this.operationID) return
+
         this.windowCoveringService.setCharacteristic(Characteristic.TargetPosition, roundedTargetPosition);
       }, 200);
 
       return;
     }
 
-    const sendCount = Math.ceil(difference / percentageChangePerSend);
+    const increments = Math.ceil(difference / percentageChangePerSend);
 
-    hexData = opening ? open : close
+    hexData = this.opening ? open : close
 
-try {
-    this.openOrClose({ hexData, opening, sendCount, previousValue }) // Perform this asynchronously i.e. without await
-  } catch (err) {
-    console.log(err)
-  }
+    this.openOrClose({ hexData, increments, previousValue, currentOperationID }) // Perform this asynchronously i.e. without await
   }
 
-  async openOrClose ({ hexData, opening, sendCount, previousValue }) {
+  async openOrClose ({ hexData, increments, previousValue, currentOperationID }) {
     let { config, data, host, name, log } = this;
-    let { percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose } = config;
+    let { hold, percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose } = config;
     const { off } = data;
 
     if (!interval) percentageChangePerSend = 0.5;
     if (!percentageChangePerSend) percentageChangePerSend = 10;
     if (disableAutomaticOff === undefined) disableAutomaticOff = true;
+    if (!onDuration) onDuration = this.opening ? onDurationOpen : onDurationClose;
+    if (!onDuration) onDuration = 2;
 
-    let currentValue = previousValue;
+    if (hold) {
+      let difference = this.targetPosition - this.currentPosition
+      if (!this.opening) difference = -1 * difference;
 
-    // Itterate through each hex config in the array
-    for (let index = 0; index < sendCount; index++) {
+      const durationPerPercentage = onDuration / percentageChangePerSend;
+      const totalTime = durationPerPercentage * difference;
 
-      if (opening) currentValue += percentageChangePerSend
-      if (!opening) currentValue -= percentageChangePerSend
+      log(`${name} setTargetPosition: currently ${this.currentPosition}%, moving to ${this.targetPosition}%`);
+      log(`${name} setTargetPosition: ${totalTime}s (${onDuration} / ${percentageChangePerSend} * ${difference}) until auto-off ${currentOperationID}`);
 
       sendData({ host, hexData, log });
-      this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, currentValue);
 
-      if (!disableAutomaticOff) {
-        if (!onDuration) onDuration = opening ? onDurationOpen : onDurationClose;
-        if (!onDuration) onDuration = 2;
+      this.updateCurrentPositionAtIntervals(currentOperationID)
 
-        log(`${name} setTargetPosition: waiting ${onDuration}s for auto-off`);
-        await delayForDuration(onDuration);
+      this.autoStopTimeout = setTimeout(() => {
+        this.stop();
+      }, totalTime * 1000)
+    } else {
+      let currentValue = this.currentPosition || 0;
+      // Itterate through each hex config in the array
+      for (let index = 0; index < increments; index++) {
+        if (currentOperationID !== this.operationID) return;
 
-        if (!off) throw new Error('An "off" hex code must be set if "disableAutomaticOff" is set to false.')
+        if (this.opening) currentValue += percentageChangePerSend;
+        if (!this.opening) currentValue -= percentageChangePerSend;
 
-        log(`${name} setTargetPosition: auto-off`);
-        sendData({ host, hexData: off, log });
+        sendData({ host, hexData, log });
+        this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, currentValue);
+
+        if (!disableAutomaticOff) {
+          log(`${name} setTargetPosition: waiting ${onDuration}s until auto-off ${currentOperationID}`);
+          await delayForDuration(onDuration);
+          if (currentOperationID !== this.operationID) return;
+
+          if (!off) throw new Error('An "off" hex code must be set if "disableAutomaticOff" is set to false.')
+
+          log(`${name} setTargetPosition: auto-off`);
+          sendData({ host, hexData: off, log });
+        }
+
+        log(`${name} setTargetPosition: waiting ${interval}s for next send ${currentOperationID}`);
+
+        if (index < sendCount) await delayForDuration(interval);
+        if (currentOperationID !== this.operationID) return;
       }
-
-      log(`${name} setTargetPosition: waiting ${interval}s for next send`);
-
-      if (index < sendCount) await delayForDuration(interval);
     }
+  }
+
+  stop () {
+    const { data, host, log, name } = this;
+    const { off } = data;
+
+    if (this.autoStopTimeout) clearTimeout(this.autoStopTimeout)
+    if (this.updateCurrentPositionTimeout) clearTimeout(this.updateCurrentPositionTimeout)
+
+    this.operationID = undefined;
+    this.opening = undefined;
+
+    log(`${name} setTargetPosition: off`);
+    if (off) sendData({ host, hexData: off, log });
+  }
+
+  updateCurrentPositionAtIntervals (currentOperationID) {
+    const { config } = this;
+    let { onDuration, onDurationOpen, onDurationClose, percentageChangePerSend } = config;
+
+    if (!onDuration) onDuration = this.opening ? onDurationOpen : onDurationClose;
+    if (!onDuration) onDuration = 2;
+
+    const durationPerPercentage = onDuration / percentageChangePerSend;
+
+    this.updateCurrentPositionTimeout = setTimeout(() => {
+      if (currentOperationID !== this.operationID) return;
+
+      let currentValue = this.currentPosition || 0;
+      if (this.opening) currentValue++;
+      if (!this.opening) currentValue--;
+
+      this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, currentValue);
+      this.updateCurrentPositionAtIntervals(currentOperationID);
+    }, durationPerPercentage * 1000)
+
   }
 
   getServices () {
