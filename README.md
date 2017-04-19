@@ -58,7 +58,7 @@ key | description | example | default
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
 type (required) | The type of accessory. | "switch" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
-disableAutomaticOff (optional) | Stop the switch from turning off automatically after a given amount of time. | false | true
+disableAutomaticOff (optional) | Prevent the window-covering from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
@@ -79,7 +79,7 @@ name (required) | A descriptor for the accessory that will show in HomeKit apps.
 type (required) | The type of accessory. | "switch-multi" | -
 data (required) | Hex data stored as an array of strings. | [ "26005800000..." ] | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
-disableAutomaticOff (optional) | Stop the switch from turning off automatically when complete. | true | false
+disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 
@@ -94,7 +94,7 @@ type (required) | The type of accessory. | "switch-repeat" | -
 data (required) | Hex data stored as string. | 26005800000... | -
 sendCount (optional) | The number of times the hex code should be sent. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
-disableAutomaticOff (optional) | Stop the switch from turning off automatically when complete. | true | false
+disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 
@@ -137,7 +137,7 @@ type (required) | The type of accessory. | "light" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 defaultBrightness (optional) | The default brightness to be set when you turn the light on. | 70 | 100
 useLastKnownBrightness (optional) | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true
-disableAutomaticOff (optional) | Stop the light from turning off automatically after a given amount of time. | false | true
+disableAutomaticOff (optional) | Prevent the light from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
@@ -183,7 +183,7 @@ type (required) | The type of accessory. | "fan" | -
 percentageChangePerSend (required) | See above | 5 | 10
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 1 | 0.5
-disableAutomaticOff (optional) | Stop the switch from turning off automatically after a given amount of time. | false | true
+disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
 onDurationOpen (optional) | The amount of time before the window covering automatically turns itself off when opening (used in conjunction with disableAutomaticOff). | 5 | 2
 onDurationClose (optional) | The amount of time before the window covering automatically turns itself off when closing (used in conjunction with disableAutomaticOff). | 5 | 2
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
