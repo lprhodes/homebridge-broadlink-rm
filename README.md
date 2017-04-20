@@ -191,7 +191,7 @@ key | description
 --- | -----------
 open | A hex code string to be sent when the window-covering is requested to open.
 close | A hex code string to be sent when the window-covering is requested to close.
-off | A hex code string to be sent when the window-covering is  turned off automatically. i.e. When disableAutomaticOff is set to false.
+stop | A hex code string to be sent when the window-covering is stopped automatically.
 
 
 ### air-conditioner

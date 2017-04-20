@@ -9,9 +9,9 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     const { config, data, log, name } = this;
     const { initialDelay } = config;
-    const { off } = data;
+    const { stop } = data;
 
-    if (off && this.operationID ) {
+    if (stop && this.operationID ) {
       log(`${name} setTargetPosition: cancel last operation`);
       this.stop();
     }
@@ -25,9 +25,9 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async performSetTargetPosition (hexData, previousValue) {
     const { config, data, log, name } = this;
-    const { open, close, off } = data;
+    const { open, close, stop } = data;
 
-    if (off && this.operationID ) {
+    if (stop && this.operationID ) {
       log(`${name} setTargetPosition: cancel last operation`);
       this.stop();
     }
@@ -73,13 +73,13 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async openOrClose ({ hexData, increments, previousValue, currentOperationID }) {
     let { config, data, host, name, log } = this;
-    let { hold, percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose, totalDurationOpen, totalDurationClose } = config;
-    const { off } = data;
+    let { hold, percentageChangePerSend, interval, disableAutomaticStop, onDuration, onDurationOpen, onDurationClose, totalDurationOpen, totalDurationClose } = config;
+    const { stop } = data;
 
     if (interval === undefined) interval = 0.5;
     if (hold === undefined) hold = true;
     if (!percentageChangePerSend) percentageChangePerSend = 10;
-    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
+    if (disableAutomaticStop === undefined) disableAutomaticStop = true;
     if (!onDuration) onDuration = this.opening ? onDurationOpen : onDurationClose;
     if (!onDuration) onDuration = 2;
 
@@ -102,13 +102,13 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
         const durationPerPercentage = fullOpenCloseTime / 100;
         totalTime = durationPerPercentage * difference;
 
-        log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-off ${currentOperationID}`);
+        log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-stop ${currentOperationID}`);
 
       } else {
         const durationPerPercentage = onDuration / percentageChangePerSend;
         totalTime = durationPerPercentage * difference;
 
-        log(`${name} setTargetPosition: ${totalTime}s (${onDuration} / ${percentageChangePerSend} * ${difference}) until auto-off ${currentOperationID}`);
+        log(`${name} setTargetPosition: ${totalTime}s (${onDuration} / ${percentageChangePerSend} * ${difference}) until auto-stop ${currentOperationID}`);
       }
 
 
@@ -133,16 +133,16 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
         sendData({ host, hexData, log });
         this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, currentValue);
 
-        if (!disableAutomaticOff) {
-          log(`${name} setTargetPosition: waiting ${onDuration}s until auto-off ${currentOperationID}`);
+        if (!disableAutomaticStop) {
+          log(`${name} setTargetPosition: waiting ${onDuration}s until auto-stop ${currentOperationID}`);
           await delayForDuration(onDuration);
           if (currentOperationID !== this.operationID) return;
 
-          if (!off) throw new Error('An "off" hex code must be set if "disableAutomaticOff" is set to false.')
+          if (!stop) throw new Error('An "stop" hex code must be set if "disableAutomaticStop" is set to false.')
           this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
-          log(`${name} setTargetPosition: auto-off`);
-          sendData({ host, hexData: off, log });
+          log(`${name} setTargetPosition: auto-stop`);
+          sendData({ host, hexData: stop, log });
         }
 
         log(`${name} setTargetPosition: waiting ${interval}s for next send ${currentOperationID}`);
@@ -155,7 +155,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   stop () {
     const { data, host, log, name } = this;
-    const { off } = data;
+    const { stop } = data;
 
     if (this.autoStopTimeout) clearTimeout(this.autoStopTimeout)
     if (this.updateCurrentPositionTimeout) clearTimeout(this.updateCurrentPositionTimeout)
@@ -165,8 +165,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
-    log(`${name} setTargetPosition: off`);
-    if (off) sendData({ host, hexData: off, log });
+    log(`${name} setTargetPosition: stop`);
+    if (stop) sendData({ host, hexData: stop, log });
   }
 
   updateCurrentPositionAtIntervals (currentOperationID) {
