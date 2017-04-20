@@ -154,30 +154,8 @@
         {
           "name":"Blind",
           "type":"window-covering",
-          "percentageChangePerSend":10,
-          "interval": 0.5,
-          "data":{
-            "open":"2600500000012...",
-            "close":"2600500000012..."
-          }
-        },
-        {
-          "name":"Blind 2",
-          "type":"window-covering",
-          "percentageChangePerSend":100,
-          "data":{
-            "open":"2600500000012...",
-            "close":"2600500000012..."
-          }
-        },
-        {
-          "name":"Blind 3",
-          "type":"window-covering",
-          "interval": 0.5,
-          "disableAutomaticOff": false,
           "totalDurationOpen": 45,
           "totalDurationClose": 40,
-          "hold": true,
           "data":{
             "open":"2600500000012...",
             "close":"2600500000012...",
