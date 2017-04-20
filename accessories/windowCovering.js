@@ -38,7 +38,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     if (!this.currentPosition) this.currentPosition = 0;
 
     let { percentageChangePerSend } = config;
-    if (!percentageChangePerSend) percentageChangePerSend = 10;
+    if (!percentageChangePerSend) percentageChangePerSend = 1;
 
     let difference = this.targetPosition - this.currentPosition;
 
@@ -76,7 +76,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     let { hold, percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose, totalDurationOpen, totalDurationClose } = config;
     const { off } = data;
 
-    if (!interval) interval = 0.5;
+    if (interval === undefined) interval = 0.5;
+    if (hold === undefined) hold = true;
     if (!percentageChangePerSend) percentageChangePerSend = 10;
     if (disableAutomaticOff === undefined) disableAutomaticOff = true;
     if (!onDuration) onDuration = this.opening ? onDurationOpen : onDurationClose;
