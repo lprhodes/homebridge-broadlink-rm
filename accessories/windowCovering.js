@@ -73,7 +73,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async openOrClose ({ hexData, increments, previousValue, currentOperationID }) {
     let { config, data, host, name, log } = this;
-    let { hold, percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose } = config;
+    let { hold, percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose, totalDurationOpen, totalDurationClose } = config;
     const { off } = data;
 
     if (!interval) percentageChangePerSend = 0.5;
@@ -83,14 +83,27 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     if (!onDuration) onDuration = 2;
 
     if (hold) {
+      log(`${name} setTargetPosition: currently ${this.currentPosition}%, moving to ${this.targetPosition}%`);
+
       let difference = this.targetPosition - this.currentPosition
       if (!this.opening) difference = -1 * difference;
 
-      const durationPerPercentage = onDuration / percentageChangePerSend;
-      const totalTime = durationPerPercentage * difference;
+      let fullOpenCloseTime = this.opening ? totalDurationOpen : totalDurationClose;
+      let totalTime;
 
-      log(`${name} setTargetPosition: currently ${this.currentPosition}%, moving to ${this.targetPosition}%`);
-      log(`${name} setTargetPosition: ${totalTime}s (${onDuration} / ${percentageChangePerSend} * ${difference}) until auto-off ${currentOperationID}`);
+      if (fullOpenCloseTime) {
+        const durationPerPercentage = fullOpenCloseTime / 100;
+        totalTime = durationPerPercentage * difference;
+
+        log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-off ${currentOperationID}`);
+
+      } else {
+        const durationPerPercentage = onDuration / percentageChangePerSend;
+        totalTime = durationPerPercentage * difference;
+
+        log(`${name} setTargetPosition: ${totalTime}s (${onDuration} / ${percentageChangePerSend} * ${difference}) until auto-off ${currentOperationID}`);
+      }
+
 
       sendData({ host, hexData, log });
 
@@ -146,12 +159,20 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   updateCurrentPositionAtIntervals (currentOperationID) {
     const { config } = this;
-    let { onDuration, onDurationOpen, onDurationClose, percentageChangePerSend } = config;
+    let { onDuration, onDurationOpen, onDurationClose, percentageChangePerSend, totalDurationOpen, totalDurationClose } = config;
 
     if (!onDuration) onDuration = this.opening ? onDurationOpen : onDurationClose;
     if (!onDuration) onDuration = 2;
 
-    const durationPerPercentage = onDuration / percentageChangePerSend;
+
+    let fullOpenCloseTime = this.opening ? totalDurationOpen : totalDurationClose;
+    let durationPerPercentage;
+
+    if (fullOpenCloseTime) {
+      durationPerPercentage = fullOpenCloseTime / 100;
+    } else {
+      durationPerPercentage = onDuration / percentageChangePerSend;
+    }
 
     this.updateCurrentPositionTimeout = setTimeout(() => {
       if (currentOperationID !== this.operationID) return;

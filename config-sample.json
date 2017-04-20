@@ -173,11 +173,10 @@
         {
           "name":"Blind 3",
           "type":"window-covering",
-          "percentageChangePerSend":10,
           "interval": 0.5,
           "disableAutomaticOff": false,
-          "onDurationOpen": 2,
-          "onDurationClose": 2,
+          "totalDurationOpen": 45,
+          "totalDurationClose": 40,
           "hold": true,
           "data":{
             "open":"2600500000012...",

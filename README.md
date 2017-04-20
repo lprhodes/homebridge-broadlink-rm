@@ -180,12 +180,14 @@ key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
 type (required) | The type of accessory. | "fan" | -
-percentageChangePerSend (required) | See above | 5 | 10
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 1 | 0.5
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
+percentageChangePerSend (required) | See above | 5 | 10
 onDurationOpen (optional) | The amount of time before the window covering automatically turns itself off when opening (used in conjunction with disableAutomaticOff). | 5 | 2
 onDurationClose (optional) | The amount of time before the window covering automatically turns itself off when closing (used in conjunction with disableAutomaticOff). | 5 | 2
+totalDurationOpen (required) | This can be used to replace percentageChangePerSend, onDurationOpen and onDurationClose. It will work these values out based on the total. | 45 | -
+totalDurationClose (required) | This can be used to replace percentageChangePerSend, onDurationOpen and onDurationClose. It will work these values out based on the total. | 45 | -
 hold (optional) | Disabling this will force the window-covering to increment in intervals rather than in a fluid motion.  | false | true
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
