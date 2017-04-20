@@ -5,11 +5,30 @@ const BroadlinkRMAccessory = require('./accessory');
 class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async setTargetPosition (hexData, previousValue) {
+    if (this.targetPosition === previousValue) return;
+
+    const { config, data, log, name } = this;
+    const { initialDelay } = config;
+    const { off } = data;
+
+    if (off && this.operationID ) {
+      log(`${name} setTargetPosition: cancel last operation`);
+      this.stop();
+    }
+
+    if (this.initialDelayTimeout) clearTimeout(this.initialDelayTimeout);
+
+    this.initialDelayTimeout = setTimeout(() => {
+      this.performSetTargetPosition(hexData, previousValue);
+    }, 1000);
+  }
+
+  async performSetTargetPosition (hexData, previousValue) {
     const { config, data, log, name } = this;
     const { open, close, off } = data;
 
     if (off && this.operationID ) {
-      log(`${name} setTargetPosition: cancel last operation`)
+      log(`${name} setTargetPosition: cancel last operation`);
       this.stop();
     }
 
@@ -34,17 +53,15 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       if (this.opening) roundedTargetPosition = Math.ceil(this.targetPosition / percentageChangePerSend) * percentageChangePerSend;
       if (!this.opening) roundedTargetPosition = Math.floor(this.targetPosition / percentageChangePerSend) * percentageChangePerSend;
 
-      this.targetPosition = previousValue;
+      this.targetPosition = roundedTargetPosition;
 
       log(`${name} setTargetPosition: (rounding to multiple of percentageChangePerSend; ${roundedTargetPosition}) ${currentOperationID}`);
 
       setTimeout(() => {
-        if (currentOperationID !== this.operationID) return
+        if (currentOperationID !== this.operationID) return;
 
         this.windowCoveringService.setCharacteristic(Characteristic.TargetPosition, roundedTargetPosition);
       }, 200);
-
-      return;
     }
 
     const increments = Math.ceil(difference / percentageChangePerSend);
