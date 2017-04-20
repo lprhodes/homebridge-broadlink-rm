@@ -76,11 +76,17 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     let { hold, percentageChangePerSend, interval, disableAutomaticOff, onDuration, onDurationOpen, onDurationClose, totalDurationOpen, totalDurationClose } = config;
     const { off } = data;
 
-    if (!interval) percentageChangePerSend = 0.5;
+    if (!interval) interval = 0.5;
     if (!percentageChangePerSend) percentageChangePerSend = 10;
     if (disableAutomaticOff === undefined) disableAutomaticOff = true;
     if (!onDuration) onDuration = this.opening ? onDurationOpen : onDurationClose;
     if (!onDuration) onDuration = 2;
+
+    if (this.opening) {
+      this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.INCREASING);
+    } else {
+      this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.DECREASING);
+    }
 
     if (hold) {
       log(`${name} setTargetPosition: currently ${this.currentPosition}%, moving to ${this.targetPosition}%`);
@@ -111,6 +117,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
       this.autoStopTimeout = setTimeout(() => {
         this.stop();
+
+        this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, this.targetPosition);
       }, totalTime * 1000)
     } else {
       let currentValue = this.currentPosition || 0;
@@ -130,6 +138,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
           if (currentOperationID !== this.operationID) return;
 
           if (!off) throw new Error('An "off" hex code must be set if "disableAutomaticOff" is set to false.')
+          this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
           log(`${name} setTargetPosition: auto-off`);
           sendData({ host, hexData: off, log });
@@ -152,6 +161,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     this.operationID = undefined;
     this.opening = undefined;
+
+    this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
     log(`${name} setTargetPosition: off`);
     if (off) sendData({ host, hexData: off, log });
