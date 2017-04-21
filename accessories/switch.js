@@ -5,7 +5,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class SwitchAccessory extends BroadlinkRMAccessory {
 
   async setSwitchState (hexData) {
-    const { config, data, host, log } = this;
+    const { config, data, host, log, state } = this;
     let { disableAutomaticOff, onDuration } = config;
 
     // Set defaults
@@ -16,7 +16,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
 
-    if (this.switchState && !disableAutomaticOff) {
+    if (state.switchState && !disableAutomaticOff) {
       this.autoOffTimeout = setTimeout(() => {
         this.switchService.setCharacteristic(Characteristic.On, 0);
       }, onDuration * 1000);

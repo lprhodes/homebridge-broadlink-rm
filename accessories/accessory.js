@@ -1,9 +1,24 @@
 const sendData = require('../helpers/sendData');
+const persistentState = require('../helpers/persistentState');
+
+const addSaveProxy = (target, saveFunc) => {
+  const handler = {
+    set (target, key, value) {
+      target[key] = value;
+
+      saveFunc(target);
+
+      return true
+    }
+  }
+
+  return new Proxy(target, handler);
+}
 
 class BroadlinkRMAccessory {
 
   constructor (log, config = {}) {
-    const { host, name, data } = config;
+    let { host, name, data, persistState } = config;
 
     this.log = log;
     this.config = config;
@@ -11,7 +26,31 @@ class BroadlinkRMAccessory {
     this.host = host;
     this.name = name;
     this.data = data;
+
+    // Set defaults
+    if (persistState === undefined) persistState = true;
+
+    if (persistState) {
+      const restoreStateOrder = this.restoreStateOrder();
+
+      const state = persistentState.load({ host, name }) || {};
+      console.log(name, state)
+
+      this.state = addSaveProxy(state, (state) => {
+        persistentState.save({ host, name, state });
+      });
+
+      this.correctReloadedState();
+    } else {
+      persistentState.clear({ host, name });
+
+      this.state = {};
+    }
   }
+
+  restoreStateOrder () { }
+
+  correctReloadedState () { }
 
   identify (callback) {
     const { name } = this
@@ -36,13 +75,22 @@ class BroadlinkRMAccessory {
   async setCharacteristicValue (props, value, callback) {
     try {
       const { propertyName, onHex, offHex, setValuePromise } = props;
-      const { host, log, name } = this;
+      const { config, host, log, name } = this;
+      const { resendHexAfterReload } = config;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
       log(`${name} set${capitalizedPropertyName}: ${value}`);
 
-      const previousValue = this[propertyName];
-      this[propertyName] = value;
+      if (this.state[propertyName] === value && !resendHexAfterReload) {
+        log(`${name} set${capitalizedPropertyName}: already ${value}`);
+
+        callback(null, value);
+
+        return;
+      }
+
+      const previousValue = this.state[propertyName];
+      this.state[propertyName] = value;
 
       // Set toggle data if this is a toggle
       const hexData = value ? onHex : offHex;
@@ -53,7 +101,7 @@ class BroadlinkRMAccessory {
         sendData({ host, hexData, log });
       }
 
-      callback(null, this[propertyName]);
+      callback(null, this.state[propertyName]);
     } catch (err) {
       console.log('setCharacteristicValue err', err)
 
@@ -61,27 +109,46 @@ class BroadlinkRMAccessory {
     }
   }
 
-  getCharacteristicValue (propertyName, defaultValue, callback) {
+  async getCharacteristicValue (props, callback) {
+    const { propertyName, defaultValue, getValuePromise } = props;
     const { log, name } = this;
 
     const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
 
-    let value = this[propertyName]
+    let value = this.state[propertyName];
 
     if (value === undefined) {
-      value = (defaultValue !== undefined) ? defaultValue : 0
+      value = (defaultValue !== undefined) ? defaultValue : 0;
 
-      if (value === 'undefined') value = undefined
+      if (value === 'undefined') value = undefined;
+    }
+
+    if (getValuePromise) {
+      const promiseValue = await getValuePromise();
+
+      if (promiseValue !== undefined) value = promiseValue;
     }
 
     log(`${name} get${capitalizedPropertyName}: ${value}`);
     callback(null, value);
   }
 
-  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, setValuePromise, defaultValue }) {
+  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, getValuePromise, setValuePromise, defaultValue }) {
+    const { config } = this;
+
     service.getCharacteristic(characteristicType)
       .on('set', this.setCharacteristicValue.bind(this, { propertyName, onHex, offHex, setValuePromise }))
-      .on('get', this.getCharacteristicValue.bind(this, propertyName, defaultValue));
+      .on('get', this.getCharacteristicValue.bind(this, { propertyName, defaultValue, getValuePromise }));
+
+      // If there's already a default loaded from persistent state then set the value
+      if (this.state[propertyName] !== undefined) {
+        const value = this.state[propertyName]
+        this.state[propertyName] = undefined;
+
+        setTimeout(() => {
+          service.setCharacteristic(characteristicType, value);
+        }, 2000);
+      }
   }
 
   createDefaultValueGetCharacteristic ({ service, characteristicType, propertyName }) {

@@ -4,23 +4,23 @@ const BroadlinkRMAccessory = require('./accessory');
 class LightAccessory extends BroadlinkRMAccessory {
 
   async setLightState (hexData, previousValue) {
-    const { config, data, host, log } = this;
+    const { config, data, host, log, state } = this;
     let { defaultBrightness, useLastKnownBrightness } = config;
 
     if (!defaultBrightness) defaultBrightness = 100;
 
-    if (this.lightState) {
+    if (state.lightState) {
       this.resetAutoOffTimeout();
 
       if (!previousValue) {
-        if (useLastKnownBrightness && this.brightness > 0) {
+        if (useLastKnownBrightness && state.brightness > 0) {
           log(`setLightState: (use last known brightness)`);
 
           setTimeout(() => {
-            this.lightService.setCharacteristic(Characteristic.Brightness, this.brightness);
+            this.lightService.setCharacteristic(Characteristic.Brightness, state.brightness);
           }, 200); // Add delay to prevent race conditions within Homekit
         } else {
-          log(`setLightState: (use default  brightness)`);
+          log(`setLightState: (use default brightness)`);
 
           setTimeout(() => {
             this.lightService.setCharacteristic(Characteristic.Brightness, defaultBrightness);
@@ -35,12 +35,10 @@ class LightAccessory extends BroadlinkRMAccessory {
   }
 
   async setBrightness (hexData) {
-    const { data, host, log } = this;
+    const { data, host, log, state } = this;
     const { off } = data;
 
-    if (this.brightness > 0) {
-
-
+    if (state.brightness > 0) {
       const allHexKeys = Object.keys(data);
 
       // Create an array of value specified in the data config
@@ -55,7 +53,7 @@ class LightAccessory extends BroadlinkRMAccessory {
       })
 
       // Find brightness closest to the one requested
-      const closest = foundValues.reduce((prev, curr) => Math.abs(curr - this.brightness) < Math.abs(prev - this.brightness) ? curr : prev);
+      const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.brightness) < Math.abs(prev - state.brightness) ? curr : prev);
       log(`setBrightness: (closest: ${closest})`);
 
       // Get the closest brightness's hex data
@@ -103,18 +101,18 @@ class LightAccessory extends BroadlinkRMAccessory {
 
     this.createToggleCharacteristic({
       service,
+      characteristicType: Characteristic.Brightness,
+      propertyName: 'brightness',
+      setValuePromise: this.setBrightness.bind(this)
+    });
+
+    this.createToggleCharacteristic({
+      service,
       characteristicType: Characteristic.On,
       propertyName: 'lightState',
       onHex: on,
       offHex: off,
       setValuePromise: this.setLightState.bind(this)
-    });
-
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.Brightness,
-      propertyName: 'brightness',
-      setValuePromise: this.setBrightness.bind(this)
     });
 
     this.lightService = service;

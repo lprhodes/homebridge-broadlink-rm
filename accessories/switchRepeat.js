@@ -5,7 +5,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
   async setSwitchState () {
-    if (this.switchState) this.performSend();
+    if (this.state.switchState) this.performSend();
   }
 
   async performSend () {
