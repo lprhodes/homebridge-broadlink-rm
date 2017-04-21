@@ -34,7 +34,6 @@ class BroadlinkRMAccessory {
       const restoreStateOrder = this.restoreStateOrder();
 
       const state = persistentState.load({ host, name }) || {};
-      console.log(name, state)
 
       this.state = addSaveProxy(state, (state) => {
         persistentState.save({ host, name, state });

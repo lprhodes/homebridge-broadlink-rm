@@ -25,8 +25,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (!state.targetTemperature) state.targetTemperature = minTemperature || 0;
     if (!state.firstTemperatureUpdate) state.firstTemperatureUpdate = true;
 
-    console.log('state.targetTemperature', state.targetTemperature)
-
     config.minTemperature = minTemperature || 0;
     config.maxTemperature = maxTemperature || 30;
 
