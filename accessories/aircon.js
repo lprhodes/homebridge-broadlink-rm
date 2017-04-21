@@ -202,21 +202,21 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    if (this.targetHeatingCoolingState === undefined) return; // Some calls are made to this without a value
-    if (this.targetHeatingCoolingState === state.currentHeatingCoolingState) return;
+    if (state.targetHeatingCoolingState === undefined) return; // Some calls are made to this without a value
+    if (state.targetHeatingCoolingState === state.currentHeatingCoolingState) return;
 
     let temperature = state.targetTemperature;
 
-    if (value === Characteristic.TargetHeatingCoolingState.HEAT) {
+    if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.HEAT) {
       temperature = defaultHeatTemperature
-    } else if (value === Characteristic.TargetHeatingCoolingState.COOL) {
+    } else if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.COOL) {
       temperature = defaultCoolTemperature;
     }
 
-    const currentModeConfigKey = this.configKeyForHeatingCoolingState(value);
+    const currentModeConfigKey = this.configKeyForHeatingCoolingState(state.targetHeatingCoolingState);
 
     if (currentModeConfigKey === 'off') {
-      this.updateServiceHeatingCoolingState(value);
+      this.updateServiceHeatingCoolingState(state.targetHeatingCoolingState);
       sendData({ host, hexData: data.off, log });
     } else {
       this.sendTemperature(temperature);
