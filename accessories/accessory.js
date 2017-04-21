@@ -20,7 +20,7 @@ class BroadlinkRMAccessory {
   constructor (log, config = {}) {
     let { host, name, data, persistState } = config;
 
-    this.log = log;
+    this.log = !config.disableLogs ? log : () => {};
     this.config = config;
 
     this.host = host;

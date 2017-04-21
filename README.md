@@ -61,8 +61,9 @@ data (required) | Hex data stored as a key-value JSON object. | See below. | -
 disableAutomaticOff (optional) | Prevent the window-covering from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 #### "data" key-value object
 key | description
@@ -83,8 +84,9 @@ data (required) | Hex data stored as an array of strings. | [ "26005800000..." ]
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 
 ### switch-repeat
@@ -100,8 +102,9 @@ sendCount (optional) | The number of times the hex code should be sent. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 
 ### fan
@@ -118,8 +121,9 @@ name (required) | A descriptor for the accessory that will show in HomeKit apps.
 type (required) | The type of accessory. | "fan" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 #### "data" key-value object
 
@@ -148,8 +152,9 @@ useLastKnownBrightness (optional) | The last known brightness will be used inste
 disableAutomaticOff (optional) | Prevent the light from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 #### "data" key-value object
 
@@ -170,8 +175,9 @@ type (required) | The type of accessory. | "garage-door-opener" | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 openCloseDuration (optional) | The amount of time in seconds that the accessory will show as "Opening" or "Closing" | 10 | 8
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 #### "data" key-value object
 key | description
@@ -196,8 +202,8 @@ totalDurationOpen (required) | The amount of time in seconds it takes to open th
 totalDurationClose (required) | The amount of time in seconds it takes to close the window-covering completely. It will work these values out based on the total. | 45 | -
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
-resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 #### "data" key-value object
 
@@ -226,7 +232,8 @@ heatTemperature (optional) | The temperature at which we change the UI to show t
 replaceAutoMode (optional) | When we turn on the thermostat with Siri it sets the mode as "auto" which isn't  supported at this time so we set the mode to "cool" or "heat" instead depending on the value of this key. | "heat" | "cool"
 pseudoDeviceTemperature (optional) | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
-persistState | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
+disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 #### "data" key-value object
 
