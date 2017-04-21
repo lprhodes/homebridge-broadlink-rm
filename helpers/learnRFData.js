@@ -17,7 +17,7 @@ const stop = (log, device) => {
       closeClient();
       closeClient = null;
 
-      if (log) log(`Learn IR (stopped)`);
+      if (log) log(`Learn Code (stopped)`);
     }, 500)
   }
 }
@@ -28,7 +28,7 @@ const start = (host, callback, turnOffCallback, log) => {
   // Get the Broadlink device
   const device = getDevice({ host, log, learnOnly: true })
   if (!device) return;
-  if (!device.enterLearning) return log(`Learn IR (IR learning not supported for device at ${host})`);
+  if (!device.enterLearning) return log(`Learn Code (IR learning not supported for device at ${host})`);
   if (!device.enterRFSweep) return log(`Learn RF (RF learning not supported for device at ${host})`);
 
   currentDevice = device
@@ -47,8 +47,8 @@ const start = (host, callback, turnOffCallback, log) => {
 
   onRawData = (message) => {
     const hex = message.toString('hex');
-    log(`Learn IR (learned hex code: ${hex})`);
-    log(`Learn IR (complete)`);
+    log(`Learn Code (learned hex code: ${hex})`);
+    log(`Learn Code (complete)`);
 
     closeClient();
     closeClient = null
@@ -59,7 +59,7 @@ const start = (host, callback, turnOffCallback, log) => {
   device.on('rawData', onRawData);
 
   device.enterRFSweep()
-  log(`Learn IR (ready)`);
+  log(`Learn Code (ready)`);
 
   callback();
 
@@ -72,7 +72,7 @@ const start = (host, callback, turnOffCallback, log) => {
     device.cancelRFSweep()
 
     setTimeout(() => {
-      log('Learn IR (stopped - 10s timeout)')
+      log('Learn Code (stopped - 10s timeout)')
       closeClient()
       closeClient = null
 

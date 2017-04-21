@@ -20,11 +20,11 @@ As of version 1.0.0 your Broadlink RM Device is automatically discovered so you 
 
 ## Learning Hex IR codes
 
-A "Learn IR"" accessory will automatically be added to the Home app and is dedicated to learning IR codes. Simply toggle the switch on, perform the IR command in front of your Broadlink RM device and copy the HEX output from the hombridge console log to wherever you want the code in the config.
+A "Learn Code" accessory will automatically be added to the Home app and is dedicated to learning IR codes. Simply toggle the switch on, perform the IR command in front of your Broadlink RM device and copy the HEX output from the hombridge console log to wherever you want the code in the config.
 
 The switch will toggle off automatically once the IR code has been received or 10 seconds has passed.
 
-You can optionally stop attempting to learn IR by toggling the switch off yourself.
+You can optionally stop attempting to learn a code by toggling the switch off yourself.
 
 ## Accessory Types
 
@@ -259,7 +259,7 @@ There looks to be a glitch in the Apple Home app in that nothing happens when se
 
 If you have multiple devices (e.g. one in the bedroom, one in the lounge) then you  can additionally specify a `"host"` value with the Broadlink RM's IP or MAC address.
 
-If you wish to have multiple Learn IR accessories (e.g. for each device) then you can add accessories with a type of `"learn-ir"` and then specify the `"host"` and `"name"` values.
+If you wish to have multiple Learn Code accessories (e.g. for each device) then you can add accessories with a type of `"learn-ir"` and then specify the `"host"` and `"name"` values.
 
 
 ## Thanks

@@ -22,7 +22,7 @@ class BroadlinkRMPlatform {
 
     const accessories = [];
 
-    // Add a Learn IR accessory if none exist in the config
+    // Add a Learn Code accessory if none exist in the config
     const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => accessory.type === 'learn-ir') : [];
 
     if (learnIRAccessories.length === 0) {
@@ -32,7 +32,7 @@ class BroadlinkRMPlatform {
 
     // Check for no accessories
     if (!config.accessories || config.accessories.length === 0) {
-      log('No accessories have been added to the Broadlink RM config. Only the Learn IR accessory will be accessible on HomeKit.');
+      log('No accessories have been added to the Broadlink RM config. Only the Learn Code accessory will be accessible on HomeKit.');
       return callback(accessories);
     }
 

@@ -25,7 +25,7 @@ const getDevice = ({ host, log, learnOnly }) => {
     const hosts = Object.keys(discoveredDevices);
     if (hosts.length === 0) return log(`Send data (no devices found)`);
 
-    // Only return device that can learn IR codes
+    // Only return device that can Learn Code codes
     if (learnOnly) {
       for (let i = 0; i < hosts.length; i++) {
         let currentDevice = discoveredDevices[hosts[i]];
@@ -37,7 +37,7 @@ const getDevice = ({ host, log, learnOnly }) => {
         }
       }
 
-      if (!device) log(`Learn IR (no device found at ${host})`)
+      if (!device) log(`Learn Code (no device found at ${host})`)
     } else {
       device = discoveredDevices[hosts[0]];
 

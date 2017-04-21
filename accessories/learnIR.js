@@ -5,7 +5,7 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
 
   constructor (log, config = {}) {
     // Set a default name for the accessory
-    if (!config.name) config.name = 'Learn IR';
+    if (!config.name) config.name = 'Learn Code';
     config.persistState = false;
 
     super(log, config);
