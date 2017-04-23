@@ -5,7 +5,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   constructor (log, config) {
-    super(log, config)
+    super(log, config);
 
     // Override any user defaults
     config.resendHexAfterReload = true;
@@ -80,84 +80,39 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async openOrClose ({ hexData, increments, previousValue, currentOperationID }) {
     let { config, data, host, name, log, state } = this;
-    let { hold, percentageChangePerSend, interval, disableAutomaticStop, onDuration, onDurationOpen, onDurationClose, totalDurationOpen, totalDurationClose } = config;
+    let { totalDurationOpen, totalDurationClose } = config;
     const { stop } = data;
 
-    if (interval === undefined) interval = 0.5;
-    if (hold === undefined) hold = true;
-    if (!percentageChangePerSend) percentageChangePerSend = 10;
-    if (disableAutomaticStop === undefined) disableAutomaticStop = true;
-    if (!onDuration) onDuration = state.opening ? onDurationOpen : onDurationClose;
-    if (!onDuration) onDuration = 2;
-
     if (state.opening) {
-      this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.INCREASING);
+      setTimeout(() => {
+        this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.INCREASING);
+      }, 200);
     } else {
-      this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.DECREASING);
+      setTimeout(() => {
+        this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.DECREASING);
+      }, 200);
     }
 
-    if (hold) {
-      log(`${name} setTargetPosition: currently ${state.currentPosition}%, moving to ${state.targetPosition}%`);
+    log(`${name} setTargetPosition: currently ${state.currentPosition}%, moving to ${state.targetPosition}%`);
 
-      let difference = state.targetPosition - state.currentPosition
-      if (!state.opening) difference = -1 * difference;
+    let difference = state.targetPosition - state.currentPosition
+    if (!state.opening) difference = -1 * difference;
 
-      let fullOpenCloseTime = state.opening ? totalDurationOpen : totalDurationClose;
-      let totalTime;
+    const fullOpenCloseTime = state.opening ? totalDurationOpen : totalDurationClose;
+    const durationPerPercentage = fullOpenCloseTime / 100;
+    const totalTime = durationPerPercentage * difference;
 
-      if (fullOpenCloseTime) {
-        const durationPerPercentage = fullOpenCloseTime / 100;
-        totalTime = durationPerPercentage * difference;
+    log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-stop ${currentOperationID}`);
 
-        log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-stop ${currentOperationID}`);
+    sendData({ host, hexData, log });
 
-      } else {
-        const durationPerPercentage = onDuration / percentageChangePerSend;
-        totalTime = durationPerPercentage * difference;
+    this.updateCurrentPositionAtIntervals(currentOperationID)
 
-        log(`${name} setTargetPosition: ${totalTime}s (${onDuration} / ${percentageChangePerSend} * ${difference}) until auto-stop ${currentOperationID}`);
-      }
+    this.autoStopTimeout = setTimeout(() => {
+      this.stop();
 
-
-      sendData({ host, hexData, log });
-
-      this.updateCurrentPositionAtIntervals(currentOperationID)
-
-      this.autoStopTimeout = setTimeout(() => {
-        this.stop();
-
-        this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
-      }, totalTime * 1000)
-    } else {
-      let currentValue = state.currentPosition || 0;
-      // Itterate through each hex config in the array
-      for (let index = 0; index < increments; index++) {
-        if (currentOperationID !== state.operationID) return;
-
-        if (state.opening) currentValue += percentageChangePerSend;
-        if (!state.opening) currentValue -= percentageChangePerSend;
-
-        sendData({ host, hexData, log });
-        this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, currentValue);
-
-        if (!disableAutomaticStop) {
-          log(`${name} setTargetPosition: waiting ${onDuration}s until auto-stop ${currentOperationID}`);
-          await delayForDuration(onDuration);
-          if (currentOperationID !== state.operationID) return;
-
-          if (!stop) throw new Error('An "stop" hex code must be set if "disableAutomaticStop" is set to false.')
-          this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
-
-          log(`${name} setTargetPosition: auto-stop`);
-          sendData({ host, hexData: stop, log });
-        }
-
-        log(`${name} setTargetPosition: waiting ${interval}s for next send ${currentOperationID}`);
-
-        if (index < sendCount) await delayForDuration(interval);
-        if (currentOperationID !== state.operationID) return;
-      }
-    }
+      this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
+    }, totalTime * 1000)
   }
 
   stop () {
@@ -178,20 +133,10 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   updateCurrentPositionAtIntervals (currentOperationID) {
     const { config, state } = this;
-    let { onDuration, onDurationOpen, onDurationClose, percentageChangePerSend, totalDurationOpen, totalDurationClose } = config;
-
-    if (!onDuration) onDuration = state.opening ? onDurationOpen : onDurationClose;
-    if (!onDuration) onDuration = 2;
-
+    let { totalDurationOpen, totalDurationClose } = config;
 
     let fullOpenCloseTime = state.opening ? totalDurationOpen : totalDurationClose;
-    let durationPerPercentage;
-
-    if (fullOpenCloseTime) {
-      durationPerPercentage = fullOpenCloseTime / 100;
-    } else {
-      durationPerPercentage = onDuration / percentageChangePerSend;
-    }
+    let durationPerPercentage = fullOpenCloseTime / 100;
 
     this.updateCurrentPositionTimeout = setTimeout(() => {
       if (currentOperationID !== state.operationID) return;
