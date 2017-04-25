@@ -73,14 +73,14 @@ class BroadlinkRMAccessory {
 
   async setCharacteristicValue (props, value, callback) {
     try {
-      const { propertyName, onHex, offHex, setValuePromise } = props;
+      const { propertyName, onHex, offHex, setValuePromise, ignorePreviousValue } = props;
       const { config, host, log, name } = this;
       const { resendHexAfterReload } = config;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
       log(`${name} set${capitalizedPropertyName}: ${value}`);
 
-      if (this.state[propertyName] === value && !resendHexAfterReload) {
+      if (!ignorePreviousValue && this.state[propertyName] === value && !resendHexAfterReload) {
         log(`${name} set${capitalizedPropertyName}: already ${value}`);
 
         callback(null, value);
@@ -132,11 +132,11 @@ class BroadlinkRMAccessory {
     callback(null, value);
   }
 
-  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, getValuePromise, setValuePromise, defaultValue }) {
+  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, getValuePromise, setValuePromise, defaultValue, ignorePreviousValue }) {
     const { config } = this;
 
     service.getCharacteristic(characteristicType)
-      .on('set', this.setCharacteristicValue.bind(this, { propertyName, onHex, offHex, setValuePromise }))
+      .on('set', this.setCharacteristicValue.bind(this, { propertyName, onHex, offHex, setValuePromise, ignorePreviousValue }))
       .on('get', this.getCharacteristicValue.bind(this, { propertyName, defaultValue, getValuePromise }));
 
       // If there's already a default loaded from persistent state then set the value

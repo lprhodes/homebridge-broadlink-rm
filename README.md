@@ -151,6 +151,7 @@ defaultBrightness (optional) | The default brightness to be set when you turn th
 useLastKnownBrightness (optional) | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true
 disableAutomaticOff (optional) | Prevent the light from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
+onDelay (optional) | The time in seconds between when the (optional) on code and the requested brightness code are sent. (default: 0.1s)
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will relevant hex code when the state is restored. | true | false
@@ -162,6 +163,8 @@ key | description
 --- | -----------
 off | A hex code string to be sent when the switch is changed to the off position.
 brightnessX | A hex code string where X is any brightness you wish to support e.g. "brightness100".
+on (optional) | You only need t add this if you need to send an "on" code before the "brightnessX" code is sent
+
 
 
 ### garage-door-opener
