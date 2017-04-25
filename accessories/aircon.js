@@ -78,7 +78,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.TargetTemperature,
       propertyName: 'targetTemperature',
-      setValuePromise: this.setTargetTemperature.bind(this)
+      setValuePromise: this.setTargetTemperature.bind(this),
+      defaultValue: minTemperature
     });
 
     this.createToggleCharacteristic({
