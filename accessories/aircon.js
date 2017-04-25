@@ -158,7 +158,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     let { autoHeatTemperature, autoCoolTemperature, autoMinimumDuration } = config;
 
     // Defaults
-    if (!autoMinimumDuration) autoMinimumDuration = 30;
+    if (!autoMinimumDuration) autoMinimumDuration = 120;
 
     if (this.autoOnTimeout) {
       this.log(`${name} getCurrentTemperature (ignore auto-check within ${autoMinimumDuration}s of starting)`);
