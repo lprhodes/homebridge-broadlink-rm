@@ -116,6 +116,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.thermostatService = service;
     services.push(service);
 
+    this.updateTemperatureUI();
+
     return services;
   }
 
@@ -128,7 +130,22 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.thermostatService.setCharacteristic(Characteristic.CurrentHeatingCoolingState, value);
       this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, value);
     }, 200)
+  }
 
+  updateTemperatureUI () {
+    const { config, host, log, name, state } = this;
+    const { pseudoDeviceTemperature } = config;
+
+    // Some devices don't include a thermometer
+    if (pseudoDeviceTemperature !== undefined) return;
+
+    setTimeout(() => {
+      this.getCurrentTemperature((err, value) => {
+        this.thermostatService.setCharacteristic(Characteristic.CurrentTemperature, value);
+
+        this.updateTemperatureUI();
+      })
+    }, 10 * 1000);
   }
 
   // Thermostat
