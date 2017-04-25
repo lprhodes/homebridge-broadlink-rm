@@ -234,6 +234,9 @@ defaultHeatTemperature (optional) | The temperature that will be requested when 
 heatTemperature (optional) | The temperature at which we change the UI to show that we're heating. Also used to determine whether "defaultCoolTemperature" or "defaultHeatTemperature" is used. | 20 | 22
 replaceAutoMode (optional) | When we turn on the thermostat with Siri it sets the mode as "auto" which isn't  supported at this time so we set the mode to "cool" or "heat" instead depending on the value of this key. | "heat" | "cool"
 pseudoDeviceTemperature (optional) | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0
+autoHeatTemperature (optional) | When the temperature is below this value, the heat mode will be enabled. | 18 | -
+autoCoolTemperature (optional) | When the temperature is above this value, the cool mode will enabled. | 27 | -
+autoMinimumDuration (optional) | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 disableLogs (optional) | Disables the log output for this accessory. | true | false
@@ -256,6 +259,8 @@ pseudo-mode | The mode we set when this hex is sent. i.e. "heat" or "cool". For 
 ## Air Conditioner Notes
 
 There looks to be a glitch in the Apple Home app in that nothing happens when setting the mode to Off when you've turned the thermostat on by setting a specific temperature. Siri and other HomeKit apps don't have the same glitch. As a work-around you can just select a different mode and then press Off. This only happens the first time after launching homebridge.
+
+Adding "autoHeatTemperature" and "autoCoolTemperature" can help automatically maintain a temperature. When the temperature falls below and hits above the "autoHeatTemperature" and "autoCoolTemperature" temperatures the accessory will automatically set the temperature to whatever the "defaultHeatTemperature" and "defaultCoolTemperature" is. The accessory will then keep checking (every "autoMinimumDuration" seconds) and if the temperature changes to be between the "autoHeatTemperature" and "autoCoolTemperature" temperatures then it will turn itself off. Something to note however is that if you decide to set a new temperature when the accessory has automatically turned itself on then it will still attempt to turn itself back off. To stop this automatic turn-off you can turn off the accessory manually and then turn it back on manually. Bare in mind that while the Home app may say 22C, the temperature may actually be 22.4C and if the Home app says 23C then it may actually be 22.5C.
 
 
 ## Multiple Broadlink RM Devices

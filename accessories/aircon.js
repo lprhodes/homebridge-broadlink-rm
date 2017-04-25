@@ -116,7 +116,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.thermostatService = service;
     services.push(service);
 
-    this.updateTemperatureUI();
+    setTimeout(() => {
+      this.updateTemperatureUI();
+    }, 2000);
 
     return services;
   }
@@ -139,13 +141,63 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) return;
 
-    setTimeout(() => {
-      this.getCurrentTemperature((err, value) => {
-        this.thermostatService.setCharacteristic(Characteristic.CurrentTemperature, value);
 
+    this.getCurrentTemperature((err, temperature) => {
+      this.thermostatService.setCharacteristic(Characteristic.CurrentTemperature, temperature);
+
+      this.checkTemperatureForAutoOn(temperature);
+
+      setTimeout(() => {
         this.updateTemperatureUI();
-      })
-    }, 10 * 1000);
+      }, 10 * 1000);
+    })
+  }
+
+  checkTemperatureForAutoOn (temperature) {
+    const { config, host, log, name, state } = this;
+    let { autoHeatTemperature, autoCoolTemperature, autoMinimumDuration } = config;
+
+    // Defaults
+    if (!autoMinimumDuration) autoMinimumDuration = 30;
+
+    if (this.autoOnTimeout) {
+      this.log(`${name} getCurrentTemperature (ignore auto-check within ${autoMinimumDuration}s of starting)`);
+
+      return;
+    }
+    if (!autoHeatTemperature && !autoCoolTemperature) return;
+
+    if (autoHeatTemperature && temperature < autoHeatTemperature) {
+      this.state.runningAutomatically = true;
+
+      this.log(`${name} getCurrentTemperature (${temperature} < ${autoHeatTemperature}: auto heat)`);
+      this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.HEAT);
+    } else if (autoCoolTemperature && temperature > autoCoolTemperature) {
+      this.state.runningAutomatically = true;
+
+      this.log(`${name} getCurrentTemperature (${temperature} > ${autoCoolTemperature}: auto cool)`);
+      this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.COOL);
+    } else {
+      this.log(`${name} getCurrentTemperature (temperature is ok)`);
+
+      if (this.state.runningAutomatically) {
+        this.state.runningAutomatically = false;
+
+        this.log(`${name} getCurrentTemperature (auto off)`);
+        this.thermostatService.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.OFF);
+      } else {
+        return;
+      }
+    }
+
+    this.autoOnTimeout = setTimeout(() => {
+      this.resetAutoOnTimeout();
+    }, autoMinimumDuration * 1000);
+  }
+
+  resetAutoOnTimeout () {
+    if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
+    this.autoOnTimeout = undefined
   }
 
   // Thermostat
@@ -240,6 +292,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const currentModeConfigKey = this.configKeyForHeatingCoolingState(state.targetHeatingCoolingState);
 
     if (currentModeConfigKey === 'off') {
+      this.state.runningAutomatically = false;
+      this.resetAutoOnTimeout();
+
       this.updateServiceHeatingCoolingState(state.targetHeatingCoolingState);
       sendData({ host, hexData: data.off, log });
     } else {
