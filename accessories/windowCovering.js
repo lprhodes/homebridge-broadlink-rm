@@ -13,8 +13,10 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async setTargetPosition (hexData, previousValue) {
     const { config, data, log, name, state } = this;
-    const { initialDelay } = config;
     const { stop } = data;
+    let { initialDelay } = config;
+
+    if (!initialDelay) initialDelay = 1;
 
     if (state.targetPosition === previousValue) return;
 
@@ -27,7 +29,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     this.initialDelayTimeout = setTimeout(() => {
       this.performSetTargetPosition(hexData, previousValue);
-    }, 1000);
+    }, initialDelay * 1000);
   }
 
   async performSetTargetPosition (hexData, previousValue) {
