@@ -3,12 +3,27 @@ const broadlink = new BroadlinkJS()
 
 const discoveredDevices = {};
 
-broadlink.discover();
+const limit = 5;
+
+const discoverDevices = (count = 0) => {
+  if (count >= 5) return;
+
+  broadlink.discover();
+  count++;
+
+  setTimeout(() => {
+    discoverDevices(count);
+  }, 5 * 1000)
+}
+
+discoverDevices();
 
 broadlink.on('deviceReady', (device) => {
   const macAddressParts = device.mac.toString('hex').match(/[\s\S]{1,2}/g) || []
   const macAddress = macAddressParts.join(':')
   device.host.macAddress = macAddress
+
+  if (discoveredDevices[device.host.address] || discoveredDevices[device.host.macAddress]) return;
 
   console.log(`Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
 
