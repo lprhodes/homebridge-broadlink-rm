@@ -23,11 +23,11 @@ class BroadlinkRMPlatform {
     const accessories = [];
 
     // Add a Learn Code accessory if none exist in the config
-    const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => accessory.type === 'learn-ir') : [];
+    const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
 
     if (learnIRAccessories.length === 0) {
-      const learnIRAccessory = new Accessory.LearnIR(log);
-      accessories.push(learnIRAccessory);
+      const learnCodeAccessory = new Accessory.LearnCode(log);
+      accessories.push(learnCodeAccessory);
     }
 
     // Check for no accessories
@@ -42,7 +42,8 @@ class BroadlinkRMPlatform {
 
       const classTypes = {
         'air-conditioner': Accessory.AirCon,
-        'learn-ir': Accessory.LearnIR,
+        'learn-ir': Accessory.LearnCode,
+        'learn-code': Accessory.LearnCode,
         'switch': Accessory.Switch,
         'garage-door-opener': Accessory.GarageDoorOpener,
         'switch-multi': Accessory.SwitchMulti,
