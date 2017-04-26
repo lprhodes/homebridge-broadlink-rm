@@ -1,4 +1,5 @@
 const learnData = require('../helpers/learnData');
+const learnRFData = require('../helpers/learnRFData');
 const BroadlinkRMAccessory = require('./accessory');
 
 class LearnIRAccessory extends BroadlinkRMAccessory {
@@ -12,8 +13,29 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
   }
 
   toggleLearning (on, callback) {
+    const { config } = this;
+    const { scanRF } = config;
+
     const turnOffCallback = () => {
       this.learnService.setCharacteristic(Characteristic.On, false);
+    }
+
+    const scanRFCallback = (success) => {
+      if (!success) return turnOffCallback();
+
+      learnData.start(this.host, null, turnOffCallback, this.log);
+    }
+
+    if (scanRF) {
+      if (on) {
+        learnRFData.start(this.host, callback, scanRFCallback, this.log);
+      } else {
+        learnRFData.stop(this.log);
+
+        callback();
+      }
+
+      return;
     }
 
     if (on) {

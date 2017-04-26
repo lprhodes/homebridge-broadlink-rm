@@ -35,6 +35,8 @@ const start = (host, callback, turnOffCallback, log) => {
   };
 
   onRawData = (message) => {
+    if (!closeClient) return;
+
     const hex = message.toString('hex');
     log(`Learn Code (learned hex code: ${hex})`);
     log(`Learn Code (complete)`);
@@ -50,7 +52,7 @@ const start = (host, callback, turnOffCallback, log) => {
   device.enterLearning()
   log(`Learn Code (ready)`);
 
-  callback();
+  if (callback) callback();
 
   getDataTimeout = setTimeout(() => {
     getData(device);
@@ -59,6 +61,8 @@ const start = (host, callback, turnOffCallback, log) => {
   // Timeout the client after 10 seconds
   timeout = setTimeout(() => {
     log('Learn Code (stopped - 10s timeout)')
+    if (device.cancelRFSweep) device.cancelRFSweep()
+
     closeClient()
     closeClient = null
 

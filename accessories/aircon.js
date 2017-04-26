@@ -12,6 +12,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.state.targetTemperature = undefined
     }
 
+    if (this.state.currentTemperature > this.config.maxTemperature) this.state.currentTemperature = this.config.maxTemperature;
+
     this.state.targetHeatingCoolingState = this.state.currentHeatingCoolingState;
   }
 
@@ -336,7 +338,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     // Add a 3 second timeout
     this.removeTemperatureListenerTimer = setTimeout(() => {
-      device.removeListener('temperature');
+      device.removeListener('temperature', onTemperature);
       this.processQueuedCallbacks();
 
    		log(`${name} getCurrentTemperature (3s timeout)`);

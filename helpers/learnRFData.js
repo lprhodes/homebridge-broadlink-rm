@@ -17,7 +17,7 @@ const stop = (log, device) => {
       closeClient();
       closeClient = null;
 
-      if (log) log(`Learn Code (stopped)`);
+      if (log) log(`Scan RF (stopped)`);
     }, 500)
   }
 }
@@ -46,22 +46,24 @@ const start = (host, callback, turnOffCallback, log) => {
   };
 
   onRawData = (message) => {
+    if (!closeClient) return;
+
     const hex = message.toString('hex');
-    log(`Learn Code (learned hex code: ${hex})`);
-    log(`Learn Code (complete)`);
+    log(`Scan RF (found frequency - now press the RF button multiple times with a pause between them)`);
+    device.cancelRFSweep()
 
     closeClient();
     closeClient = null
 
-    turnOffCallback()
+    turnOffCallback(true)
   };
 
-  device.on('rawData', onRawData);
+  device.on('rawRFData', onRawData);
 
   device.enterRFSweep()
-  log(`Learn Code (ready)`);
+  log(`Scan RF (scanning - keep holding the button that sends the RF frequency)`);
 
-  callback();
+  if (callback) callback();
 
   getDataTimeout = setTimeout(() => {
     getData(device);
@@ -72,13 +74,13 @@ const start = (host, callback, turnOffCallback, log) => {
     device.cancelRFSweep()
 
     setTimeout(() => {
-      log('Learn Code (stopped - 10s timeout)')
+      log('Scan RF (stopped - 15s timeout)')
       closeClient()
       closeClient = null
 
       turnOffCallback()
     }, 1000)
-  }, 10000); // 10s
+  }, 15 * 1000); // 10s
 }
 
 const getData = (device) => {
