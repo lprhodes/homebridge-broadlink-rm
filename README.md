@@ -4,9 +4,10 @@ Broadlink RM Mini and Pro plugin for [Homebridge](https://github.com/nfarina/hom
 
 This allows you to control your RM Mini and Pro with HomeKit and Siri.
 
-## Requirements
+## IMPORTANT
 
-- Node.js >= 7.6
+- Requirements: Node.js >= 7.6
+- If you're seeing something like "ERROR LOADING PLUGIN"..."async setCharacteristicValue (props, value, callback) {" then please check your node version before creating a new issue: `node -v`.
 
 ## Installation
 
@@ -18,7 +19,7 @@ This allows you to control your RM Mini and Pro with HomeKit and Siri.
 
 As of version 1.0.0 your Broadlink RM Device is automatically discovered so you no longer need to specify a "host" value.
 
-## Learning Hex IR codes
+## Learning Hex IR and RF codes
 
 A "Learn Code" accessory will automatically be added to the Home app and is dedicated to learning IR codes. Simply toggle the switch on, perform the IR command in front of your Broadlink RM device and copy the HEX output from the hombridge console log to wherever you want the code in the config.
 
@@ -28,7 +29,7 @@ You can optionally stop attempting to learn a code by toggling the switch off yo
 
 ## Accessory Types
 
-- [learn-ir](#learn-ir)
+- [learn-code](#learn-code)
 - [switch](#switch)
 - [switch-multi](#switch-multi)
 - [switch-repeat](#switch-repeat)
@@ -38,14 +39,14 @@ You can optionally stop attempting to learn a code by toggling the switch off yo
 - [window-covering](#window-covering)
 - [air-conditioner](#air-conditioner)
 
-### learn-ir
+### learn-code
 
-You shouldn't need to use this accessory type as we add one automatically but if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the "learn-ir" type along with a host so that you can learn from each of them.
+You shouldn't need to use this accessory type as we add one automatically but if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the "learn-code" type along with a host so that you can learn from each of them.
 
 key | description | example | default
 --- | ----------- | ------- | -------
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
-type (required) | The type of accessory. | "learn-ir" | -
+type (required) | The type of accessory. | "learn-code" | -
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 
@@ -267,7 +268,7 @@ Adding "autoHeatTemperature" and "autoCoolTemperature" can help automatically ma
 
 If you have multiple devices (e.g. one in the bedroom, one in the lounge) then you  can additionally specify a `"host"` value with the Broadlink RM's IP or MAC address.
 
-If you wish to have multiple Learn Code accessories (e.g. for each device) then you can add accessories with a type of `"learn-ir"` and then specify the `"host"` and `"name"` values.
+If you wish to have multiple Learn Code accessories (e.g. for each device) then you can add accessories with a type of `"learn-code"` and then specify the `"host"` and `"name"` values.
 
 
 ## Thanks
