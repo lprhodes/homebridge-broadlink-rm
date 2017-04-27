@@ -17,23 +17,12 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
     const { disableAutomaticOff, scanRF } = config;
 
     const turnOffCallback = () => {
-
-      if (disableAutomaticOff) {
-        learnData.start(this.host, null, turnOffCallback, this.log, true);
-      } else {
-        this.learnService.setCharacteristic(Characteristic.On, false);
-      }
-    }
-
-    const scanRFCallback = (success) => {
-      if (!success) return turnOffCallback();
-
-      learnData.start(this.host, null, turnOffCallback, this.log);
+      this.learnService.setCharacteristic(Characteristic.On, false);
     }
 
     if (scanRF) {
       if (on) {
-        learnRFData.start(this.host, callback, scanRFCallback, this.log);
+        learnRFData.start(this.host, callback, turnOffCallback, this.log, disableAutomaticOff);
       } else {
         learnRFData.stop(this.log);
 
@@ -44,7 +33,8 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
     }
 
     if (on) {
-      learnData.start(this.host, callback, turnOffCallback, this.log);
+
+      learnData.start(this.host, callback, turnOffCallback, this.log, disableAutomaticOff);
     } else {
       learnData.stop(this.log);
 
