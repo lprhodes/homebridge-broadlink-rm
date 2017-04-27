@@ -4,7 +4,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class FanAccessory extends BroadlinkRMAccessory {
 
   async setFanSpeed (hexData) {
-    const { data, host, log, state } = this;
+    const { data, host, log, state , name} = this;
 
     const allHexKeys = Object.keys(data);
 
@@ -21,12 +21,12 @@ class FanAccessory extends BroadlinkRMAccessory {
 
     // Find speed closest to the one requested
     const closest = foundSpeeds.reduce((prev, curr) => Math.abs(curr - state.fanSpeed) < Math.abs(prev - state.fanSpeed) ? curr : prev);
-    log(`setFanSpeed: (closest: ${closest})`);
+    log(`${name} setFanSpeed: (closest: ${closest})`);
 
     // Get the closest speed's hex data
     hexData = data[`fanSpeed${closest}`];
 
-    sendData({ host, hexData, log });
+    sendData({ host, hexData, log, name });
   }
 
   getServices () {

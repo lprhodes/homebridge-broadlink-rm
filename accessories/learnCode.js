@@ -14,10 +14,15 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
 
   toggleLearning (on, callback) {
     const { config } = this;
-    const { scanRF } = config;
+    const { disableAutomaticOff, scanRF } = config;
 
     const turnOffCallback = () => {
-      this.learnService.setCharacteristic(Characteristic.On, false);
+
+      if (disableAutomaticOff) {
+        learnData.start(this.host, null, turnOffCallback, this.log, true);
+      } else {
+        this.learnService.setCharacteristic(Characteristic.On, false);
+      }
     }
 
     const scanRFCallback = (success) => {

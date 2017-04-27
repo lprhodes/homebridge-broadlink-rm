@@ -30,7 +30,7 @@ class LightAccessory extends BroadlinkRMAccessory {
     } else {
       this.stopAutoOffTimeout();
 
-      sendData({ host, hexData, log });
+      sendData({ host, hexData, log, name });
     }
   }
 
@@ -78,17 +78,17 @@ class LightAccessory extends BroadlinkRMAccessory {
 
       if (on) {
         log(`${name} setBrightness: (turn on, wait ${onDelay}s)`);
-        sendData({ host, hexData: on, log });
+        sendData({ host, hexData: on, log, name });
 
         setTimeout(() => {
           log(`${name} setBrightness: (closest: ${closest})`);
-          sendData({ host, hexData, log });
+          sendData({ host, hexData, log, name });
 
           this.resetAutoOffTimeout();
         }, onDelay * 1000);
       } else {
         log(`setBrightness: (closest: ${closest})`);
-        sendData({ host, hexData, log });
+        sendData({ host, hexData, log, name });
 
         this.resetAutoOffTimeout();
       }
@@ -96,7 +96,7 @@ class LightAccessory extends BroadlinkRMAccessory {
       log(`${name} setBrightness: (off)`);
 
       this.stopAutoOffTimeout();
-      sendData({ host, hexData: off, log });
+      sendData({ host, hexData: off, log, name });
     }
   }
 

@@ -4,17 +4,17 @@ const sendData = require('../helpers/sendData');
 
 class AirConAccessory extends BroadlinkRMAccessory {
 
-  correctReloadedState () {
-    this.state.lastUsedHeatingCoolingState = undefined;
-    this.state.lastUsedTemperature = undefined;
+  correctReloadedState (state) {
+    state.lastUsedHeatingCoolingState = undefined;
+    state.lastUsedTemperature = undefined;
 
-    if (this.state.currentHeatingCoolingState === 0)  {
-      this.state.targetTemperature = undefined
+    if (state.currentHeatingCoolingState === 0)  {
+      state.targetTemperature = undefined
     }
 
-    if (this.state.currentTemperature > this.config.maxTemperature) this.state.currentTemperature = this.config.maxTemperature;
+    if (state.currentTemperature > this.config.maxTemperature) state.currentTemperature = this.config.maxTemperature;
 
-    this.state.targetHeatingCoolingState = this.state.currentHeatingCoolingState;
+    state.targetHeatingCoolingState = state.currentHeatingCoolingState;
   }
 
   constructor (log, config) {
@@ -23,9 +23,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { state } = this;
     const { defaultCoolTemperature, defaultHeatTemperature, heatTemperature, minTemperature, maxTemperature, pseudoDeviceTemperature, replaceAutoMode, units } = config
 
-    this.log = log;
-
-    if (config.resendHexAfterReload === undefined) config.resendHexAfterReload = true;
+    // if (config.resendHexAfterReload === undefined) config.resendHexAfterReload = true;
 
     if (state.currentHeatingCoolingState === undefined) state.currentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.OFF;
     if (state.targetHeatingCoolingState === undefined) state.targetHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.OFF;
@@ -247,7 +245,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     state.lastUsedTemperature = state.targetTemperature;
     state.lastUsedHeatingCoolingState = state.currentHeatingCoolingState;
 
-    sendData({ host, hexData: hexData.data, log });
+    sendData({ host, hexData: hexData.data, log, name });
   }
 
 	getCurrentHeatingCoolingState () {
@@ -298,7 +296,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.resetAutoOnTimeout();
 
       this.updateServiceHeatingCoolingState(state.targetHeatingCoolingState);
-      sendData({ host, hexData: data.off, log });
+      sendData({ host, hexData: data.off, log, name });
     } else {
       this.sendTemperature(temperature);
     }

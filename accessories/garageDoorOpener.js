@@ -4,23 +4,23 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
 
-  correctReloadedState () {
-    this.state.targetDoorState = this.state.currentDoorState;
+  correctReloadedState (state) {
+    state.targetDoorState = state.currentDoorState;
   }
 
   async setTargetDoorState (hexData) {
-    const { config, data, host, log, state } = this;
+    const { config, data, host, log, name, state } = this;
     let { openCloseDuration } = config;
 
     if (!openCloseDuration) openCloseDuration = 8;
 
-    sendData({ host, hexData, log });
+    sendData({ host, hexData, log, name });
 
     if (!state.targetDoorState) {
       if (this.finishedClosingTimeout) clearTimeout(this.finishedClosingTimeout);
 
       this.finishedOpeningTimeout = setTimeout(() => {
-        log('setCurrentDoorState: open')
+        log(`${name} setCurrentDoorState: open`)
 
         this.garageDoorOpenerService.setCharacteristic(Characteristic.CurrentDoorState, 0);
       }, openCloseDuration * 1000)
@@ -28,7 +28,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       if (this.garageDoorOpenerService) clearTimeout(this.garageDoorOpenerService);
 
       this.finishedClosingTimeout = setTimeout(() => {
-        log('setCurrentDoorState: closed')
+        log(`${name} setCurrentDoorState: closed`)
 
         this.garageDoorOpenerService.setCharacteristic(Characteristic.CurrentDoorState, 1);
       }, openCloseDuration * 1000)
@@ -36,15 +36,15 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   }
 
   async setLockTargetState (hexData) {
-    const { config, data, host, log, state } = this;
+    const { config, data, host, log, name, state } = this;
 
-    sendData({ host, hexData, log });
+    sendData({ host, hexData, log, name });
 
     if (!state.lockTargetState) {
-      log('setCurrentDoorState: unlocked')
+      log(`${name} setCurrentDoorState: unlocked`)
       this.garageDoorOpenerService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
     } else {
-      log('setCurrentDoorState: locked')
+      log(`${name} setCurrentDoorState: locked`)
       this.garageDoorOpenerService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
     }
   }
@@ -57,6 +57,12 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
 
     const service = new Service.GarageDoorOpener(name);
     this.addNameService(service);
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.CurrentDoorState,
+      propertyName: 'currentDoorState',
+    });
 
     this.createToggleCharacteristic({
       service,

@@ -14,11 +14,11 @@ const stop = (log) => {
   }
 }
 
-const start = (host, callback, turnOffCallback, log) => {
+const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   stop()
 
   // Get the Broadlink device
-  const device = getDevice({ host, log, learnOnly: true })
+  const device = getDevice({ host, log, learnOnly: true });
   if (!device) return;
   if (!device.enterLearning) return log(`Learn Code (IR learning not supported for device at ${host})`);
 
@@ -42,9 +42,9 @@ const start = (host, callback, turnOffCallback, log) => {
     log(`Learn Code (complete)`);
 
     closeClient();
-    closeClient = null
+    closeClient = null;
 
-    turnOffCallback()
+    turnOffCallback();
   };
 
   device.on('rawData', onRawData);
@@ -58,15 +58,17 @@ const start = (host, callback, turnOffCallback, log) => {
     getData(device);
   }, 1000)
 
+  if (disableTimeout) return;
+
   // Timeout the client after 10 seconds
   timeout = setTimeout(() => {
-    log('Learn Code (stopped - 10s timeout)')
-    if (device.cancelRFSweep) device.cancelRFSweep()
+    log('Learn Code (stopped - 10s timeout)');
+    if (device.cancelRFSweep) device.cancelRFSweep();
 
-    closeClient()
-    closeClient = null
+    closeClient();
+    closeClient = null;
 
-    turnOffCallback()
+    turnOffCallback();
   }, 10000); // 10s
 }
 
@@ -78,7 +80,7 @@ const getData = (device) => {
 
   getDataTimeout = setTimeout(() => {
     getData(device);
-  }, 1000)
+  }, 1000);
 }
 
 module.exports = { start, stop }

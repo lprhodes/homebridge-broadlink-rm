@@ -4,10 +4,10 @@ const BroadlinkRMAccessory = require('./accessory');
 class ChannelAccessory extends BroadlinkRMAccessory {
 
   setChannel (hexData, channel, callback) {
-    const { host, log } = this;
+    const { host, log, name } = this;
 
     log(`setChannel: ${channel}`);
-    sendData({ host, hexData: hexData[channel], callback, log });
+    sendData({ host, hexData: hexData[channel], callback, log, name });
   }
 
   getServices () {

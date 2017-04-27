@@ -40,14 +40,14 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
   }
 
   async performRepeatSend (hexConfig) {
-    const { host, log } = this;
+    const { host, log, name } = this;
     let { data, interval, sendCount } = hexConfig;
 
     interval = interval || 1;
 
     // Itterate through each hex config in the array
     for (let index = 0; index < sendCount; index++) {
-      sendData({ host, hexData: data, log });
+      sendData({ host, hexData: data, log, name });
 
       if (index < sendCount - 1) await delayForDuration(interval);
     }

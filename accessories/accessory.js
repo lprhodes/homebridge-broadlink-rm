@@ -1,11 +1,12 @@
 const sendData = require('../helpers/sendData');
 const persistentState = require('../helpers/persistentState');
 
-const addSaveProxy = (target, saveFunc) => {
+const addSaveProxy = (name, target, saveFunc) => {
   const handler = {
     set (target, key, value) {
       target[key] = value;
 
+      // console.log(`${name} save ${key} ${value}`, target)
       saveFunc(target);
 
       return true
@@ -18,9 +19,10 @@ const addSaveProxy = (target, saveFunc) => {
 class BroadlinkRMAccessory {
 
   constructor (log, config = {}) {
-    let { host, name, data, persistState } = config;
+    let { disableLogs, host, name, data, persistState } = config;
 
-    this.log = !config.disableLogs ? log : () => {};
+
+    this.log = !disableLogs ? log : () => {};
     this.config = config;
 
     this.host = host;
@@ -31,18 +33,21 @@ class BroadlinkRMAccessory {
     if (persistState === undefined) persistState = true;
 
     if (persistState) {
+      this.isReloadingState = true;
+
       const restoreStateOrder = this.restoreStateOrder();
 
       const state = persistentState.load({ host, name }) || {};
+      this.correctReloadedState(state);
 
-      this.state = addSaveProxy(state, (state) => {
+      this.state = addSaveProxy(name, state, (state) => {
         persistentState.save({ host, name, state });
       });
 
-      this.correctReloadedState();
+      setTimeout(() => {
+        this.isReloadingState = false;
+      }, 2300);
     } else {
-      persistentState.clear({ host, name });
-
       this.state = {};
     }
   }
@@ -78,9 +83,12 @@ class BroadlinkRMAccessory {
       const { resendHexAfterReload } = config;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-      log(`${name} set${capitalizedPropertyName}: ${value}`);
+      log(`${name} set${capitalizedPropertyName}: ${value} (isReloadingState: ${this.isReloadingState})`);
 
-      if (!ignorePreviousValue && this.state[propertyName] === value && !resendHexAfterReload) {
+      const previousValue = this.state[propertyName];
+      this.state[propertyName] = value;
+
+      if ((!ignorePreviousValue && this.state[propertyName] === value && !this.isReloadingState) || (this.isReloadingState && !resendHexAfterReload)) {
         log(`${name} set${capitalizedPropertyName}: already ${value}`);
 
         callback(null, value);
@@ -88,16 +96,13 @@ class BroadlinkRMAccessory {
         return;
       }
 
-      const previousValue = this.state[propertyName];
-      this.state[propertyName] = value;
-
       // Set toggle data if this is a toggle
       const hexData = value ? onHex : offHex;
 
       if (setValuePromise) {
         await setValuePromise(hexData, previousValue);
       } else if (hexData) {
-        sendData({ host, hexData, log });
+        sendData({ host, hexData, log, name });
       }
 
       callback(null, this.state[propertyName]);

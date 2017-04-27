@@ -8,7 +8,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     super(log, config);
 
     // Override any user defaults
-    config.resendHexAfterReload = true;
+    // config.resendHexAfterReload = true;
   }
 
   async setTargetPosition (hexData, previousValue) {
@@ -106,7 +106,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-stop ${currentOperationID}`);
 
-    sendData({ host, hexData, log });
+    sendData({ host, hexData, log, name });
 
     this.updateCurrentPositionAtIntervals(currentOperationID)
 
@@ -130,7 +130,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
     log(`${name} setTargetPosition: stop`);
-    if (stop) sendData({ host, hexData: stop, log });
+    if (stop) sendData({ host, hexData: stop, log, name });
   }
 
   updateCurrentPositionAtIntervals (currentOperationID) {

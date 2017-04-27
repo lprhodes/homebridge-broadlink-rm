@@ -22,7 +22,7 @@ const stop = (log, device) => {
   }
 }
 
-const start = (host, callback, turnOffCallback, log) => {
+const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   stop()
 
   // Get the Broadlink device
@@ -50,48 +50,50 @@ const start = (host, callback, turnOffCallback, log) => {
 
     const hex = message.toString('hex');
     log(`Scan RF (found frequency - now press the RF button multiple times with a pause between them)`);
-    device.cancelRFSweep()
+    device.cancelRFSweep();
 
     closeClient();
-    closeClient = null
+    closeClient = null;
 
-    turnOffCallback(true)
+    turnOffCallback(true);
   };
 
   device.on('rawRFData', onRawData);
 
-  device.enterRFSweep()
+  device.enterRFSweep();
   log(`Scan RF (scanning - keep holding the button that sends the RF frequency)`);
 
   if (callback) callback();
 
   getDataTimeout = setTimeout(() => {
     getData(device);
-  }, 1000)
+  }, 1000);
 
-  // Timeout the client after 10 seconds
+  if (disableTimeout) return;
+
+  // Timeout the client after 15 seconds
   timeout = setTimeout(() => {
     device.cancelRFSweep()
 
     setTimeout(() => {
-      log('Scan RF (stopped - 15s timeout)')
-      closeClient()
-      closeClient = null
+      log('Scan RF (stopped - 15s timeout)');
+      closeClient();
+      closeClient = null;
 
-      turnOffCallback()
-    }, 1000)
-  }, 15 * 1000); // 10s
+      turnOffCallback();
+    }, 1000);
+  }, 15 * 1000); // 15s
 }
 
 const getData = (device) => {
   if (getDataTimeout) clearTimeout(getDataTimeout);
   if (!closeClient) return;
 
-  device.checkRFData()
+  device.checkRFData();
 
   getDataTimeout = setTimeout(() => {
     getData(device);
-  }, 1000)
+  }, 1000);
 }
 
 module.exports = { start, stop }

@@ -36,7 +36,7 @@ key | description | example | default
 name (required) | A descriptor for the accessory that will show in HomeKit apps. | "TV" | -
 type (required) | The type of accessory. | "switch" | -
 persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
-resendHexAfterReload (optional) | When persistState is true (it is by default) this will resend the hex code for the last known state when homebridge is restarted restored. | true | false
+resendHexAfterReload (optional) | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false
 disableLogs (optional) | Disables the log output for this accessory. | true | false
 
 ## Accessory Types
@@ -55,6 +55,9 @@ disableLogs (optional) | Disables the log output for this accessory. | true | fa
 
 You shouldn't need to add this accessory type yourself as we add one automatically however if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the "learn-code" type along with a host so that you can learn from each of them.
 
+key | description | example | default
+--- | ----------- | ------- | -------
+disableAutomaticOff (optional) | Prevent the learn-code accessory from turning off automatically after a given amount of time or when a hex code has been received. | false | true
 
 ### switch
 
