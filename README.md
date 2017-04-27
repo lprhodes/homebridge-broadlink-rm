@@ -27,9 +27,7 @@ The switch will toggle off automatically once the IR code has been received or 1
 
 You can optionally stop attempting to learn a code by toggling the switch off yourself.
 
-## Accessories
-
-### Common Accessory Configuration Keys
+## Common Accessory Configuration Keys
 
 The following configuration keys are common between each accessory:
 
@@ -41,7 +39,7 @@ persistState (optional) | Determines whether the state of accessory persists aft
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will resend the hex code for the last known state when homebridge is restarted restored. | true | false
 disableLogs (optional) | Disables the log output for this accessory. | true | false
 
-### Accessory Types
+## Accessory Types
 
 - [learn-code](#learn-code)
 - [switch](#switch)
@@ -58,7 +56,7 @@ disableLogs (optional) | Disables the log output for this accessory. | true | fa
 You shouldn't need to add this accessory type yourself as we add one automatically however if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the "learn-code" type along with a host so that you can learn from each of them.
 
 
-#### switch
+### switch
 
 Turn the switch on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
 
@@ -67,14 +65,14 @@ key | description | example | default
 disableAutomaticOff (optional) | Prevent the window-covering from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 
-##### "data" key-value object
+#### "data" key-value object
 key | description
 --- | -----------
 on | A hex code string to be sent when the switch is changed to the on position.
 off | A hex code string to be sent when the switch is changed to the off position.
 
 
-#### switch-multi
+### switch-multi
 
 Turn the switch on and the switch will send each hex code in the provided array until. It then turns itself off automatically. You can also set the interval between each send.
 
@@ -85,7 +83,7 @@ interval (optional) | The amount of time between each send of a hex code in seco
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 
 
-#### switch-repeat
+### switch-repeat
 
 Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. It then turns itself off automatically. You can also set the interval between each send.
 
@@ -97,7 +95,7 @@ interval (optional) | The amount of time between each send of a hex code in seco
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 
 
-#### fan
+### fan
 
 Turn the fan on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
 
@@ -109,7 +107,7 @@ key | description | example | default
 --- | ----------- | ------- | -------
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 
-##### "data" key-value object
+#### "data" key-value object
 
 key | description
 --- | -----------
@@ -119,7 +117,7 @@ swingToggle | A hex code string used to toggle the swing mode on/off.
 fanSpeedX | A hex code string where X is any fan speed you wish to support e.g. "fanSpeed100".
 
 
-#### light
+### light
 
 Turn the light on and the "defaultBrightness" is set unless "useLastKnownBrightness" is set to true in which case the last brightness that was set will be used.
 Turn the light off and the "off" hex code is sent.
@@ -135,7 +133,7 @@ disableAutomaticOff (optional) | Prevent the light from turning off automaticall
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 onDelay (optional) | The time in seconds between when the (optional) on code and the requested brightness code are sent. (default: 0.1s)
 
-##### "data" key-value object
+#### "data" key-value object
 
 key | description
 --- | -----------
@@ -145,7 +143,7 @@ on (optional) | You only need t add this if you need to send an "on" code before
 
 
 
-#### garage-door-opener
+### garage-door-opener
 
 Set the switch to open and the "open" hex code is sent, set it to close and the "close" hex code is sent.
 
@@ -155,14 +153,14 @@ data (required) | Hex data stored as a key-value JSON object. | See below. | -
 openCloseDuration (optional) | The amount of time in seconds that the accessory will show as "Opening" or "Closing" | 10 | 8
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
-##### "data" key-value object
+#### "data" key-value object
 key | description
 --- | -----------
 open | A hex code string to be sent when the switch is changed to the open position.
 close | A hex code string to be sent when the switch is changed to the close position.
 
 
-#### window-covering
+### window-covering
 
 The window-covering accessory designed to be used by IR/RF controlled blinds/shades/shutters.
 
@@ -176,7 +174,7 @@ data (required) | Hex data stored as a key-value JSON object. | See below. | -
 totalDurationOpen (required) | The amount of time in seconds it takes to open the window-covering completely. | 45 | -
 totalDurationClose (required) | The amount of time in seconds it takes to close the window-covering completely. It will work these values out based on the total. | 45 | -
 
-##### "data" key-value object
+#### "data" key-value object
 
 key | description
 --- | -----------
@@ -185,7 +183,7 @@ close | A hex code string to be sent when the window-covering is requested to cl
 stop | A hex code string to be sent when the window-covering is stopped automatically.
 
 
-#### air-conditioner
+### air-conditioner
 
 This allows you to send a hex code for any temperature that you've defined a hex code for. If you simply want to heat up or cool down a room (and not learn every single temperature code) you can just set hex codes for the lowest and highest temperatures and those will be used whatever temperature you request.
 
@@ -204,14 +202,14 @@ autoHeatTemperature (optional) | When the temperature is below this value, the h
 autoCoolTemperature (optional) | When the temperature is above this value, the cool mode will enabled. | 27 | -
 autoMinimumDuration (optional) | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120
 
-##### "data" key-value object
+#### "data" key-value object
 
 key | description
 --- | -----------
 off | A hex code string to be sent when the air conditioner is asked to be turned off.
 temperatureX | A hex code string where X is any temperature you wish to support e.g. "temperature30".
 
-##### "temperatureX" key-value object
+#### "temperatureX" key-value object
 
 key | description
 --- | -----------
@@ -219,7 +217,7 @@ data | Hex data stored as string.
 pseudo-mode | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo").
 
 
-### Air Conditioner Notes
+## Air Conditioner Notes
 
 There looks to be a glitch in the Apple Home app in that nothing happens when setting the mode to Off when you've turned the thermostat on by setting a specific temperature. Siri and other HomeKit apps don't have the same glitch. As a work-around you can just select a different mode and then press Off. This only happens the first time after launching homebridge.
 
