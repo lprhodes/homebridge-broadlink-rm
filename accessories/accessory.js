@@ -83,18 +83,28 @@ class BroadlinkRMAccessory {
       const { resendHexAfterReload } = config;
 
       const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-      log(`${name} set${capitalizedPropertyName}: ${value} (isReloadingState: ${this.isReloadingState})`);
+      log(`${name} set${capitalizedPropertyName}: ${value}`);
 
-      const previousValue = this.state[propertyName];
-      this.state[propertyName] = value;
+      if (this.isReloadingState && !resendHexAfterReload) {
+        this.state[propertyName] = value;
 
-      if ((!ignorePreviousValue && this.state[propertyName] === value && !this.isReloadingState) || (this.isReloadingState && !resendHexAfterReload)) {
         log(`${name} set${capitalizedPropertyName}: already ${value}`);
 
         callback(null, value);
 
         return;
       }
+
+      if (!ignorePreviousValue && this.state[propertyName] === value && !this.isReloadingState) {
+        log(`${name} set${capitalizedPropertyName}: already ${value}`);
+
+        callback(null, value);
+
+        return;
+      }
+
+      const previousValue = this.state[propertyName];
+      this.state[propertyName] = value;
 
       // Set toggle data if this is a toggle
       const hexData = value ? onHex : offHex;
