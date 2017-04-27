@@ -1,3 +1,6 @@
+const semver = require('semver');
+if (semver.lt(process.version, '7.6.0')) throw new Error(`homebridge-broadlink-rm requires your node version to be at least v7.6.0. Current version: ${process.version}`)
+
 const Accessory = require('./accessories');
 
 module.exports = (homebridge) => {
