@@ -27,7 +27,7 @@ The switch will toggle off automatically once the IR code has been received or 1
 
 You can optionally stop attempting to learn a code by toggling the switch off yourself.
 
-More details [below](#learn-code)
+More details [below](#accessory-types)
 
 ## Common Accessory Configuration Keys
 
