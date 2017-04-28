@@ -33,7 +33,6 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
     }
 
     if (on) {
-
       learnData.start(this.host, callback, turnOffCallback, this.log, disableAutomaticOff);
     } else {
       learnData.stop(this.log);

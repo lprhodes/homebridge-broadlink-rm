@@ -29,8 +29,11 @@ class BroadlinkRMPlatform {
     const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
 
     if (learnIRAccessories.length === 0) {
-      const learnCodeAccessory = new Accessory.LearnCode(log);
+      const learnCodeAccessory = new Accessory.LearnCode(log, { name: 'Learn' });
       accessories.push(learnCodeAccessory);
+
+      const sweepFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Sweep Frequency', scanRF: true });
+      accessories.push(sweepFrequencyAccessory);
     }
 
     // Check for no accessories
