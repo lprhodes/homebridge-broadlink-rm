@@ -58,7 +58,7 @@ You shouldn't need to add this accessory type yourself as we add one automatical
 key | description | example | default
 --- | ----------- | ------- | -------
 disableAutomaticOff (optional) | Prevent the learn-code accessory from turning off automatically after a given amount of time or when a hex code has been received. | false | true
-scanRF (optional) | This changes the type of learning to be the same as the default "Scan Frequency" | true | false
+scanFrequency (optional) | This changes the type of learning to be the same as the default "Scan Frequency" | true | false
 
 ### switch
 
