@@ -21,11 +21,9 @@ As of version 1.0.0 your Broadlink RM Device is automatically discovered so you 
 
 ## Learning Hex IR and RF codes
 
-A "Learn Code" accessory will automatically be added to the Home app and is dedicated to learning IR codes. Simply toggle the switch on, perform the IR command in front of your Broadlink RM device and copy the HEX output from the homebridge console log to wherever you want the code in the config.
+"Learn" and "Scan Frequency" accessories are automatically added to the Home app (so long as you've not added either manually in the config). Simply toggle the switch on, perform the IR or RF command in front of your Broadlink RM device and copy the HEX output from the homebridge console log to wherever you want the code in the config.
 
-The switch will toggle off automatically once the IR code has been received or 10 seconds has passed.
-
-You can optionally stop attempting to learn a code by toggling the switch off yourself.
+The switch will toggle off automatically once the code has been received. You can optionally stop attempting to learn a code by toggling the switch off yourself.
 
 More details [below](#accessory-types)
 
@@ -60,6 +58,7 @@ You shouldn't need to add this accessory type yourself as we add one automatical
 key | description | example | default
 --- | ----------- | ------- | -------
 disableAutomaticOff (optional) | Prevent the learn-code accessory from turning off automatically after a given amount of time or when a hex code has been received. | false | true
+scanRF (optional) | This changes the type of learning to be the same as the default "Scan Frequency" | true | false
 
 ### switch
 

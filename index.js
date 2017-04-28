@@ -32,8 +32,8 @@ class BroadlinkRMPlatform {
       const learnCodeAccessory = new Accessory.LearnCode(log, { name: 'Learn' });
       accessories.push(learnCodeAccessory);
 
-      const sweepFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Sweep Frequency', scanRF: true });
-      accessories.push(sweepFrequencyAccessory);
+      const scanFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Scan Frequency', scanRF: true });
+      accessories.push(scanFrequencyAccessory);
     }
 
     // Check for no accessories
