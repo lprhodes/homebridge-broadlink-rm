@@ -1,4 +1,6 @@
 const semver = require('semver');
+const persistentState = require('./helpers/persistentState')
+
 if (semver.lt(process.version, '7.6.0')) throw new Error(`homebridge-broadlink-rm requires your node version to be at least v7.6.0. Current version: ${process.version}`)
 
 const Accessory = require('./accessories');
@@ -18,6 +20,10 @@ class BroadlinkRMPlatform {
   constructor (log, config = {}) {
     this.log = log;
     this.config = config;
+
+    const { homebridgeDirectory } = config;
+
+    persistentState.init({ homebridgeDirectory })
   }
 
   accessories (callback) {

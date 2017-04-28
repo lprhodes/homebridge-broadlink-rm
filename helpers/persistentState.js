@@ -1,10 +1,14 @@
 const path = require('path');
 const nodePersist = require('node-persist');
 
-var home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
-home = path.join(home, ".homebridge");
+const init = ({ homebridgeDirectory }) => {
+  if (!homebridgeDirectory) {
+    homebridgeDirectory = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+    homebridgeDirectory = path.join(homebridgeDirectory, ".homebridge");
+  }
 
-nodePersist.initSync({ dir: `${home}/plugin-persist/homebridge-broadlink-rm` });
+  nodePersist.initSync({ dir: `${homebridgeDirectory}/plugin-persist/homebridge-broadlink-rm` });
+}
 
 const clear = ({ host, name }) => {
   if (!host) host = 'default';
@@ -25,6 +29,7 @@ const save = ({ host, name, state }) => {
 }
 
 module.exports = {
+  init,
   clear,
   load,
   save

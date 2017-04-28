@@ -15,6 +15,9 @@ This allows you to control your RM Mini and Pro with HomeKit and Siri.
 2. Install this plugin using: `npm install -g homebridge-broadlink-rm`
 3. Update your configuration file. (See config-sample.json)
 
+## Overriding the homebridge directory (AKA where the consig.json file lives)
+Generally the plugin can find where your config.json lives as it commonly sits in the .homebridge directory of your user account. If you're doing something out of the ordinary however you may need to override this. You can do so by adding a "homebridgeDirectory" key/value pair to the platform config.
+
 ## Broadlink RM Device Discovery
 
 As of version 1.0.0 your Broadlink RM Device is automatically discovered so you no longer need to specify a "host" value.
