@@ -12,8 +12,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
       state.targetTemperature = undefined
     }
 
-    if (state.currentTemperature > this.config.maxTemperature) state.currentTemperature = this.config.maxTemperature;
-
     state.targetHeatingCoolingState = state.currentHeatingCoolingState;
   }
 
@@ -327,6 +325,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     onTemperature = (temperature) => {
       state.currentTemperature = temperature;
 
+      if (state.currentTemperature > this.config.maxTemperature) state.currentTemperature = this.config.minTemperature;
+      if (state.currentTemperature < this.config.minTemperature) state.currentTemperature = this.config.minTemperature;
+
       if (this.removeTemperatureListenerTimer) clearTimeout(this.removeTemperatureListenerTimer)
       device.removeListener('temperature', onTemperature);
       this.processQueuedCallbacks();
@@ -364,15 +365,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
 	setTargetTemperature (hexData, previousValue) {
-    const { config, name, state } = this;
+    const { config, log, name, state } = this;
     const { minTemperature, maxTemperature } = config;
 
-    let error;
-
-    if (state.currentTemperature < minTemperature) error = new Error(`The target temperature (${this.targetTemperature}) must be more than the minTemperature (${minTemperature})`);
-    if (state.currentTemperature > maxTemperature) error = new Error(`The target temperature (${this.targetTemperature}) must be less than the maxTemperature (${maxTemperature})`);
-
-    if (error) throw error
+    if (state.targetTemperature < minTemperature) return log(`The target temperature (${this.targetTemperature}) must be more than the minTemperature (${minTemperature})`);
+    if (state.targetTemperature > maxTemperature) return log(`The target temperature (${this.targetTemperature}) must be less than the maxTemperature (${maxTemperature})`);
 
     if (state.targetTemperature === previousValue) return
 
