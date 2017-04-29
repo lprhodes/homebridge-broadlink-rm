@@ -1,4 +1,4 @@
-const BroadlinkJS = require('broadlinkjs');
+const BroadlinkJS = require('broadlinkjs-rm');
 const broadlink = new BroadlinkJS()
 
 const discoveredDevices = {};
