@@ -323,8 +323,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     let onTemperature;
 
     onTemperature = (temperature) => {
-      if (temperature > this.config.maxTemperature) temperature = this.config.maxTemperature
-      if (temperature < this.config.minTemperature) temperature = this.config.minTemperature
+      if (temperature > 40) return log(`${name} getCurrentTemperature (reported temperature too high, ignoring: ${temperature})`)
+      if (temperature < -15) return log(`${name} getCurrentTemperature (reported temperature too low, ignoring: ${temperature})`)
       state.currentTemperature = temperature;
 
       if (this.removeTemperatureListenerTimer) clearTimeout(this.removeTemperatureListenerTimer)
