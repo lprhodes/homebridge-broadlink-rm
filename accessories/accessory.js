@@ -95,7 +95,7 @@ class BroadlinkRMAccessory {
         return;
       }
 
-      if (!ignorePreviousValue && this.state[propertyName] === value && !this.isReloadingState) {
+      if (!ignorePreviousValue && this.state[propertyName] == value && !this.isReloadingState) {
         log(`${name} set${capitalizedPropertyName}: already ${value}`);
 
         callback(null, value);
