@@ -48,7 +48,7 @@ disableLogs (optional) | Disables the log output for this accessory. | true | fa
 - [switch](#switch)
 - [switch-multi](#switch-multi)
 - [switch-repeat](#switch-repeat)
-- [switch-multi](#fan)
+- [fan](#fan)
 - [light](#light)
 - [garage-door-opener](#garage-door-opener)
 - [window-covering](#window-covering)
