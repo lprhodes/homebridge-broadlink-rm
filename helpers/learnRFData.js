@@ -1,6 +1,7 @@
 const getDevice = require('./getDevice');
 
 let closeClient = null;
+let isClosingClient = false;
 let timeout = null;
 let getDataTimeout = null;
 let getDataTimeout2 = null;
@@ -10,18 +11,19 @@ let currentDevice
 
 const stop = (log, device) => {
   // Reset existing learn requests
-  if (closeClient) {
+  if (!closeClient || isClosingClient) return;
 
-    if (currentDevice) currentDevice.cancelRFSweep()
+  isClosingClient = true;
 
-    setTimeout(() => {
+  if (currentDevice) currentDevice.cancelRFSweep();
 
-      closeClient();
-      closeClient = null;
+  setTimeout(() => {
+    closeClient();
+    closeClient = null;
+    isClosingClient = false;
 
-      if (log) log(`Scan RF (stopped)`);
-    }, 500)
-  }
+    if (log) log(`Scan RF (stopped)`);
+  }, 500)
 }
 
 const start = (host, callback, turnOffCallback, log, disableTimeout) => {
@@ -96,7 +98,6 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     device.cancelRFSweep();
 
     closeClient();
-    closeClient = null;
 
     turnOffCallback();
   };
@@ -124,7 +125,6 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     setTimeout(() => {
       log('Scan RF (stopped - 20s timeout)');
       closeClient();
-      closeClient = null;
 
       turnOffCallback();
     }, 1000);

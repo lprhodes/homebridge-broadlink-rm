@@ -6,12 +6,12 @@ let getDataTimeout = null;
 
 const stop = (log) => {
   // Reset existing learn requests
-  if (closeClient) {
-    closeClient();
-    closeClient = null;
+  if (!closeClient) return;
 
-    log(`Learn Code (stopped)`);
-  }
+  closeClient();
+  closeClient = null;
+
+  log(`Learn Code (stopped)`);
 }
 
 const start = (host, callback, turnOffCallback, log, disableTimeout) => {
@@ -42,7 +42,6 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     log(`Learn Code (complete)`);
 
     closeClient();
-    closeClient = null;
 
     turnOffCallback();
   };
@@ -66,7 +65,6 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     if (device.cancelRFSweep) device.cancelRFSweep();
 
     closeClient();
-    closeClient = null;
 
     turnOffCallback();
   }, 10000); // 10s
