@@ -199,13 +199,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   // Thermostat
-  sendTemperature (temperature) {
+  sendTemperature (temperature, previousTemperature) {
     const { config, data, host, log, name, state } = this;
     const { defaultHeatTemperature, defaultCoolTemperature, heatTemperature } = config;
 
-    log(`Potential ${name} sendTemperature (${temperature})`);
+    log(`${name} Potential sendTemperature (${temperature})`);
 
-    let hasTemperatureChanged = (state.targetTemperature !== temperature);
+    let hasTemperatureChanged = (previousTemperature !== temperature);
     let hexData = data[`temperature${temperature}`];
 
     // You may not want to set the hex data for every single mode...
@@ -215,7 +215,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       if (!hexData) {
         const error = Error(`You need to set the defaultHeatTemperature and defaultCoolTemperature or provide a hex code for the given mode/temperature:
-          ({ "temperature${state.targetTemperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })
+          ({ "temperature${temperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })
           or at the very least, the default mode/temperature
           ({ "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })`);
 
@@ -223,7 +223,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
 
       hasTemperatureChanged = (state.targetTemperature !== defaultTemperature);
-      this.log(`Update to default ${name} temperature (${defaultTemperature})`);
+      this.log(`${name} Update to default temperature (${defaultTemperature})`);
 
       state.targetTemperature = defaultTemperature;
     } else {
@@ -296,7 +296,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.updateServiceHeatingCoolingState(state.targetHeatingCoolingState);
       sendData({ host, hexData: data.off, log, name });
     } else {
-      this.sendTemperature(temperature);
+      this.sendTemperature(temperature, state.targetTemperature);
     }
 	}
 
