@@ -139,7 +139,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) return;
 
-    if (!autoHeatTemperature && !autoCoolTemperature) return;
+    if ((!autoHeatTemperature && !autoCoolTemperature) || !this.isAutoSwitchOn()) return;
 
     this.getCurrentTemperature((err, temperature) => {
       this.thermostatService.setCharacteristic(Characteristic.CurrentTemperature, temperature);
@@ -165,7 +165,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    if (!autoHeatTemperature && !autoCoolTemperature) return;
+    if ((!autoHeatTemperature && !autoCoolTemperature) || !this.isAutoSwitchOn()) return;
 
     if (autoHeatTemperature && temperature < autoHeatTemperature) {
       this.state.runningAutomatically = true;
@@ -198,6 +198,23 @@ class AirConAccessory extends BroadlinkRMAccessory {
   resetAutoOnTimeout () {
     if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
     this.autoOnTimeout = undefined
+  }
+
+  isAutoSwitchOn () {
+    return this.autoSwitchAccessory && this.autoSwitchAccessory.state && this.autoSwitchAccessory.state.switchState;
+  }
+
+  updateAccessories (accessories) {
+    const { config, log } = this;
+    const { autoSwitch } = config;
+
+    if (!autoSwitch) return;
+
+    const autoSwitchAccessories = accessories.filter(accessory => accessory.name === autoSwitch);
+
+    if (autoSwitchAccessories.length === 0) return log(`${name} No accessory could be found with the name "${autoSwitch}". Please update the "autoSwitch" value or add a matching switch accessory.`);
+
+    this.autoSwitchAccessory = autoSwitchAccessories[0];
   }
 
   // Thermostat

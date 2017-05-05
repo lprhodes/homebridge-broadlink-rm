@@ -73,6 +73,12 @@ class BroadlinkRMPlatform {
       accessories.push(homeKitAccessory);
     })
 
+    accessories.forEach((accessory) => {
+      if (typeof accessory !== Accessory.AirCon) return;
+
+      accessory.updateAccessories(accessories)
+    })
+
     callback(accessories);
   }
 }
