@@ -206,10 +206,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   updateAccessories (accessories) {
-    const { config, log } = this;
+    const { config, name, log } = this;
     const { autoSwitch } = config;
 
+    console.log('autoSwitch', autoSwitch)
+
     if (!autoSwitch) return;
+
+    log(`${name} Linking autoSwitch "${autoSwitch}"`)
 
     const autoSwitchAccessories = accessories.filter(accessory => accessory.name === autoSwitch);
 
