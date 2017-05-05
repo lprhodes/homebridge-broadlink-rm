@@ -9,8 +9,11 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
   }
 
   async performSend (data) {
-    const { config, host, log, name } = this;
-    let { disableAutomaticOff, interval, sendCount } = config;
+    const { config, host, log, name, state } = this;
+    let { disableAutomaticOff, interval, onSendCount, offSendCount, sendCount  } = config;
+
+    if (state.switchState && onSendCount) sendCount = onSendCount;
+    if (!state.switchState && offSendCount) sendCount = offSendCount;
 
     interval = interval || 1;
 
