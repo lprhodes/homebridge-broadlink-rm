@@ -74,9 +74,9 @@ class BroadlinkRMPlatform {
     })
 
     accessories.forEach((accessory) => {
-      if (instanceof accessory !== Accessory.AirCon) return;
-
-      accessory.updateAccessories(accessories)
+      if (accessory instanceof Accessory.AirCon) {
+        accessory.updateAccessories(accessories)
+      }
     })
 
     callback(accessories);
