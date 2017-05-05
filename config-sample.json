@@ -144,6 +144,10 @@
           }
         },
         {
+          "name":"A/C Auto Switch",
+          "type":"switch"
+        },
+        {
           "name": "Fan",
           "type": "fan",
           "data": {

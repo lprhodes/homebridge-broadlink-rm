@@ -27,7 +27,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     const services = super.getServices();
 
     const { data, name } = this;
-    const { on, off } = data;
+    const { on, off } = data || { };
 
     const service = new Service.Switch(name);
     this.addNameService(service);
