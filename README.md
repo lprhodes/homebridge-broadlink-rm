@@ -85,7 +85,7 @@ Turn the switch on and the switch will send each hex code in the provided array 
 
 key | description | example | default
 --- | ----------- | ------- | -------
-data (required) | Hex data stored as an array of strings. | [ "26005800000..." ] | -
+data (required) | Hex data stored as an array of strings. You can also set separate "on" and "off" arrays of codes similar to the "switch" accessory. | [ "26005800000..." ] | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 
@@ -96,8 +96,10 @@ Turn the switch on and the switch will repeatedly send the hex code until it rea
 
 key | description | example | default
 --- | ----------- | ------- | -------
-data (required) | Hex data stored as string. | 26005800000... | -
+data (required) | Hex data stored as string. You can also set separate "on" and "off" codes similar to the "switch" accessory. | 26005800000... | -
 sendCount (optional) | The number of times the hex code should be sent. | 5 | 1
+onSendCount (optional) | If you set separate "on" and "off" codes you can use this to override the "sendCount" when the switch is turned on. | 5 | 1
+offSendCount (optional) | If you set separate "on" and "off" codes you can use this to override the "sendCount" when the switch is turned off. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 
