@@ -139,7 +139,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) return;
 
-    if (!autoHeatTemperature && !autoCoolTemperature) return;
+    if ((!autoHeatTemperature && !autoCoolTemperature) || !this.isAutoSwitchOn()) return;
 
     this.getCurrentTemperature((err, temperature) => {
       this.thermostatService.setCharacteristic(Characteristic.CurrentTemperature, temperature);
@@ -201,6 +201,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   isAutoSwitchOn () {
+    console.log('this.autoSwitchAccessory.state', this.autoSwitchAccessory.state)
     return this.autoSwitchAccessory && this.autoSwitchAccessory.state && this.autoSwitchAccessory.state.switchState;
   }
 
