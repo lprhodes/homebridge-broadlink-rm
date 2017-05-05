@@ -134,11 +134,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   updateTemperatureUI () {
     const { config, host, log, name, state } = this;
-    const { pseudoDeviceTemperature } = config;
+    const { pseudoDeviceTemperature, autoHeatTemperature, autoCoolTemperature } = config;
 
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) return;
 
+    if (!autoHeatTemperature && !autoCoolTemperature) return;
 
     this.getCurrentTemperature((err, temperature) => {
       this.thermostatService.setCharacteristic(Characteristic.CurrentTemperature, temperature);
@@ -163,6 +164,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       return;
     }
+
     if (!autoHeatTemperature && !autoCoolTemperature) return;
 
     if (autoHeatTemperature && temperature < autoHeatTemperature) {
