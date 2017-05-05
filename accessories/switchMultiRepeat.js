@@ -15,12 +15,12 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
     if (nonObjects.length > 0) return log('The "switch-multi-repeat" type requires the config value for "data" an array of objects.')
   }
 
-  async setSwitchState () {
-    if (this.state.switchState) this.performSend();
+  async setSwitchState (hexData) {
+    if (hexData) this.performSend(hexData);
   }
 
-  async performSend () {
-    const { config, data, log } = this;
+  async performSend (data) {
+    const { config, log } = this;
     let { disableAutomaticOff, interval, pause, sendCount } = config;
 
     if (!interval) interval = 1;
@@ -70,7 +70,8 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.On,
       propertyName: 'switchState',
-      onHex: data,
+      onHex: Array.isArray(data) ? data : data.on,
+      offHex: Array.isArray(data) ? undefined : data.off,
       setValuePromise: this.setSwitchState.bind(this)
     })
 

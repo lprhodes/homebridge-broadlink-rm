@@ -12,12 +12,12 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
     if (!Array.isArray(data)) return log('The "switch-multi" type requires the config value for "data" to be an array of hex codes.')
   }
 
-  async setSwitchState () {
-    if (this.state.switchState) this.performSend();
+  async setSwitchState (hexData) {
+    if (hexData) this.performSend(hexData);
   }
 
-  async performSend () {
-    const { config, data, host, log, name } = this;
+  async performSend (data) {
+    const { config, host, log, name } = this;
     let { disableAutomaticOff, interval } = config;
 
     // Itterate through each hex config in the array
@@ -47,7 +47,8 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.On,
       propertyName: 'switchState',
-      onHex: data,
+      onHex: Array.isArray(data) ? data : data.on,
+      offHex: Array.isArray(data) ? undefined : data.off,
       setValuePromise: this.setSwitchState.bind(this)
     })
 
