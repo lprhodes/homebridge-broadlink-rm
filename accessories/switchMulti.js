@@ -29,7 +29,7 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
       if (index < data.length - 1) await delayForDuration(interval);
     }
 
-    if (!disableAutomaticOff) {
+    if (state.switchState && !disableAutomaticOff) {
       await delayForDuration(0.1);
 
       this.switchService.setCharacteristic(Characteristic.On, 0);
