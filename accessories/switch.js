@@ -36,8 +36,8 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.On,
       propertyName: 'switchState',
-      onHex: on,
-      offHex: off,
+      onData: on,
+      offData: off,
       setValuePromise: this.setSwitchState.bind(this)
     });
 

@@ -141,8 +141,8 @@ class LightAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.On,
       propertyName: 'lightState',
-      onHex: on,
-      offHex: off,
+      onData: on,
+      offData: off,
       setValuePromise: this.setLightState.bind(this)
     });
 

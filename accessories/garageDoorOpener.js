@@ -73,8 +73,8 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.TargetDoorState,
       propertyName: 'targetDoorState',
-      onHex: open,
-      offHex: close,
+      onData: open,
+      offData: close,
       setValuePromise: this.setTargetDoorState.bind(this)
     });
 
@@ -82,8 +82,8 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.LockTargetState,
       propertyName: 'lockTargetState',
-      onHex: lock,
-      offHex: unlock,
+      onData: lock,
+      offData: unlock,
       setValuePromise: this.setLockTargetState.bind(this)
     });
 

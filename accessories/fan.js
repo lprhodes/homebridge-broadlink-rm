@@ -42,8 +42,8 @@ class FanAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.On,
       propertyName: 'switchState',
-      onHex: on,
-      offHex: off
+      onData: on,
+      offData: off
     });
 
     services.push(service);
@@ -56,16 +56,16 @@ class FanAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.Active,
       propertyName: 'switchState',
-      onHex: on,
-      offHex: off
+      onData: on,
+      offData: off
     });
 
     this.createToggleCharacteristic({
       service,
       characteristicType: Characteristic.SwingMode,
       propertyName: 'swingMode',
-      onHex: swingToggle,
-      offHex: swingToggle
+      onData: swingToggle,
+      offData: swingToggle
     });
 
     this.createToggleCharacteristic({

@@ -1,35 +1,17 @@
-const semver = require('semver');
-const persistentState = require('./helpers/persistentState')
-
-if (semver.lt(process.version, '7.6.0')) throw new Error(`homebridge-broadlink-rm requires your node version to be at least v7.6.0. Current version: ${process.version}`)
-
+const { HomebridgePlatform } = require('homebridge-platform-helper');
 const Accessory = require('./accessories');
 
 module.exports = (homebridge) => {
   global.Service = homebridge.hap.Service;
   global.Characteristic = homebridge.hap.Characteristic;
 
-  require('./services/TVChannels');
-  require('./services/UpDown');
-
   homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
 }
 
-class BroadlinkRMPlatform {
+class BroadlinkRMPlatform extends HomebridgePlatform {
 
-  constructor (log, config = {}) {
-    this.log = log;
-    this.config = config;
-
-    const { homebridgeDirectory } = config;
-
-    persistentState.init({ homebridgeDirectory })
-  }
-
-  accessories (callback) {
+  addAccessories (accessories) {
     const { config, log } = this;
-
-    const accessories = [];
 
     // Add a Learn Code accessory if none exist in the config
     const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
@@ -40,12 +22,6 @@ class BroadlinkRMPlatform {
 
       const scanFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Scan Frequency', scanFrequency: true });
       accessories.push(scanFrequencyAccessory);
-    }
-
-    // Check for no accessories
-    if (!config.accessories || config.accessories.length === 0) {
-      log('No accessories have been added to the Broadlink RM config. Only the Learn Code accessory will be accessible on HomeKit.');
-      return callback(accessories);
     }
 
     // Itterate through the config accessories
@@ -66,32 +42,11 @@ class BroadlinkRMPlatform {
         'window-covering': Accessory.WindowCovering,
       }
 
-      if (!classTypes[accessory.type]) throw new Error(`We don't support accessories of type "${accessory.type}".`);
+      if (!classTypes[accessory.type]) throw new Error(`homebridge-broadlink-rm doesn't support accessories of type "${accessory.type}".`);
 
-      const homeKitAccessory = new classTypes[accessory.type](log, accessory)
+      const homeKitAccessory = new classTypes[accessory.type](log, accessory);
 
       accessories.push(homeKitAccessory);
     })
-
-    accessories.forEach((accessory) => {
-      if (accessory instanceof Accessory.AirCon) {
-        accessory.updateAccessories(accessories)
-      }
-    })
-
-    callback(accessories);
   }
 }
-
-    //
-    // for (var i = 0; i < this.data.length; i++) {
-    //   const data = this.data[i];
-    //   const { name, type } = data;
-    //
-    //   if (type === 'thermostat') {
-    //     this.log('add thermostat service');
-    //
-    //     const thermostatService = new ThermostatService(this.log, this.config, data).createService()
-    //
-    //     services.push(thermostatService);
-    //   }

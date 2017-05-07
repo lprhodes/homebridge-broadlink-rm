@@ -42,8 +42,8 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.On,
       propertyName: 'switchState',
-      onHex: (typeof data === 'object') ? data.on : data,
-      offHex: (typeof data === 'object') ? data.off : undefined,
+      onData: (typeof data === 'object') ? data.on : data,
+      offData: (typeof data === 'object') ? data.off : undefined,
       setValuePromise: this.setSwitchState.bind(this)
     });
 
