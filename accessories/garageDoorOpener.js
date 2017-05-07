@@ -30,6 +30,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       }, openCloseDuration * 1000);
     } else {
       if (this.garageDoorOpenerService) clearTimeout(this.garageDoorOpenerService);
+      if (this.autoCloseTimeout) clearTimeout(this.autoCloseTimeout);
 
       this.finishedClosingTimeout = setTimeout(() => {
         log(`${name} setCurrentDoorState: closed`);
