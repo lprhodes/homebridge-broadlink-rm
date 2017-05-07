@@ -160,6 +160,7 @@ key | description | example | default
 --- | ----------- | ------- | -------
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 openCloseDuration (optional) | The amount of time in seconds that the accessory will show as "Opening" or "Closing" | 10 | 8
+autoCloseDelay (optional) | The amount of time in seconds that the accessory will wait before automatically initiating the "Closing" state. | 10 | 30
 host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
 
 #### "data" key-value object
