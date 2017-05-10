@@ -1,5 +1,7 @@
 const { HomebridgeAccessory } = require('homebridge-platform-helper');
 
+const sendData = require('../helpers/sendData');
+
 class BroadlinkRMAccessory extends HomebridgeAccessory {
 
   constructor (log, config) {
