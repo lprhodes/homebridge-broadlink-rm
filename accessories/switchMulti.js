@@ -17,7 +17,7 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
   }
 
   async performSend (data) {
-    const { config, host, log, name } = this;
+    const { config, host, log, name, state } = this;
     let { disableAutomaticOff, interval } = config;
 
     // Itterate through each hex config in the array
