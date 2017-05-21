@@ -46,6 +46,13 @@ class FanAccessory extends BroadlinkRMAccessory {
       offData: off
     });
 
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.RotationSpeed,
+      propertyName: 'fanSpeed',
+      setValuePromise: this.setFanSpeed.bind(this)
+    });
+
     services.push(service);
 
     // Fanv2 service
