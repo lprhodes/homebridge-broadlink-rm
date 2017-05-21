@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.2.0",
-    "homebridge-platform-helper": "0.0.1"
+    "homebridge-platform-helper": "0.0.2"
   }
 }
