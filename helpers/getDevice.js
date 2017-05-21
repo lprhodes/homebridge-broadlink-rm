@@ -5,8 +5,16 @@ const discoveredDevices = {};
 
 const limit = 5;
 
+let discovering = false;
+
 const discoverDevices = (count = 0) => {
-  if (count >= 5) return;
+  discovering = true;
+
+  if (count >= 5) {
+    discovering = false;
+
+    return;
+  }
 
   broadlink.discover();
   count++;
@@ -38,7 +46,16 @@ const getDevice = ({ host, log, learnOnly }) => {
     device = discoveredDevices[host];
   } else { // use the first one of no host is provided
     const hosts = Object.keys(discoveredDevices);
-    if (hosts.length === 0) return log(`Send data (no devices found)`);
+    if (hosts.length === 0) {
+      log(`Send data (no devices found)`);
+      if (!discovering) {
+        log(`Attempting to discover RM devices for 5s`);
+
+        discoverDevices()
+      }
+
+      return
+    }
 
     // Only return device that can Learn Code codes
     if (learnOnly) {
@@ -53,10 +70,20 @@ const getDevice = ({ host, log, learnOnly }) => {
       }
 
       if (!device) log(`Learn Code (no device found at ${host})`)
+      if (!device && !discovering) {
+        log(`Attempting to discover RM devices for 5s`);
+
+        discoverDevices()
+      }
     } else {
       device = discoveredDevices[hosts[0]];
 
       if (!device) log(`Send data (no device found at ${host})`);
+      if (!device && !discovering) {
+        log(`Attempting to discover RM devices for 5s`);
+
+        discoverDevices()
+      }
     }
   }
 
