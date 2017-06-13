@@ -7,6 +7,7 @@ const SwitchMultiRepeat = require('./switchMultiRepeat');
 const SwitchRepeat = require('./switchRepeat');
 const UpDown = require('./upDown');
 const Fan = require('./fan');
+const FanMulti = require('./fanMulti');
 const GarageDoorOpener = require('./garageDoorOpener');
 const Light = require('./light');
 const WindowCovering = require('./windowCovering');
@@ -21,6 +22,7 @@ module.exports = {
   SwitchRepeat,
   UpDown,
   Fan,
+  FanMulti,
   GarageDoorOpener,
   Light,
   WindowCovering
