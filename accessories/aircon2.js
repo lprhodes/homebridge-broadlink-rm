@@ -171,20 +171,19 @@ class AirCon2Accessory extends BroadlinkRMAccessory {
     const { config, data, host, log, name, state } = this;     
     switch(value) {
       case Characteristic.CurrentHeatingCoolingState.OFF:
-      this.log(`${name} Setting Mode = OFF` + value); 
+      this.log(`${name} Setting Mode = OFF`); 
       sendData({ host, hexData: data["off"], log, name });
       break;        
       case Characteristic.CurrentHeatingCoolingState.HEAT:
-      this.log(`${name} Setting Mode = HEAT` + value); 
+      this.log(`${name} Setting Mode = HEAT`); 
       sendData({ host, hexData: data["heat"], log, name });
       break;
       case Characteristic.CurrentHeatingCoolingState.COOL:
-      this.log(`${name} Setting Mode = COOL` + value); 
+      this.log(`${name} Setting Mode = COOL`); 
       sendData({ host, hexData: data["cool"], log, name });
       break;
       case Characteristic.CurrentHeatingCoolingState.AUTO:
-      case 3: // Characteristic.CurrentHeatingCoolingState.AUTO is undefined?
-      this.log(`${name} Setting Mode = AUTO` + value);
+      this.log(`${name} Setting Mode = AUTO`);
       sendData({ host, hexData: data["auto"], log, name }); 
       break;
       default:
