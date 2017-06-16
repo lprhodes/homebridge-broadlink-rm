@@ -52,12 +52,9 @@ class AirCon2Accessory extends BroadlinkRMAccessory {
       defaultValue: minTemperature
     });
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.TargetHeatingCoolingState,
-      propertyName: 'targetHeatingCoolingState',
-      setValuePromise: this.setTargetHeatingCoolingState.bind(this)
-    });
+    service
+      .getCharacteristic(Characteristic.TargetHeatingCoolingState)
+      .on('set', this.setTargetHeatingCoolingState.bind(this));
 
     service
       .getCharacteristic(Characteristic.CurrentTemperature)
@@ -168,16 +165,36 @@ class AirCon2Accessory extends BroadlinkRMAccessory {
 
 	getCurrentHeatingCoolingState () {
     const { state } = this;
-
-    this.updateServiceHeatingCoolingState(state.currentHeatingCoolingState);
 	}
 
-	setTargetHeatingCoolingState () {
-    const { config, data, host, log, name, state } = this;
-    const { defaultCoolTemperature, defaultHeatTemperature } = config;
+  setTargetHeatingCoolingState(value, callback) {  
+    const { config, data, host, log, name, state } = this;     
+    switch(value) {
+      case Characteristic.CurrentHeatingCoolingState.OFF:
+      this.log(`${name} Setting Mode = OFF` + value); 
+      sendData({ host, hexData: data["off"], log, name });
+      break;        
+      case Characteristic.CurrentHeatingCoolingState.HEAT:
+      this.log(`${name} Setting Mode = HEAT` + value); 
+      sendData({ host, hexData: data["heat"], log, name });
+      break;
+      case Characteristic.CurrentHeatingCoolingState.COOL:
+      this.log(`${name} Setting Mode = COOL` + value); 
+      sendData({ host, hexData: data["cool"], log, name });
+      break;
+      case Characteristic.CurrentHeatingCoolingState.AUTO:
+      case 3: // Characteristic.CurrentHeatingCoolingState.AUTO is undefined?
+      this.log(`${name} Setting Mode = AUTO` + value);
+      sendData({ host, hexData: data["auto"], log, name }); 
+      break;
+      default:
+      this.log(this.logPrefix + ": Unknown state sent to setTargetHeatingCoolingState (" + value + ")" + " - defaulted to OFF");
+      sendData({ host, hexData: data["off"], log, name });
+      break;
+    }
+    callback(null);
+  }
 
- 	this.log(`${name} setTargetHeatingCoolingState`);
-	}
 
 	getCurrentTemperature (callback) {
     const { config, host, log, name, state } = this;
