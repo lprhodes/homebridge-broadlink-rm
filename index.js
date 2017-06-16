@@ -30,6 +30,7 @@ class BroadlinkRMPlatform extends HomebridgePlatform {
 
       const classTypes = {
         'air-conditioner': Accessory.AirCon,
+        'air-conditioner2': Accessory.AirCon2,
         'learn-ir': Accessory.LearnCode,
         'learn-code': Accessory.LearnCode,
         'switch': Accessory.Switch,
