@@ -13,6 +13,8 @@
     {
       "platform":"BroadlinkRM",
       "name":"Broadlink RM",
+      "hideScanFrequencyButton": false,
+      "hideLearnButton": false,
       "accessories":[
         {
           "name":"Auto-off Switch",

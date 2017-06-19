@@ -17,11 +17,16 @@ class BroadlinkRMPlatform extends HomebridgePlatform {
     const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
 
     if (learnIRAccessories.length === 0) {
-      const learnCodeAccessory = new Accessory.LearnCode(log, { name: 'Learn' });
-      accessories.push(learnCodeAccessory);
 
-      const scanFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Scan Frequency', scanFrequency: true });
-      accessories.push(scanFrequencyAccessory);
+      if (!config.hideLearnButton) {
+        const learnCodeAccessory = new Accessory.LearnCode(log, { name: 'Learn' });
+        accessories.push(learnCodeAccessory);
+      }
+
+      if (!config.hideScanFrequencyButton) {
+        const scanFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Scan Frequency', scanFrequency: true });
+        accessories.push(scanFrequencyAccessory);
+      }
     }
 
     // Itterate through the config accessories
