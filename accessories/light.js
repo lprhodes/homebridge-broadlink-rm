@@ -81,6 +81,8 @@ class LightAccessory extends BroadlinkRMAccessory {
         sendData({ host, hexData: on, log, name });
 
         setTimeout(() => {
+          if (!state.lightState) return;
+
           log(`${name} setBrightness: (closest: ${closest})`);
           sendData({ host, hexData, log, name });
 
