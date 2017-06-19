@@ -24,9 +24,11 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
 
         this.garageDoorOpenerService.setCharacteristic(Characteristic.CurrentDoorState, 0);
 
-        this.autoCloseTimeout = setTimeout(() => {
-          this.garageDoorOpenerService.setCharacteristic(Characteristic.TargetDoorState, 1);
-        }, autoCloseDelay * 1000);
+        if (autoCloseDelay) {
+          this.autoCloseTimeout = setTimeout(() => {
+            this.garageDoorOpenerService.setCharacteristic(Characteristic.TargetDoorState, 1);
+          }, autoCloseDelay * 1000);
+        }
       }, openCloseDuration * 1000);
     } else {
       if (this.garageDoorOpenerService) clearTimeout(this.garageDoorOpenerService);
