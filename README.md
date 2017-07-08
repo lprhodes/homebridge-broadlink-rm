@@ -115,6 +115,9 @@ If you don't specify every fan speed then the accessory will choose the hex code
 key | description | example | default
 --- | ----------- | ------- | -------
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
+hideSwingMode (optional) | Determines whether we should hide the swing mode UI or not | true | false
+hideV1Fan (optional) | Determines whether we should hide the V1 fan or not | true | false
+hideV2Fan (optional) | Determines whether we should hide the V2 fan or not | true | false
 
 #### "data" key-value object
 
@@ -211,6 +214,8 @@ pseudoDeviceTemperature (optional) | Some RM devices don't have a built in therm
 autoHeatTemperature (optional) | When the temperature is below this value, the heat mode will be enabled. | 18 | -
 autoCoolTemperature (optional) | When the temperature is above this value, the cool mode will enabled. | 27 | -
 autoMinimumDuration (optional) | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120
+temperatureAdjustment (optional) | The number of degrees that the reported temperature should be offset by. | 3 | 0
+
 
 #### "data" key-value object
 
