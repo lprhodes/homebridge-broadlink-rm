@@ -33,58 +33,65 @@ class FanAccessory extends BroadlinkRMAccessory {
 
   getServices () {
     const services = super.getServices();
-    const { data, name } = this;
+    const { config, data, name } = this;
+    const { hideSwingMode, hideV1Fan, hideV2Fan } = config;
     const { on, off, swingToggle } = data;
 
-	  // Until FanV2 service is supported completely in Home app, we have to add legacy
-    let service = new Service.Fan(name);
+    if (!hideV1Fan) {
+  	  // Until FanV2 service is supported completely in Home app, we have to add legacy
+      let service = new Service.Fan(name);
 
-    this.addNameService(service);
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.On,
-      propertyName: 'switchState',
-      onData: on,
-      offData: off
-    });
+      this.addNameService(service);
+      this.createToggleCharacteristic({
+        service,
+        characteristicType: Characteristic.On,
+        propertyName: 'switchState',
+        onData: on,
+        offData: off
+      });
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.RotationSpeed,
-      propertyName: 'fanSpeed',
-      setValuePromise: this.setFanSpeed.bind(this)
-    });
+      this.createToggleCharacteristic({
+        service,
+        characteristicType: Characteristic.RotationSpeed,
+        propertyName: 'fanSpeed',
+        setValuePromise: this.setFanSpeed.bind(this)
+      });
 
-    services.push(service);
+      services.push(service);
+    }
 
-    // Fanv2 service
-    service = new Service.Fanv2(name);
-    this.addNameService(service);
+    if (!hideV2Fan) {
+      // Fanv2 service
+      service = new Service.Fanv2(name);
+      this.addNameService(service);
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.Active,
-      propertyName: 'switchState',
-      onData: on,
-      offData: off
-    });
+      this.createToggleCharacteristic({
+        service,
+        characteristicType: Characteristic.Active,
+        propertyName: 'switchState',
+        onData: on,
+        offData: off
+      });
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.SwingMode,
-      propertyName: 'swingMode',
-      onData: swingToggle,
-      offData: swingToggle
-    });
+      if (!hideSwingMode) {
+        this.createToggleCharacteristic({
+          service,
+          characteristicType: Characteristic.SwingMode,
+          propertyName: 'swingMode',
+          onData: swingToggle,
+          offData: swingToggle
+        });
+      }
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.RotationSpeed,
-      propertyName: 'fanSpeed',
-      setValuePromise: this.setFanSpeed.bind(this)
-    });
+      this.createToggleCharacteristic({
+        service,
+        characteristicType: Characteristic.RotationSpeed,
+        propertyName: 'fanSpeed',
+        setValuePromise: this.setFanSpeed.bind(this)
+      });
 
-    services.push(service);
+      services.push(service);
+    }
 
     return services;
   }
