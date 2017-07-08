@@ -323,7 +323,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
 	getCurrentTemperature (callback) {
     const { config, host, log, name, state } = this;
-    const { pseudoDeviceTemperature } = config;
+    const { pseudoDeviceTemperature, temperatureAdjustment } = config;
 
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) {
@@ -344,6 +344,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     let onTemperature;
 
     onTemperature = (temperature) => {
+      if (temperatureAdjustment) temperature += temperatureAdjustment
+
       if (temperature > 40) return log(`${name} getCurrentTemperature (reported temperature too high, ignoring: ${temperature})`)
       if (temperature < -15) return log(`${name} getCurrentTemperature (reported temperature too low, ignoring: ${temperature})`)
       state.currentTemperature = temperature;
