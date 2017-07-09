@@ -49,6 +49,7 @@ disableLogs (optional) | Disables the log output for this accessory. | true | fa
 - [switch-multi](#switch-multi)
 - [switch-repeat](#switch-repeat)
 - [fan](#fan)
+- [fan-multi](#fan-multi)
 - [light](#light)
 - [garage-door-opener](#garage-door-opener)
 - [window-covering](#window-covering)
@@ -103,7 +104,6 @@ offSendCount (optional) | If you set separate "on" and "off" codes you can use t
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
 
-
 ### fan
 
 Turn the fan on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
@@ -119,14 +119,23 @@ hideSwingMode (optional) | Determines whether we should hide the swing mode UI o
 hideV1Fan (optional) | Determines whether we should hide the V1 fan or not | true | false
 hideV2Fan (optional) | Determines whether we should hide the V2 fan or not | true | false
 
+### fan-multi
+
+Much like the `fan` accessory, but with the ability to send multiple hex codes for on and off commands.
+
+key | description | example | default
+--- | ----------- | ------- | -------
+data (required) | Hex data stored as an array of strings. You can also set separate "on" and "off" arrays of codes similar to the `switch`/`switch-multi` accessory. | [ "26005800000..." ] | -
+
 #### "data" key-value object
 
 key | description
 --- | -----------
-on | A hex code string to be sent when the switch is changed to the on position.
-off | A hex code string to be sent when the switch is changed to the off position.
+on | An array of hex code strings to be sent when the fan is turned on.
+off | An array of hex code strings to be sent when the fan is turned off.
 swingToggle | A hex code string used to toggle the swing mode on/off.
 fanSpeedX | A hex code string where X is any fan speed you wish to support e.g. "fanSpeed100".
+
 
 
 ### light
