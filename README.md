@@ -21,6 +21,7 @@ Generally the plugin can find where your config.json lives as it commonly sits i
 ## Broadlink RM Device Discovery
 
 As of version 1.0.0 your Broadlink RM Device is automatically discovered so you no longer need to specify a "host" value.
+If your network doesn't support automatic discovery then you can add a "hosts" array to the platform object (See config-sample.json).
 
 ## Learning Hex IR and RF codes
 
@@ -203,9 +204,9 @@ This allows you to send a hex code for any temperature that you've defined a hex
 key | description | example | default
 --- | ----------- | ------- | -------
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
-minTemperature (optional) | The number of times the hex code should be sent. | 14 | 0
-maxTemperature (optional) | The amount of time between each send of a hex code in seconds. | 28 | 30
-temperatureDisplayUnits (optional) | Specify celsius or fahrenheit. | F | C
+minTemperature (optional) | The minimum temperature to report to HomeKit. | 14 | 0
+maxTemperature (optional) | The maximum temperature to report to HomeKit. | 28 | 30
+temperatureDisplayUnits (optional) | Specify Celsius or Fahrenheit. | F | C
 defaultCoolTemperature (optional) | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16
 defaultHeatTemperature (optional) | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30
 heatTemperature (optional) | The temperature at which we change the UI to show that we're heating. Also used to determine whether "defaultCoolTemperature" or "defaultHeatTemperature" is used. | 20 | 22

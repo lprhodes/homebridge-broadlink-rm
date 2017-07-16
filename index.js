@@ -1,5 +1,6 @@
 const { HomebridgePlatform } = require('homebridge-platform-helper');
 const Accessory = require('./accessories');
+const broadlink = require('./helpers/broadlink');
 
 module.exports = (homebridge) => {
   global.Service = homebridge.hap.Service;
@@ -27,6 +28,12 @@ class BroadlinkRMPlatform extends HomebridgePlatform {
         const scanFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Scan Frequency', scanFrequency: true });
         accessories.push(scanFrequencyAccessory);
       }
+    }
+
+    if (config.hosts) {
+      config.hosts.forEach((host) => {
+        broadlink.addDevice(host.mac, host.address, host.isPlus);
+      })
     }
 
     // Itterate through the config accessories

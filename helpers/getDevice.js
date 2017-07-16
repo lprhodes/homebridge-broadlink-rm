@@ -1,5 +1,4 @@
-const BroadlinkJS = require('broadlinkjs-rm');
-const broadlink = new BroadlinkJS()
+const broadlink = require('./broadlink');
 
 const discoveredDevices = {};
 
@@ -17,10 +16,9 @@ const discoverDevices = (count = 0) => {
   }
 
   broadlink.discover();
-  count++;
 
   setTimeout(() => {
-    discoverDevices(count);
+    discoverDevices(count + 1);
   }, 5 * 1000)
 }
 
