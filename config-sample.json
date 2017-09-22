@@ -110,6 +110,33 @@
           }
         },
         {
+          "name":"Air Conditioner Pro",
+          "type":"air-conditioner-pro",
+          "data":{
+            "off":"2600500000012...",
+            "heat30":{
+              "pseudo-mode":"heat",
+              "data":"2600500000012..."
+            },
+            "heat16":{
+              "pseudo-mode":"heat",
+              "data":"2600500000012..."
+            }
+            "cool30":{
+              "pseudo-mode":"cool",
+              "data":"2600500000012..."
+            },
+            "cool16":{
+              "pseudo-mode":"cool",
+              "data":"2600500000012..."
+            },
+            "auto30":{
+              "pseudo-mode":"auto",
+              "data":"2600500000012..."
+            }
+          }
+        },
+        {
           "name":"Air Conditioner",
           "type":"air-conditioner",
           "data":{

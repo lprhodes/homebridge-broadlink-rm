@@ -3,6 +3,28 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class FanAccessory extends BroadlinkRMAccessory {
 
+  performSetValueAction ({ host, data, log, name }) {
+    if (Array.isArray(data)) {
+      performSend(data);
+    } else {
+      sendData({ host, hexData: data, log, name });
+    }
+  }
+
+  async performSend (data) {
+    const { config, host, log, name, state } = this;
+    let { interval } = config;
+
+    // Itterate through each hex config in the array
+    for (let index = 0; index < data.length; index++) {
+      const hexData = data[index]
+
+      sendData({ host, hexData, log, name });
+
+      if (index < data.length - 1) await delayForDuration(interval);
+    }
+  }
+
   async setFanSpeed (hexData) {
     const { data, host, log, state , name} = this;
 
