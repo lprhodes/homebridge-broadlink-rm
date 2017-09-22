@@ -234,6 +234,10 @@ class AirConProAccessory extends BroadlinkRMAccessory {
       case 3:
         targethcs = 'auto';
         break;
+      default :
+        state.targetTemperature = temperature;
+        this.updateTemperatureUI();
+        return;
     }
     log(`${name} Potential sendTemperature (${temperature})`);
     let hasTemperatureChanged = (previousTemperature !== temperature);
@@ -242,7 +246,7 @@ class AirConProAccessory extends BroadlinkRMAccessory {
     // You may not want to set the hex data for every single mode...
     if (!hexData) {
       const defaultTemperature = (temperature >= heatTemperature) ? defaultHeatTemperature : defaultCoolTemperature;
-      hexData = data[`temperature${defaultTemperature}`];
+      hexData = data[`${targethcs}${defaultTemperature}`];
 
       if (!hexData) {
         const error = Error(`You need to set the defaultHeatTemperature and defaultCoolTemperature or provide a hex code for the given mode/temperature:
@@ -340,8 +344,12 @@ class AirConProAccessory extends BroadlinkRMAccessory {
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) {
       //log(`${name} getCurrentTemperature (using ${state.targetTemperature} from target)`);
-
-      return callback(null, state.targetTemperature);
+      if(state.targetTemperature !== undefined){
+        return callback(null, state.targetTemperature);
+      }else{
+        this.updateServiceHeatingCoolingState(0);
+        return callback(null, 26);
+      }
     }
 
     const device = getDevice({ host, log })
