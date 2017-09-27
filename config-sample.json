@@ -27,6 +27,14 @@
           }
         },
         {
+          "name":"Projector",
+          "type":"projector",
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012..."
+          }
+        },
+        {
           "name":"TV On/Off",
           "type":"switch",
           "data":{

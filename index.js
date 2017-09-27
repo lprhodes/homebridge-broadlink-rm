@@ -39,6 +39,7 @@ class BroadlinkRMPlatform extends HomebridgePlatform {
         'learn-ir': Accessory.LearnCode,
         'learn-code': Accessory.LearnCode,
         'switch': Accessory.Switch,
+        'projector': Accessory.Projector,
         'garage-door-opener': Accessory.GarageDoorOpener,
         'switch-multi': Accessory.SwitchMulti,
         'switch-multi-repeat': Accessory.SwitchMultiRepeat,
