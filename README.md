@@ -53,6 +53,8 @@ disableLogs (optional) | Disables the log output for this accessory. | true | fa
 - [garage-door-opener](#garage-door-opener)
 - [window-covering](#window-covering)
 - [air-conditioner](#air-conditioner)
+- [air-conditioner-pro](#air-conditioner-pro)
+- [projector](#projector)
 
 ### learn-code
 
@@ -237,6 +239,51 @@ pseudo-mode | The mode we set when this hex is sent. i.e. "heat" or "cool". For 
 There looks to be a glitch in the Apple Home app in that nothing happens when setting the mode to Off when you've turned the thermostat on by setting a specific temperature. Siri and other HomeKit apps don't have the same glitch. As a work-around you can just select a different mode and then press Off. This only happens the first time after launching homebridge.
 
 Adding "autoHeatTemperature" and "autoCoolTemperature" can help automatically maintain a temperature. When the temperature falls below and hits above the "autoHeatTemperature" and "autoCoolTemperature" temperatures the accessory will automatically set the temperature to whatever the "defaultHeatTemperature" and "defaultCoolTemperature" is. The accessory will then keep checking (every "autoMinimumDuration" seconds) and if the temperature changes to be between the "autoHeatTemperature" and "autoCoolTemperature" temperatures then it will turn itself off. Something to note however is that if you decide to set a new temperature when the accessory has automatically turned itself on then it will still attempt to turn itself back off. To stop this automatic turn-off you can turn off the accessory manually and then turn it back on manually. Bare in mind that while the Home app may say 22C, the temperature may actually be 22.4C and if the Home app says 23C then it may actually be 22.5C.
+
+### air-conditioner-pro
+
+This allows you to send a hex code for any temperature that you've defined a hex code for. If you simply want to heat up or cool down a room (and not learn every single temperature code) you can just set hex codes for the lowest and highest temperatures and those will be used whatever temperature you request.
+
+key | description | example | default
+--- | ----------- | ------- | -------
+data (required) | Hex data stored as a key-value JSON object. | See below. | -
+minTemperature (optional) | The number of times the hex code should be sent. | 14 | 0
+maxTemperature (optional) | The amount of time between each send of a hex code in seconds. | 28 | 30
+temperatureDisplayUnits (optional) | Specify celsius or fahrenheit. | F | C
+defaultCoolTemperature (optional) | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16
+defaultHeatTemperature (optional) | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30
+heatTemperature (optional) | The temperature at which we change the UI to show that we're heating. Also used to determine whether "defaultCoolTemperature" or "defaultHeatTemperature" is used. | 20 | 22
+replaceAutoMode (optional) | When we turn on the thermostat with Siri it sets the mode as "auto" which isn't  supported at this time so we set the mode to "cool" or "heat" instead depending on the value of this key. | "heat" | "cool"
+pseudoDeviceTemperature (optional) | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0
+autoHeatTemperature (optional) | When the temperature is below this value, the heat mode will be enabled. | 18 | -
+autoCoolTemperature (optional) | When the temperature is above this value, the cool mode will enabled. | 27 | -
+autoMinimumDuration (optional) | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120
+temperatureAdjustment (optional) | The number of degrees that the reported temperature should be offset by. | 3 | 0
+
+
+#### "data" key-value object
+
+key | description
+--- | -----------
+off | A hex code string to be sent when the air conditioner is asked to be turned off.
+heat/cool/autoX | A hex code string where X is any temperature you wish to support e.g. "heat30".
+
+#### auto/heat/cool X key-value object(autoX heatX coolX)
+
+key | description
+--- | -----------
+data | Hex data stored as string.
+pseudo-mode | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo").
+
+### projector
+
+Turn the switch on and the "on" hex code is sent, turn it off and the "off" hex code is sent twice.
+
+#### "data" key-value object
+key | description
+--- | -----------
+on | A hex code string to be sent when the switch is changed to the on position.
+off | A hex code string to be sent when the switch is changed to the off position.
 
 
 ## Multiple Broadlink RM Devices

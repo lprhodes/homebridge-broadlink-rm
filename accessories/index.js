@@ -1,6 +1,8 @@
 const AirCon = require('./aircon');
+const AirConPro = require('./airconPro');
 const Channel = require('./channel');
 const LearnCode = require('./learnCode');
+const Projector = require('./projector');
 const Switch = require('./switch');
 const SwitchMulti = require('./switchMulti');
 const SwitchMultiRepeat = require('./switchMultiRepeat');
@@ -13,9 +15,11 @@ const WindowCovering = require('./windowCovering');
 
 module.exports = {
   AirCon,
+  AirConPro,
   Channel,
   LearnCode,
   Switch,
+  Projector,
   SwitchMulti,
   SwitchMultiRepeat,
   SwitchRepeat,
