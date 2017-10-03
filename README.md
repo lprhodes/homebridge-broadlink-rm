@@ -266,7 +266,7 @@ temperatureAdjustment (optional) | The number of degrees that the reported tempe
 key | description
 --- | -----------
 off | A hex code string to be sent when the air conditioner is asked to be turned off.
-temperatureX | A hex code string where X is any temperature you wish to support e.g. "temperature30".
+heat/cool/autoX | A hex code string where X is any temperature you wish to support e.g. "heat30".
 
 #### auto/heat/cool X key-value object(autoX heatX coolX)
 
