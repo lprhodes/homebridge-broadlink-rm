@@ -53,6 +53,8 @@ disableLogs (optional) | Disables the log output for this accessory. | true | fa
 - [garage-door-opener](#garage-door-opener)
 - [window-covering](#window-covering)
 - [air-conditioner](#air-conditioner)
+- [air-conditioner-pro](#air-conditioner-pro)
+- [projector](#projector)
 
 ### learn-code
 
@@ -272,6 +274,16 @@ key | description
 --- | -----------
 data | Hex data stored as string.
 pseudo-mode | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo").
+
+### projector
+
+Turn the switch on and the "on" hex code is sent, turn it off and the "off" hex code is sent twice.
+
+#### "data" key-value object
+key | description
+--- | -----------
+on | A hex code string to be sent when the switch is changed to the on position.
+off | A hex code string to be sent when the switch is changed to the off position.
 
 
 ## Multiple Broadlink RM Devices
