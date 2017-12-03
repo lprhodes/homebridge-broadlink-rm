@@ -20,7 +20,7 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
   }
 
   async performSend (data) {
-    const { config, log } = this;
+    const { config, log, state } = this;
     let { disableAutomaticOff, interval, pause, sendCount } = config;
 
     if (!interval) interval = 1;
