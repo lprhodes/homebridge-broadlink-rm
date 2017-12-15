@@ -132,7 +132,7 @@ key | description
 `on` | A hex code string to be sent when the switch is changed to the on position.
 `off` | A hex code string to be sent when the switch is changed to the off position.
 
-#### Example
+### Example
 
 ```json
 {
@@ -240,10 +240,10 @@ then ask "Set Fan to 40%" then the hex code for 50% will be used.
 
 key | description | example | default
 --- | ----------- | ------- | -------
-data* | Hex data stored as a key-value JSON object. | See below. | -
-hideSwingMode | Determines whether we should hide the swing mode UI or not | `true` | `false`
-hideV1Fan | Determines whether we should hide the V1 fan or not | `true` | `false`
-hideV2Fan | Determines whether we should hide the V2 fan or not | `true` | `false`
+`data`* | Hex data stored as a key-value JSON object. | See below. | -
+`hideSwingMode` | Determines whether we should hide the swing mode UI or not | `true` | `false`
+`hideV1Fan` | Determines whether we should hide the V1 fan or not | `true` | `false`
+`hideV2Fan` | Determines whether we should hide the V2 fan or not | `true` | `false`
 \* required key | | | 
 
 ### "data" values
