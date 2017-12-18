@@ -121,10 +121,9 @@ Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex 
 key | description | example | default
 --- | ----------- | ------- | -------
 `data`* | Hex data stored as a key-value JSON object. | See below | -
-`disableAutomaticOff` | Prevent the window-covering from turning off automatically after a given amount of time. | `false` | `true`
+`disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | `false` | `true`
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | `5` | `2`
 \* required key | | | 
-
 
 ### "data" values
 key | description
