@@ -1,9 +1,16 @@
+const ping = require('ping');
 const BroadlinkJS = require('broadlinkjs-rm');
 const broadlink = new BroadlinkJS()
 
-const discoveredDevices = {};
+const pingFrequency = 1000;
 
-const limit = 5;
+const startPing = (host) => {
+  setInterval(() => {
+    ping.sys.probe(host)
+  }, pingFrequency);
+}
+
+const discoveredDevices = {};
 
 let discovering = false;
 
@@ -37,6 +44,8 @@ broadlink.on('deviceReady', (device) => {
 
   discoveredDevices[device.host.address] = device;
   discoveredDevices[device.host.macAddress] = device;
+
+  startPing(device.host.address)
 })
 
 const getDevice = ({ host, log, learnOnly }) => {
