@@ -118,9 +118,9 @@ If you don't specify every fan speed then the accessory will choose the hex code
 key | description | example | default
 --- | ----------- | ------- | -------
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
-hideSwingMode (optional) | Determines whether we should hide the swing mode UI or not | true | false
-hideV1Fan (optional) | Determines whether we should hide the V1 fan or not | true | false
-hideV2Fan (optional) | Determines whether we should hide the V2 fan or not | true | false
+showSwingMode (optional) | Determines whether we should hide the swing mode UI or not | false | true
+showV1Fan (optional) | Determines whether we should show the V1 fan or not | true | false
+showV2Fan (optional) | Determines whether we should show the V2 fan or not | false | true
 
 #### "data" key-value object
 

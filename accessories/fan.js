@@ -34,12 +34,16 @@ class FanAccessory extends BroadlinkRMAccessory {
   getServices () {
     const services = super.getServices();
     const { config, data, name } = this;
-    const { hideSwingMode, hideV1Fan, hideV2Fan } = config;
+    const { showSwingMode, showV1Fan, showV2Fan } = config;
     const { on, off, swingToggle } = data;
+
+    if (showV2Fan !== false) showV2Fan = true
+    if (showSwingMode !== false) showSwingMode = true
+    
 
     let service
 
-    if (!hideV1Fan) {
+    if (showV1Fan) {
   	  // Until FanV2 service is supported completely in Home app, we have to add legacy
       service = new Service.Fan(name);
 
@@ -62,7 +66,7 @@ class FanAccessory extends BroadlinkRMAccessory {
       services.push(service);
     }
 
-    if (!hideV2Fan) {
+    if (showV2Fan) {
       // Fanv2 service
       service = new Service.Fanv2(name);
       this.addNameService(service);
@@ -75,7 +79,7 @@ class FanAccessory extends BroadlinkRMAccessory {
         offData: off
       });
 
-      if (!hideSwingMode) {
+      if (showSwingMode) {
         this.createToggleCharacteristic({
           service,
           characteristicType: Characteristic.SwingMode,
