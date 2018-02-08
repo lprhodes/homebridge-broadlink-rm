@@ -7,6 +7,7 @@ const classTypes = {
   'learn-code': Accessory.LearnCode,
   'switch': Accessory.Switch,
   'garage-door-opener': Accessory.GarageDoorOpener,
+  'lock': Accessory.Lock,
   'switch-multi': Accessory.SwitchMulti,
   'switch-multi-repeat': Accessory.SwitchMultiRepeat,
   'switch-repeat': Accessory.SwitchRepeat,

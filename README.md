@@ -175,6 +175,27 @@ key | description
 --- | -----------
 open | A hex code string to be sent when the switch is changed to the open position.
 close | A hex code string to be sent when the switch is changed to the close position.
+unlock | A hex code string to be sent when the switch is set to unlock.
+lock | A hex code string to be sent when the switch is set to lock.
+
+
+
+### lock
+
+Set the switch to unlock and the "unlock" hex code is sent, set it to lock and the "lock" hex code is sent.
+
+key | description | example | default
+--- | ----------- | ------- | -------
+data (required) | Hex data stored as a key-value JSON object. | See below. | -
+autoLockDelay (optional) | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30
+host (optional) | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered)
+
+#### "data" key-value object
+key | description
+--- | -----------
+unlock | A hex code string to be sent when the switch is set to unlock.
+lock | A hex code string to be sent when the switch is set to lock.
+
 
 
 ### window-covering
