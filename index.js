@@ -21,12 +21,12 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
     const { config, log } = this;
 
     // Add a Learn Code accessory if none exist in the config
-    const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
+    const learnIRAccessories = (config && config.accessories && Array.isArray(config.accessories)) ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
 
     if (learnIRAccessories.length === 0) {
 
       if (!config.hideLearnButton) {
-        const learnCodeAccessory = new Accessory.LearnCode(log, { name: 'Learn' });
+        const learnCodeAccessory = new Accessory.LearnCode(log, { name: 'Learn', scanFrequency: false });
         accessories.push(learnCodeAccessory);
       }
 
