@@ -8,6 +8,7 @@ This allows you to control your RM Mini and Pro with HomeKit and Siri.
 
 - Requires Node.js >= 7.6.0
 - If you're seeing something like "ERROR LOADING PLUGIN"..."async setCharacteristicValue (props, value, callback) {" then please check your node version before creating a new issue: `node -v`.
+- There's a lot of people here who have never seen config files like these before, so here's a quick tip; when you have the option of putting true or false as a value, do not put quotation marks around it. e.g. { example: false } not { example: "false" }.
 
 ## Installation
 
