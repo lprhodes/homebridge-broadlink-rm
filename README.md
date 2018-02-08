@@ -119,9 +119,11 @@ If you don't specify every fan speed then the accessory will choose the hex code
 key | description | example | default
 --- | ----------- | ------- | -------
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
-showSwingMode (optional) | Determines whether we should hide the swing mode UI or not | false | true
-showV1Fan (optional) | Determines whether we should show the V1 fan or not | true | false
-showV2Fan (optional) | Determines whether we should show the V2 fan or not | false | true
+showSwingMode (optional) | Determines whether we should hide the swing mode UI or not. | false | true
+showRotationDirection (optional) | Determines whether we should show the rotation direction UI or not. | false | true
+showV1Fan (optional) | Determines whether we should show the V1 fan or not. | true | false
+showV2Fan (optional) | Determines whether we should show the V2 fan or not. | false | true
+
 
 #### "data" key-value object
 
@@ -129,6 +131,8 @@ key | description
 --- | -----------
 on | A hex code string to be sent when the switch is changed to the on position.
 off | A hex code string to be sent when the switch is changed to the off position.
+clockwise | A hex code string to be sent to make the fan go clockwise.
+counterClockwise | A hex code string to be sent to make the fan go counter clockwise.
 swingToggle | A hex code string used to toggle the swing mode on/off.
 fanSpeedX | A hex code string where X is any fan speed you wish to support e.g. "fanSpeed100".
 

@@ -31,6 +31,12 @@ class FanAccessory extends BroadlinkRMAccessory {
     sendData({ host, hexData, log, name, debug });
   }
 
+  async setRotationDirection (hexData) {
+    const { config, data, host, log, name, state, debug } = this;
+
+    if (hexData) sendData({ host, hexData, log, name, debug });
+  }
+
   getServices () {
     const services = super.getServices();
     const { config, data, name } = this;
@@ -39,7 +45,7 @@ class FanAccessory extends BroadlinkRMAccessory {
 
     if (showV2Fan !== false) showV2Fan = true
     if (showSwingMode !== false) showSwingMode = true
-    
+    if (showRotationDirection !== false) showRotationDirection = true
 
     let service
 
@@ -62,6 +68,17 @@ class FanAccessory extends BroadlinkRMAccessory {
         propertyName: 'fanSpeed',
         setValuePromise: this.setFanSpeed.bind(this)
       });
+
+      if (showRotationDirection) {
+        this.createToggleCharacteristic({
+          service,
+          characteristicType: Characteristic.RotationDirection,
+          propertyName: 'rotationDirection',
+          setValuePromise: this.setRotationDirection.bind(this),
+          onData: clockwise,
+          offData: counterClockwise
+        });
+      }
 
       services.push(service);
     }
@@ -95,6 +112,17 @@ class FanAccessory extends BroadlinkRMAccessory {
         propertyName: 'fanSpeed',
         setValuePromise: this.setFanSpeed.bind(this)
       });
+
+      if (showRotationDirection) {
+        this.createToggleCharacteristic({
+          service,
+          characteristicType: Characteristic.RotationDirection,
+          propertyName: 'rotationDirection',
+          setValuePromise: this.setRotationDirection.bind(this),
+          onData: clockwise,
+          offData: counterClockwise
+        });
+      }
 
       services.push(service);
     }
