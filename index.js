@@ -1,14 +1,21 @@
 const { HomebridgePlatform } = require('homebridge-platform-helper');
 const Accessory = require('./accessories');
 
-module.exports = (homebridge) => {
-  global.Service = homebridge.hap.Service;
-  global.Characteristic = homebridge.hap.Characteristic;
-
-  homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
+const classTypes = {
+  'air-conditioner': Accessory.AirCon,
+  'learn-ir': Accessory.LearnCode,
+  'learn-code': Accessory.LearnCode,
+  'switch': Accessory.Switch,
+  'garage-door-opener': Accessory.GarageDoorOpener,
+  'switch-multi': Accessory.SwitchMulti,
+  'switch-multi-repeat': Accessory.SwitchMultiRepeat,
+  'switch-repeat': Accessory.SwitchRepeat,
+  'fan': Accessory.Fan,
+  'light': Accessory.Light,
+  'window-covering': Accessory.WindowCovering,
 }
 
-class BroadlinkRMPlatform extends HomebridgePlatform {
+const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
   addAccessories (accessories) {
     const { config, log } = this;
@@ -33,20 +40,6 @@ class BroadlinkRMPlatform extends HomebridgePlatform {
     config.accessories.forEach((accessory) => {
       if (!accessory.type) throw new Error(`Each accessory must be configured with a "type". e.g. "switch"`);
 
-      const classTypes = {
-        'air-conditioner': Accessory.AirCon,
-        'learn-ir': Accessory.LearnCode,
-        'learn-code': Accessory.LearnCode,
-        'switch': Accessory.Switch,
-        'garage-door-opener': Accessory.GarageDoorOpener,
-        'switch-multi': Accessory.SwitchMulti,
-        'switch-multi-repeat': Accessory.SwitchMultiRepeat,
-        'switch-repeat': Accessory.SwitchRepeat,
-        'fan': Accessory.Fan,
-        'light': Accessory.Light,
-        'window-covering': Accessory.WindowCovering,
-      }
-
       if (!classTypes[accessory.type]) throw new Error(`homebridge-broadlink-rm doesn't support accessories of type "${accessory.type}".`);
 
       const homeKitAccessory = new classTypes[accessory.type](log, accessory);
@@ -54,4 +47,11 @@ class BroadlinkRMPlatform extends HomebridgePlatform {
       accessories.push(homeKitAccessory);
     })
   }
+}
+
+module.exports = (homebridge) => {
+  global.Service = homebridge.hap.Service;
+  global.Characteristic = homebridge.hap.Characteristic;
+
+  homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
 }
