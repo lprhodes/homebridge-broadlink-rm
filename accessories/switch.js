@@ -4,6 +4,37 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchAccessory extends BroadlinkRMAccessory {
 
+  constructor (log, config) {
+    super(log, config);
+
+    this.manufacturer = 'Broadlink';
+    this.model = 'RM Mini or Pro';
+    this.serialNumber = this.host;
+
+    config.resendDataAfterReload = config.resendHexAfterReload;
+
+    if (config.pingIPAddress) checkStateWithPing()
+  }
+
+  checkStateWithPing () {
+    const { config, debug, log } = this;
+    let { pingIPAddress } = config;
+
+    const pingFrequency = 1000;
+    
+    setInterval(() => {
+      ping.sys.probe(pingIPAddress, (active) => {
+        if (debug) log(`${name} ping "${host}": ${active ? 'active' : 'inactive'}`);
+
+        if (active) {
+          this.switchService.setCharacteristic(Characteristic.On, 1);
+        } else {
+          this.switchService.setCharacteristic(Characteristic.On, 0);
+        }
+      })
+    }, pingFrequency);
+  }
+
   async setSwitchState (hexData) {
     const { config, data, host, log, name, state, debug } = this;
     let { disableAutomaticOff, onDuration } = config;

@@ -74,6 +74,7 @@ key | description | example | default
 --- | ----------- | ------- | -------
 disableAutomaticOff (optional) | Prevent the window-covering from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
+pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | -
 
 #### "data" key-value object
 key | description
