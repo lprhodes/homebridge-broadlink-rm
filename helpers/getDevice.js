@@ -2,15 +2,28 @@ const ping = require('ping');
 const BroadlinkJS = require('broadlinkjs-rm');
 const broadlink = new BroadlinkJS()
 
-const pingFrequency = 1000;
+const pingFrequency = 5000;
 
-const startPing = (host) => {
+const startPing = (device) => {
+  device.state = 'unknown';
+
   setInterval(() => {
-    ping.sys.probe(host)
+    ping.sys.probe(device.host.address, (active) => {
+      if (!active && device.state === 'active') {
+        console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
+
+        device.state = 'inactive';
+      } else if (active && device.state !== 'active') {
+        if (device.state === 'inactive') console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
+
+        device.state = 'active';
+      }
+    })
   }, pingFrequency);
 }
 
 const discoveredDevices = {};
+const manualDevices = {};
 
 let discovering = false;
 
@@ -45,7 +58,7 @@ broadlink.on('deviceReady', (device) => {
   discoveredDevices[device.host.address] = device;
   discoveredDevices[device.host.macAddress] = device;
 
-  startPing(device.host.address)
+  startPing(device)
 })
 
 const getDevice = ({ host, log, learnOnly }) => {
@@ -53,6 +66,14 @@ const getDevice = ({ host, log, learnOnly }) => {
 
   if (host) {
     device = discoveredDevices[host];
+
+    // Create manual device
+    if (!device && !manualDevices[address]) {
+      const device = { host: { address } };
+      manualDevices[address] = device;
+
+      startPing(device)
+    }
   } else { // use the first one of no host is provided
     const hosts = Object.keys(discoveredDevices);
     if (hosts.length === 0) {
