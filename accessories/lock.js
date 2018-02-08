@@ -5,21 +5,25 @@ const BroadlinkRMAccessory = require('./accessory');
 class LockAccessory extends BroadlinkRMAccessory {
 
   correctReloadedState (state) {
-    state.targetLockState = state.LockCurrentState;
+    state.targetLockState = state.lockCurrentState;
   }
 
-  async setTargetLockState (hexData) {
+  async setLockTargetState (hexData, currentState) {
     const { config, data, host, log, name, state, debug } = this;
     let { autoLockDelay } = config;
 
-    const openCloseDuration = openCloseDuration = 2;
+    const lockUnlockDuration = 1;
 
     sendData({ host, hexData, log, name, debug });
 
-    if (!state.targetLockState) {
-      if (this.finishedClosingTimeout) clearTimeout(this.finishedClosingTimeout);
+    console.log('state.currentState', currentState)
 
-      this.finishedOpeningTimeout = setTimeout(() => {
+    if (currentState === Characteristic.LockTargetState.SECURED) {
+      if (this.finishedLockingTimeout) clearTimeout(this.finishedLockingTimeout);
+
+      log(`${name} setLockCurrentState: unlocking`);
+
+      setTimeout(() => {
         log(`${name} setLockCurrentState: unlocked`);
 
         this.lockService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
@@ -30,19 +34,24 @@ class LockAccessory extends BroadlinkRMAccessory {
           this.autoLockTimeout = setTimeout(() => {
             log(`${name} setLockCurrentState: locked`);
 
-            this.lockService.setCharacteristic(Characteristic.TargetLockState, Characteristic.LockCurrentState.SECURED);
+            this.lockService.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
+
+            setTimeout(() => {
+              this.lockService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
+            }, lockUnlockDuration * 1000);
           }, autoLockDelay * 1000);
         }
-      }, openCloseDuration * 1000);
+      }, lockUnlockDuration * 1000);
     } else {
       if (this.lockService) clearTimeout(this.lockService);
       if (this.autoLockTimeout) clearTimeout(this.autoLockTimeout);
 
-      this.finishedClosingTimeout = setTimeout(() => {
+      this.finishedLockingTimeout = setTimeout(() => {
         log(`${name} setLockCurrentState: locked`);
 
+        this.lockService.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
         this.lockService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
-      }, openCloseDuration * 1000)
+      }, lockUnlockDuration * 1000)
     }
   }
 
@@ -50,10 +59,16 @@ class LockAccessory extends BroadlinkRMAccessory {
     const services = super.getServices();
 
     const { data, name } = this;
-    const { open, close, lock, unlock } = data;
+    const { lock, unlock } = data;
 
-    const service = new Service.LockControlPoint(name);
+    const service = new Service.LockMechanism(name);
     this.addNameService(service);
+
+    this.createToggleCharacteristic({
+      service,
+      characteristicType: Characteristic.LockCurrentState,
+      propertyName: 'lockCurrentState',
+    });
 
     this.createToggleCharacteristic({
       service,
@@ -62,12 +77,6 @@ class LockAccessory extends BroadlinkRMAccessory {
       onData: lock,
       offData: unlock,
       setValuePromise: this.setLockTargetState.bind(this)
-    });
-
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.LockCurrentState,
-      propertyName: 'lockCurrentState',
     });
 
     this.lockService = service;
