@@ -186,6 +186,8 @@ key | description | example | default
 data (required) | Hex data stored as a key-value JSON object. | See below. | -
 totalDurationOpen (required) | The amount of time in seconds it takes to open the window-covering completely. | 45 | -
 totalDurationClose (required) | The amount of time in seconds it takes to close the window-covering completely. It will work these values out based on the total. | 45 | -
+sendStopAt0 (optional) | Determines where the stop command is sent when the blind position reaches 0% | true | false
+sendStopAt100 (optional) | Determines where the stop command is sent when the blind position reaches 100% | true | false
 
 #### "data" key-value object
 
