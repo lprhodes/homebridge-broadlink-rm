@@ -222,7 +222,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   // Thermostat
   sendTemperature (temperature, previousTemperature) {
     const { config, data, host, log, name, state, debug } = this;
-    const { defaultHeatTemperature, defaultCoolTemperature, heatTemperature } = config;
+    const { defaultHeatTemperature, defaultCoolTemperature, heatTemperature, sendOnWhenOff } = config;
 
     log(`${name} Potential sendTemperature (${temperature})`);
 
@@ -254,6 +254,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (!hasTemperatureChanged && !state.firstTemperatureUpdate && state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF) return;
 
     state.firstTemperatureUpdate = false;
+
+    if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && sendOnWhenOff) {
+      log(`${name} sendTemperature (turning on before setting temperature)`);
+
+      
+      this.targetHeatingCoolingState = 'auto'
+      this.setTargetHeatingCoolingState()
+    }
 
     const mode = hexData['pseudo-mode'];
     this.log(`${name} sendTemperature (${state.targetTemperature}, ${mode})`);

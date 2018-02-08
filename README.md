@@ -246,7 +246,7 @@ autoHeatTemperature (optional) | When the temperature is below this value, the h
 autoCoolTemperature (optional) | When the temperature is above this value, the cool mode will enabled. | 27 | -
 autoMinimumDuration (optional) | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120
 temperatureAdjustment (optional) | The number of degrees that the reported temperature should be offset by. | 3 | 0
-
+sendOnWhenOff (optional) | If the air-con unit state is off then the on code will be sent before sending the temperature code. | true | false
 
 #### "data" key-value object
 
