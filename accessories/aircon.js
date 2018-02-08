@@ -13,6 +13,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     state.targetHeatingCoolingState = state.currentHeatingCoolingState;
+
+    if (state.userSpecifiedTargetTemperature) state.targetTemperature = state.userSpecifiedTargetTemperature
   }
 
   constructor (log, config) {
@@ -402,6 +404,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (state.targetTemperature > maxTemperature) return log(`The target temperature (${this.targetTemperature}) must be less than the maxTemperature (${maxTemperature})`);
 
     if (state.targetTemperature === previousValue) return
+
+    state.userSpecifiedTargetTemperature = state.targetTemperature  
 
     this.sendTemperature(state.targetTemperature, previousValue);
 	}
