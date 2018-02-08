@@ -5,14 +5,14 @@ const BroadlinkRMAccessory = require('./accessory');
 class SwitchAccessory extends BroadlinkRMAccessory {
 
   async setSwitchState (hexData) {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     let { disableAutomaticOff, onDuration } = config;
 
     // Set defaults
     if (disableAutomaticOff === undefined) disableAutomaticOff = true;
     if (!onDuration) onDuration = 60;
 
-    if (hexData) sendData({ host, hexData, log, name });
+    if (hexData) sendData({ host, hexData, log, name, debug });
 
     if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
 

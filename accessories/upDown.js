@@ -4,7 +4,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class UpDownAccessory extends BroadlinkRMAccessory {
 
   setUpDown (hexData, value, callback) {
-    const { host, log } = this;
+    const { host, log, debug } = this;
 
     if (value === 0) return callback()
 
@@ -18,7 +18,7 @@ class UpDownAccessory extends BroadlinkRMAccessory {
       type='down'
     }
 
-    sendData({ host, hexData: hexData[type], log });
+    sendData({ host, hexData: hexData[type], log, debug });
   }
 
   getServices () {

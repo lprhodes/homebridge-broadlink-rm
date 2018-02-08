@@ -2,7 +2,7 @@ const assert = require('assert')
 
 const getDevice = require('./getDevice');
 
-module.exports = ({ host, hexData, log, name }) => {
+module.exports = ({ host, hexData, log, name, debug }) => {
   assert(hexData && typeof hexData === 'string', 'HEX value is missing')
 
   // Get the Broadlink device
@@ -17,7 +17,7 @@ module.exports = ({ host, hexData, log, name }) => {
   if (hexData.includes('5aa5aa555')) return log('[ERROR] This type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn Code" accessory to find new (decrypted) codes.');
 
   const hexDataBuffer = new Buffer(hexData, 'hex');
-  device.sendData(hexDataBuffer);
+  device.sendData(hexDataBuffer, debug);
 
   log(`${name} sendHex (${device.host.address}; ${device.host.macAddress})`);
 }

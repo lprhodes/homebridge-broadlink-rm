@@ -4,7 +4,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class LightAccessory extends BroadlinkRMAccessory {
 
   async setLightState (hexData, previousValue) {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     let { defaultBrightness, useLastKnownBrightness } = config;
 
     if (!defaultBrightness) defaultBrightness = 100;
@@ -30,7 +30,7 @@ class LightAccessory extends BroadlinkRMAccessory {
     } else {
       this.stopAutoOffTimeout();
 
-      sendData({ host, hexData, log, name });
+      sendData({ host, hexData, log, name, debug });
     }
   }
 
@@ -50,7 +50,7 @@ class LightAccessory extends BroadlinkRMAccessory {
   }
 
   async setBrightnessAfterTimeout () {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     const { off, on } = data;
     let { onDelay } = config;
 
@@ -78,19 +78,19 @@ class LightAccessory extends BroadlinkRMAccessory {
 
       if (on) {
         log(`${name} setBrightness: (turn on, wait ${onDelay}s)`);
-        sendData({ host, hexData: on, log, name });
+        sendData({ host, hexData: on, log, name, debug });
 
         setTimeout(() => {
           if (!state.lightState) return;
 
           log(`${name} setBrightness: (closest: ${closest})`);
-          sendData({ host, hexData, log, name });
+          sendData({ host, hexData, log, name, debug });
 
           this.resetAutoOffTimeout();
         }, onDelay * 1000);
       } else {
         log(`setBrightness: (closest: ${closest})`);
-        sendData({ host, hexData, log, name });
+        sendData({ host, hexData, log, name, debug });
 
         this.resetAutoOffTimeout();
       }
@@ -98,7 +98,7 @@ class LightAccessory extends BroadlinkRMAccessory {
       log(`${name} setBrightness: (off)`);
 
       this.stopAutoOffTimeout();
-      sendData({ host, hexData: off, log, name });
+      sendData({ host, hexData: off, log, name, debug });
     }
   }
 

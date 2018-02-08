@@ -9,7 +9,7 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
   }
 
   async performSend (data) {
-    const { config, host, log, name, state } = this;
+    const { config, host, log, name, state, debug } = this;
     let { disableAutomaticOff, interval, onSendCount, offSendCount, sendCount  } = config;
 
     if (state.switchState && onSendCount) sendCount = onSendCount;
@@ -19,7 +19,7 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
     // Itterate through each hex config in the array
     for (let index = 0; index < sendCount; index++) {
-      sendData({ host, hexData: data, log, name });
+      sendData({ host, hexData: data, log, name, debug });
 
       if (index < sendCount - 1) await delayForDuration(interval);
     }

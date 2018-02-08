@@ -221,7 +221,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   // Thermostat
   sendTemperature (temperature, previousTemperature) {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     const { defaultHeatTemperature, defaultCoolTemperature, heatTemperature } = config;
 
     log(`${name} Potential sendTemperature (${temperature})`);
@@ -264,7 +264,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     state.lastUsedTemperature = state.targetTemperature;
     state.lastUsedHeatingCoolingState = state.currentHeatingCoolingState;
 
-    sendData({ host, hexData: hexData.data, log, name });
+    sendData({ host, hexData: hexData.data, log, name, debug });
   }
 
 	getCurrentHeatingCoolingState () {
@@ -274,7 +274,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 	}
 
 	setTargetHeatingCoolingState () {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     const { defaultCoolTemperature, defaultHeatTemperature, replaceAutoMode } = config;
 
     // Perform the auto -> cool/heat conversion descrived in constructor()
@@ -315,7 +315,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.resetAutoOnTimeout();
 
       this.updateServiceHeatingCoolingState(state.targetHeatingCoolingState);
-      sendData({ host, hexData: data.off, log, name });
+      sendData({ host, hexData: data.off, log, name, debug });
     } else {
       this.sendTemperature(temperature, state.targetTemperature);
     }

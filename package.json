@@ -21,7 +21,7 @@
     "url": "git@github.com:lprhodes/homebridge-broadlink-rm.git"
   },
   "dependencies": {
-    "broadlinkjs-rm": "^0.2.1",
+    "broadlinkjs-rm": "^0.2.2",
     "homebridge-platform-helper": "0.0.4"
   },
   "devDependencies": {

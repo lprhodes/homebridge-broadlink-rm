@@ -42,6 +42,8 @@ type (required) | The type of accessory. | "switch" | -
 persistState (optional) | Determines whether the state of accessory persists after homebridge has been restarted. | false | true
 resendHexAfterReload (optional) | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false
 disableLogs (optional) | Disables the log output for this accessory. | true | false
+debug (optional) | Outputs some additional logs, useful for figuring out issues. | true | false
+
 
 ## Accessory Types
 

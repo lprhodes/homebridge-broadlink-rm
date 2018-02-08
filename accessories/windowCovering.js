@@ -81,7 +81,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async openOrClose ({ hexData, increments, previousValue, currentOperationID }) {
-    let { config, data, host, name, log, state } = this;
+    let { config, data, host, name, log, state, debug } = this;
     let { totalDurationOpen, totalDurationClose, sendStopAt0, sendStopAt100 } = config;
     const { stop } = data;
 
@@ -106,7 +106,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-stop ${currentOperationID}`);
 
-    sendData({ host, hexData, log, name });
+    sendData({ host, hexData, log, name, debug });
 
     this.updateCurrentPositionAtIntervals(currentOperationID)
 
@@ -119,7 +119,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   stop (sendHex) {
-    const { data, host, log, name, state } = this;
+    const { data, host, log, name, state, debug } = this;
     const { stop } = data;
 
     if (this.autoStopTimeout) clearTimeout(this.autoStopTimeout)
@@ -131,7 +131,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
 
     log(`${name} setTargetPosition: stop`);
-    if (sendHex && stop) sendData({ host, hexData: stop, log, name });
+    if (sendHex && stop) sendData({ host, hexData: stop, log, name, debug });
   }
 
   updateCurrentPositionAtIntervals (currentOperationID) {

@@ -14,8 +14,8 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
     config.resendDataAfterReload = config.resendHexAfterReload;
   }
 
-  performSetValueAction ({ host, data, log, name }) {
-    sendData({ host, hexData: data, log, name });
+  performSetValueAction ({ host, data, log, name, debug }) {
+    sendData({ host, hexData: data, log, name, debug });
   }
 }
 
