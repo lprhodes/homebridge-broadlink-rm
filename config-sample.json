@@ -89,6 +89,37 @@
           ]
         },
         {
+          "name":"Entertainment 3",
+          "type":"switch-multi-repeat",
+          "interval":2,
+          "data": {
+            "on": [
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              },
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              }
+            ],
+            "off": [
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              },
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              }
+            ]
+          }
+        },
+        {
           "name":"Light",
           "type":"light",
           "defaultBrightness": 70,
