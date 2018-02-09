@@ -40,7 +40,7 @@ class FanAccessory extends BroadlinkRMAccessory {
   getServices () {
     const services = super.getServices();
     const { config, data, name } = this;
-    const { showSwingMode, showV1Fan, showV2Fan } = config;
+    let { showSwingMode, showV1Fan, showV2Fan } = config;
     const { on, off, swingToggle } = data;
 
     if (showV2Fan !== false) showV2Fan = true
