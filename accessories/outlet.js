@@ -27,9 +27,9 @@ class SwitchAccessory extends BroadlinkRMAccessory {
         if (debug) log(`${name} ping "${host}": ${active ? 'active' : 'inactive'}`);
 
         if (active) {
-          this.switchService.setCharacteristic(Characteristic.On, 1);
+          this.switchService.setCharacteristic(Characteristic.OutletInUse, 1);
         } else {
-          this.switchService.setCharacteristic(Characteristic.On, 0);
+          this.switchService.setCharacteristic(Characteristic.OutletInUse, 0);
         }
       })
     }, pingFrequency);
@@ -54,17 +54,13 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     }
   }
 
-  setOutletInUse (value, callback) {
-    callback(null, callback)
-  }
-
   getServices () {
     const services = super.getServices();
 
     const { data, name } = this;
     const { on, off } = data || { };
 
-    const service = new Service.Switch(name);
+    const service = new Service.Outlet(name);
     this.addNameService(service);
 
     this.createToggleCharacteristic({
@@ -75,11 +71,6 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       offData: off,
       setValuePromise: this.setSwitchState.bind(this)
     });
-
-    service.getCharacteristic(Characteristic.OutletInUse)
-      .on('set', this.setOutletInUse)
-      .on('get', this.getCharacteristicValue.bind(this, { propertyName: 'outletInUse' }));
-
 
     this.switchService = service;
 
