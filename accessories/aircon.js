@@ -62,7 +62,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   getServices () {
     const services = super.getServices();
     const { data, config, name } = this;
-    const { minTemperature, maxTemperature } = config;
+    const { minTemperature, maxTemperature, allowResend } = config;
 
     const service = new Service.Thermostat(name);
     this.addNameService(service);
@@ -224,7 +224,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   // Thermostat
   sendTemperature (temperature, previousTemperature) {
     const { config, data, host, log, name, state, debug } = this;
-    const { defaultHeatTemperature, defaultCoolTemperature, heatTemperature, sendOnWhenOff } = config;
+    const { allowResend, defaultHeatTemperature, defaultCoolTemperature, heatTemperature, sendOnWhenOff } = config;
 
     log(`${name} Potential sendTemperature (${temperature})`);
 
@@ -242,8 +242,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
           or at the very least, the default mode/temperature
           ({ "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })`);
 
+          console.log('error', error)
         throw new Error(`${name} ${error.message}`);
       }
+
 
       hasTemperatureChanged = (state.targetTemperature !== defaultTemperature);
       this.log(`${name} Update to default temperature (${defaultTemperature})`);
@@ -253,7 +255,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
       state.targetTemperature = temperature;
     }
 
-    if (!hasTemperatureChanged && !state.firstTemperatureUpdate && state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF) return;
+    if (!hasTemperatureChanged && !state.firstTemperatureUpdate && state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF) {
+      if (!allowResend) {
+        return;
+      }
+    }
 
     state.firstTemperatureUpdate = false;
 
