@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.2.2",
-    "homebridge-platform-helper": "0.0.6",
+    "homebridge-platform-helper": "0.0.7",
     "ping": "^0.2.2"
   },
   "devDependencies": {
