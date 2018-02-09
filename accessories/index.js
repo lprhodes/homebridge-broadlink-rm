@@ -1,6 +1,7 @@
 const AirCon = require('./aircon');
 const Channel = require('./channel');
 const LearnCode = require('./learnCode');
+const Outlet = require('./outlet');
 const Switch = require('./switch');
 const SwitchMulti = require('./switchMulti');
 const SwitchMultiRepeat = require('./switchMultiRepeat');
@@ -19,6 +20,7 @@ module.exports = {
   Switch,
   SwitchMulti,
   SwitchMultiRepeat,
+  Outlet,
   SwitchRepeat,
   UpDown,
   Fan,

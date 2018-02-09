@@ -72,7 +72,7 @@ Turn the switch on and the "on" hex code is sent, turn it off and the "off" hex 
 
 key | description | example | default
 --- | ----------- | ------- | -------
-disableAutomaticOff (optional) | Prevent the window-covering from turning off automatically after a given amount of time. | false | true
+disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | -
 
@@ -85,7 +85,7 @@ off | A hex code string to be sent when the switch is changed to the off positio
 
 ### switch-multi
 
-Turn the switch on and the switch will send each hex code in the provided array until. It then turns itself off automatically. You can also set the interval between each send.
+Turn the switch on and the switch will send each hex code in the provided array. It then turns itself off automatically. You can also set the interval between each send.
 
 key | description | example | default
 --- | ----------- | ------- | -------
@@ -106,6 +106,22 @@ onSendCount (optional) | If you set separate "on" and "off" codes you can use th
 offSendCount (optional) | If you set separate "on" and "off" codes you can use this to override the "sendCount" when the switch is turned off. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
+
+### outlet
+
+Turn the outlet on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
+
+key | description | example | default
+--- | ----------- | ------- | -------
+disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
+pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | -
+
+#### "data" key-value object
+key | description
+--- | -----------
+on | A hex code string to be sent when the plug is changed to the on position.
+off | A hex code string to be sent when the plug is changed to the off position.
 
 
 ### fan
