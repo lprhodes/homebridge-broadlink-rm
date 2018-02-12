@@ -54,10 +54,6 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     }
   }
 
-  setOutletInUse (value, callback) {
-    callback(null, callback)
-  }
-
   getServices () {
     const services = super.getServices();
 
@@ -75,11 +71,6 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       offData: off,
       setValuePromise: this.setSwitchState.bind(this)
     });
-
-    service.getCharacteristic(Characteristic.OutletInUse)
-      .on('set', this.setOutletInUse)
-      .on('get', this.getCharacteristicValue.bind(this, { propertyName: 'outletInUse' }));
-
 
     this.switchService = service;
 

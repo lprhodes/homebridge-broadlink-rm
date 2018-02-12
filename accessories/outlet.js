@@ -35,6 +35,10 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     }, pingFrequency);
   }
 
+  setOutletInUse (value, callback) {
+    callback(null, callback)
+  }
+
   async setSwitchState (hexData) {
     const { config, data, host, log, name, state, debug } = this;
     let { disableAutomaticOff, onDuration } = config;
@@ -71,6 +75,10 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       offData: off,
       setValuePromise: this.setSwitchState.bind(this)
     });
+
+    service.getCharacteristic(Characteristic.OutletInUse)
+      .on('set', this.setOutletInUse)
+      .on('get', this.getCharacteristicValue.bind(this, { propertyName: 'outletInUse' }));
 
     this.switchService = service;
 
