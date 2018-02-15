@@ -13,7 +13,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     config.resendDataAfterReload = config.resendHexAfterReload;
 
-    if (config.pingIPAddress) checkStateWithPing()
+    if (config.pingIPAddress) self.checkStateWithPing()
   }
 
   checkStateWithPing () {
