@@ -1,4 +1,4 @@
-# Homebridge Broadlink IR
+# Homebridge Broadlink RM
 
 Broadlink RM Mini and Pro plugin for [Homebridge](https://github.com/nfarina/homebridge)
 
@@ -13,7 +13,7 @@ This allows you to control your RM Mini and Pro with HomeKit and Siri.
 ## Installation
 
 1. Install homebridge using: `sudo npm install -g homebridge`
-2. Install this plugin using: `npm install -g homebridge-broadlink-IR`
+2. Install this plugin using: `npm install -g homebridge-broadlink-rm`
 3. Update your configuration file. (See config-sample.json)
 
 ## Overriding the homebridge directory (AKA where the consig.json file lives)
