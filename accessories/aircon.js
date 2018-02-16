@@ -265,7 +265,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && sendOnWhenOff) {
       log(`${name} sendTemperature (turning on before setting temperature)`);
-
+      sendData({host, hexData: data.on, log, name, debug});
       
       this.targetHeatingCoolingState = 'auto'
       this.setTargetHeatingCoolingState()
