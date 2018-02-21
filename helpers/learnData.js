@@ -6,21 +6,21 @@ let getDataTimeout = null;
 
 const stop = (log) => {
   // Reset existing learn requests
-  if (closeClient) {
-    closeClient();
-    closeClient = null;
+  if (!closeClient) return;
 
-    log(`Learn IR (stopped)`);
-  }
+  closeClient();
+  closeClient = null;
+
+  log(`Learn Code (stopped)`);
 }
 
-const start = (host, callback, turnOffCallback, log) => {
+const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   stop()
 
   // Get the Broadlink device
-  const device = getDevice({ host, log, learnOnly: true })
+  const device = getDevice({ host, log, learnOnly: true });
   if (!device) return;
-  if (!device.enterLearning) return log(`Learn IR (IR learning not supported for device at ${host})`);
+  if (!device.enterLearning) return log(`Learn Code (IR learning not supported for device at ${host})`);
 
   let onRawData;
 
@@ -35,34 +35,38 @@ const start = (host, callback, turnOffCallback, log) => {
   };
 
   onRawData = (message) => {
+    if (!closeClient) return;
+
     const hex = message.toString('hex');
-    log(`Learn IR (learned hex code: ${hex})`);
-    log(`Learn IR (complete)`);
+    log(`Learn Code (learned hex code: ${hex})`);
+    log(`Learn Code (complete)`);
 
     closeClient();
-    closeClient = null
 
-    turnOffCallback()
+    turnOffCallback();
   };
 
   device.on('rawData', onRawData);
 
   device.enterLearning()
-  log(`Learn IR (ready)`);
+  log(`Learn Code (ready)`);
 
-  callback();
+  if (callback) callback();
 
   getDataTimeout = setTimeout(() => {
     getData(device);
   }, 1000)
 
+  if (disableTimeout) return;
+
   // Timeout the client after 10 seconds
   timeout = setTimeout(() => {
-    log('Learn IR (stopped - 10s timeout)')
-    closeClient()
-    closeClient = null
+    log('Learn Code (stopped - 10s timeout)');
+    if (device.cancelRFSweep) device.cancelRFSweep();
 
-    turnOffCallback()
+    closeClient();
+
+    turnOffCallback();
   }, 10000); // 10s
 }
 
@@ -74,7 +78,7 @@ const getData = (device) => {
 
   getDataTimeout = setTimeout(() => {
     getData(device);
-  }, 1000)
+  }, 1000);
 }
 
 module.exports = { start, stop }

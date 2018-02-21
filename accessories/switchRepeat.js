@@ -1,48 +1,34 @@
 const sendData = require('../helpers/sendData');
+const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
   async setSwitchState (hexData) {
-    const { host } = this;
-
-    if (this.switchState) {
-      this.performSend(host, hexData);
-    } else {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
-
-      this.sendCount = 0;
-    }
+    if (hexData) this.performSend(hexData);
   }
 
-  performSend (host, hexData) {
-    const { config, log } = this;
-    let { disableAutomaticTurnOff, interval, sendCount } = config;
+  async performSend (data) {
+    const { config, host, log, name, state, debug } = this;
+    let { disableAutomaticOff, interval, onSendCount, offSendCount, sendCount  } = config;
 
-    this.sendCount = this.sendCount || 0;
+    if (state.switchState && onSendCount) sendCount = onSendCount;
+    if (!state.switchState && offSendCount) sendCount = offSendCount;
+
     interval = interval || 1;
 
-    sendData({ host, hexData, log });
+    // Itterate through each hex config in the array
+    for (let index = 0; index < sendCount; index++) {
+      sendData({ host, hexData: data, log, name, debug });
 
-    this.sendCount++;
-
-    if (this.sendCount >= sendCount) {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
-
-      this.sendCount = 0;
-
-      if (!disableAutomaticTurnOff) {
-        setTimeout(() => {
-          this.switchService.setCharacteristic(Characteristic.On, 0);
-        }, 100);
-      }
-
-      return;
+      if (index < sendCount - 1) await delayForDuration(interval);
     }
 
-    this.performSendTimeout = setTimeout(() => {
-      this.performSend(host, hexData);
-    }, interval * 1000);
+    if (state.switchState && !disableAutomaticOff) {
+      await delayForDuration(0.1);
+
+      this.switchService.setCharacteristic(Characteristic.On, 0);
+    }
   }
 
   getServices () {
@@ -56,7 +42,8 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
       service,
       characteristicType: Characteristic.On,
       propertyName: 'switchState',
-      onHex: data,
+      onData: (typeof data === 'object') ? data.on : data,
+      offData: (typeof data === 'object') ? data.off : undefined,
       setValuePromise: this.setSwitchState.bind(this)
     });
 

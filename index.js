@@ -1,102 +1,59 @@
+const { HomebridgePlatform } = require('homebridge-platform-helper');
 const Accessory = require('./accessories');
 
-module.exports = (homebridge) => {
-  global.Service = homebridge.hap.Service;
-  global.Characteristic = homebridge.hap.Characteristic;
-
-  require('./services/TVChannels');
-  require('./services/UpDown');
-
-  homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
+const classTypes = {
+  'air-conditioner': Accessory.AirCon,
+  'learn-ir': Accessory.LearnCode,
+  'learn-code': Accessory.LearnCode,
+  'switch': Accessory.Switch,
+  'garage-door-opener': Accessory.GarageDoorOpener,
+  'lock': Accessory.Lock,
+  'switch-multi': Accessory.SwitchMulti,
+  'switch-multi-repeat': Accessory.SwitchMultiRepeat,
+  'switch-repeat': Accessory.SwitchRepeat,
+  'fan': Accessory.Fan,
+  'outlet': Accessory.Outlet,
+  'light': Accessory.Light,
+  'window-covering': Accessory.WindowCovering,
 }
 
-class BroadlinkRMPlatform {
+const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
-  constructor (log, config = {}) {
-    this.log = log;
-    this.config = config;
-  }
-
-  accessories (callback) {
+  addAccessories (accessories) {
     const { config, log } = this;
 
-    const accessories = [];
-
-    // Add a Learn IR accessory if none exist in the config
-    const learnIRAccessories = config.accessories ? config.accessories.filter((accessory) => accessory.type === 'learn-ir') : [];
+    // Add a Learn Code accessory if none exist in the config
+    const learnIRAccessories = (config && config.accessories && Array.isArray(config.accessories)) ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
 
     if (learnIRAccessories.length === 0) {
-      const learnIRAccessory = new Accessory.LearnIR(log);
-      accessories.push(learnIRAccessory);
-    }
 
-    // Check for no accessories
-    if (!config.accessories || config.accessories.length === 0) {
-      log('No accessories have been added to the Broadlink RM config. Only the Learn IR accessory will be accessible on HomeKit.');
-      return callback(accessories);
+      if (!config.hideLearnButton) {
+        const learnCodeAccessory = new Accessory.LearnCode(log, { name: 'Learn', scanFrequency: false });
+        accessories.push(learnCodeAccessory);
+      }
+
+      if (!config.hideScanFrequencyButton) {
+        const scanFrequencyAccessory = new Accessory.LearnCode(log, { name: 'Scan Frequency', scanFrequency: true });
+        accessories.push(scanFrequencyAccessory);
+      }
     }
 
     // Itterate through the config accessories
     config.accessories.forEach((accessory) => {
       if (!accessory.type) throw new Error(`Each accessory must be configured with a "type". e.g. "switch"`);
 
-      let homeKitAccessory;
+      if (!classTypes[accessory.type]) throw new Error(`homebridge-broadlink-rm doesn't support accessories of type "${accessory.type}".`);
 
-      switch (accessory.type) {
-        case 'air-conditioner': {
-          homeKitAccessory = new Accessory.AirCon(log, accessory)
-          break;
-        }
-        // case 'channel': {
-        //   homeKitAccessory = new Accessory.Channel(log, accessory)
-        //   break;
-        // }
-        case 'learn-ir': {
-          homeKitAccessory = new Accessory.LearnIR(log, accessory)
-          break;
-        }
-        case 'switch': {
-          homeKitAccessory = new Accessory.Switch(log, accessory)
-          break;
-        }
-        case 'switch-multi': {
-          homeKitAccessory = new Accessory.SwitchMulti(log, accessory)
-          break;
-        }
-        case 'switch-repeat': {
-          homeKitAccessory = new Accessory.SwitchRepeat(log, accessory)
-          break;
-        }
-        // case 'up-down': {
-        //   homeKitAccessory = new Accessory.UpDown(log, accessory)
-        //   break;
-        // }
-        case 'fan': {
-          homeKitAccessory = new Accessory.Fan(log, accessory)
-          break
-        }
-        default:
-          throw new Error(`We don't support accessories of type "${accessory.type}".`);
-      }
-
-      if (!homeKitAccessory) return
+      const homeKitAccessory = new classTypes[accessory.type](log, accessory);
 
       accessories.push(homeKitAccessory);
     })
-
-    callback(accessories);
   }
 }
 
-    //
-    // for (var i = 0; i < this.data.length; i++) {
-    //   const data = this.data[i];
-    //   const { name, type } = data;
-    //
-    //   if (type === 'thermostat') {
-    //     this.log('add thermostat service');
-    //
-    //     const thermostatService = new ThermostatService(this.log, this.config, data).createService()
-    //
-    //     services.push(thermostatService);
-    //   }
+module.exports = (homebridge) => {
+  global.Service = homebridge.hap.Service;
+  global.Characteristic = homebridge.hap.Characteristic;
+
+  homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
+}

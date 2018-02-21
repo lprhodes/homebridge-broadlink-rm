@@ -1,19 +1,31 @@
-const AirConAccessory = require('./aircon');
-const ChannelAccessory = require('./channel');
-const LearnIRAccessory = require('./learnIR');
-const SwitchAccessory = require('./switch');
-const SwitchMultiAccessory = require('./switchMulti');
-const SwitchRepeatAccessory = require('./switchRepeat');
-const UpDownAccessory = require('./upDown');
-const FanAccessory = require('./fan');
+const AirCon = require('./aircon');
+const Channel = require('./channel');
+const LearnCode = require('./learnCode');
+const Outlet = require('./outlet');
+const Switch = require('./switch');
+const SwitchMulti = require('./switchMulti');
+const SwitchMultiRepeat = require('./switchMultiRepeat');
+const SwitchRepeat = require('./switchRepeat');
+const UpDown = require('./upDown');
+const Fan = require('./fan');
+const GarageDoorOpener = require('./garageDoorOpener');
+const Lock = require('./lock');
+const Light = require('./light');
+const WindowCovering = require('./windowCovering');
 
 module.exports = {
-  AirCon: AirConAccessory,
-  Channel: ChannelAccessory,
-  LearnIR: LearnIRAccessory,
-  Switch: SwitchAccessory,
-  SwitchMulti: SwitchMultiAccessory,
-  SwitchRepeat: SwitchRepeatAccessory,
-  UpDown: UpDownAccessory,
-  Fan: FanAccessory
+  AirCon,
+  Channel,
+  LearnCode,
+  Switch,
+  SwitchMulti,
+  SwitchMultiRepeat,
+  Outlet,
+  SwitchRepeat,
+  UpDown,
+  Fan,
+  GarageDoorOpener,
+  Lock,
+  Light,
+  WindowCovering
 }
