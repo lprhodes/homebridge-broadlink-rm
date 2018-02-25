@@ -1,3 +1,5 @@
+const ping = require('ping');
+
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration')
 const BroadlinkRMAccessory = require('./accessory');
