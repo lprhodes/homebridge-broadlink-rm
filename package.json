@@ -1,6 +1,6 @@
 {
   "name": "homebridge-broadlink-rm",
-  "version": "2.6.8",
+  "version": "2.6.9",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
