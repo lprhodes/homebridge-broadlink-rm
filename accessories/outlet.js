@@ -20,9 +20,9 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
   checkStateWithPing () {
     const { config, debug, log, state } = this;
-    let { pingIPAddress, pingIPAddressStateOnly, name } = config;
+    let { pingIPAddress, pingIPAddressStateOnly, name, pingFrequency } = config;
 
-    const pingFrequency = 1000;
+    if (!pingFrequency) pingFrequency = 1;
     
     setInterval(() => {
       ping.sys.probe(pingIPAddress, (active) => {
@@ -41,7 +41,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
           this.switchService.setCharacteristic(Characteristic.OutletInUse, 0);
         }
       })
-    }, pingFrequency);
+    }, pingFrequency * 1000);
   }
 
   setOutletInUse (value, callback) {

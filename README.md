@@ -119,6 +119,8 @@ key | description | example | default
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
 pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | -
+pingIPAddressStateOnly (optional) | Using this option will prevent the hex code from being sent when the state changes | true | false
+pingFrequency (optional) | The frequency in seconds that the IP address should be pinged | 5 | 1
 
 #### "data" key-value object
 key | description
