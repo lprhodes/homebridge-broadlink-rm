@@ -10,11 +10,14 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
 
   async performSend (data) {
     const { config, host, log, name, state, debug } = this;
-    let { disableAutomaticOff, interval, onSendCount, offSendCount, sendCount  } = config;
+    let { disableAutomaticOff, onDuration, interval, onSendCount, offSendCount, sendCount  } = config;
 
     if (state.switchState && onSendCount) sendCount = onSendCount;
     if (!state.switchState && offSendCount) sendCount = offSendCount;
 
+    // Set defaults
+    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
+    if (!onDuration) onDuration = 60;
     interval = interval || 1;
 
     // Itterate through each hex config in the array
@@ -24,11 +27,15 @@ class SwitchRepeatAccessory extends BroadlinkRMAccessory {
       if (index < sendCount - 1) await delayForDuration(interval);
     }
 
-    if (state.switchState && !disableAutomaticOff) {
-      await delayForDuration(0.1);
+    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
 
-      this.switchService.setCharacteristic(Characteristic.On, 0);
-    }
+    if (state.switchState && !disableAutomaticOff) {
+      log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
+
+      this.autoOffTimeout = setTimeout(() => {
+        this.switchService.setCharacteristic(Characteristic.On, 0);
+      }, onDuration * 1000);
+    }    
   }
 
   getServices () {

@@ -64,6 +64,7 @@ You shouldn't need to add this accessory type yourself as we add one automatical
 key | description | example | default
 --- | ----------- | ------- | -------
 disableAutomaticOff (optional) | Prevent the learn-code accessory from turning off automatically after a given amount of time or when a hex code has been received. | false | true
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
 scanFrequency (optional) | This changes the type of learning to be the same as the default "Scan Frequency" | true | false
 
 ### switch
@@ -73,7 +74,7 @@ Turn the switch on and the "on" hex code is sent, turn it off and the "off" hex 
 key | description | example | default
 --- | ----------- | ------- | -------
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
-onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
 pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | -
 pingIPAddressStateOnly (optional) | Using this option will prevent the hex code from being sent when the state changes | true | false
 pingFrequency (optional) | The frequency in seconds that the IP address should be pinged | 5 | 1
@@ -94,8 +95,8 @@ key | description | example | default
 --- | ----------- | ------- | -------
 data (required) | Hex data stored as an array of strings. You can also set separate "on" and "off" arrays of codes similar to the "switch" accessory. | [ "26005800000..." ] | -
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
-disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
-
+disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | false | true
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
 
 ### switch-repeat
 
@@ -108,7 +109,8 @@ sendCount (optional) | The number of times the hex code should be sent. | 5 | 1
 onSendCount (optional) | If you set separate "on" and "off" codes you can use this to override the "sendCount" when the switch is turned on. | 5 | 1
 offSendCount (optional) | If you set separate "on" and "off" codes you can use this to override the "sendCount" when the switch is turned off. | 5 | 1
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
-disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | true | false
+disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | false | true
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
 
 ### outlet
 
@@ -117,7 +119,7 @@ Turn the outlet on and the "on" hex code is sent, turn it off and the "off" hex 
 key | description | example | default
 --- | ----------- | ------- | -------
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
-onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
 pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | -
 pingIPAddressStateOnly (optional) | Using this option will prevent the hex code from being sent when the state changes | true | false
 pingFrequency (optional) | The frequency in seconds that the IP address should be pinged | 5 | 1
@@ -171,7 +173,7 @@ data (required) | Hex data stored as a key-value JSON object. | See below. | -
 defaultBrightness (optional) | The default brightness to be set when you turn the light on. | 70 | 100
 useLastKnownBrightness (optional) | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true
 disableAutomaticOff (optional) | Prevent the light from turning off automatically after a given amount of time. | false | true
-onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 2
+onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
 onDelay (optional) | The time in seconds between when the (optional) on code and the requested brightness code are sent. (default: 0.1s)
 
 #### "data" key-value object

@@ -18,7 +18,11 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
 
   async performSend (data) {
     const { config, host, log, name, state, debug } = this;
-    let { disableAutomaticOff, interval } = config;
+    let { disableAutomaticOff, onDuration, interval } = config;
+
+    // Set defaults
+    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
+    if (!onDuration) onDuration = 60;
 
     // Itterate through each hex config in the array
     for (let index = 0; index < data.length; index++) {
@@ -29,10 +33,14 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
       if (index < data.length - 1) await delayForDuration(interval);
     }
 
-    if (state.switchState && !disableAutomaticOff) {
-      await delayForDuration(0.1);
+    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
 
-      this.switchService.setCharacteristic(Characteristic.On, 0);
+    if (state.switchState && !disableAutomaticOff) {
+      log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
+
+      this.autoOffTimeout = setTimeout(() => {
+        this.switchService.setCharacteristic(Characteristic.On, 0);
+      }, onDuration * 1000);
     }
   }
 

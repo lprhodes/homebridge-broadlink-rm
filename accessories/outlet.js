@@ -61,6 +61,8 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
 
     if (state.switchState && !disableAutomaticOff) {
+      log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
+
       this.autoOffTimeout = setTimeout(() => {
         this.switchService.setCharacteristic(Characteristic.On, 0);
       }, onDuration * 1000);
