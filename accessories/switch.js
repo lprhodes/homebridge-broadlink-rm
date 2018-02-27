@@ -15,18 +15,25 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     config.resendDataAfterReload = config.resendHexAfterReload;
 
-    if (config.pingIPAddress) self.checkStateWithPing()
+    if (config.pingIPAddress) this.checkStateWithPing()
   }
 
   checkStateWithPing () {
-    const { config, debug, log } = this;
-    let { pingIPAddress } = config;
+    const { config, debug, log, state } = this;
+    let { name, pingIPAddress, pingIPAddressStateOnly, pingFrequency } = config;
 
-    const pingFrequency = 1000;
+    if (!pingFrequency) pingFrequency = 1;
     
     setInterval(() => {
       ping.sys.probe(pingIPAddress, (active) => {
-        if (debug) log(`${name} ping "${host}": ${active ? 'active' : 'inactive'}`);
+        log(`${name} ping "${pingIPAddress}": ${active ? 'active' : 'inactive'}`);
+
+        if (pingIPAddressStateOnly) {
+          state.switchState = active ? 1 : 0;
+          this.switchService.getCharacteristic(Characteristic.On).getValue();
+
+          return
+        }
 
         if (active) {
           this.switchService.setCharacteristic(Characteristic.On, 1);
@@ -34,7 +41,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
           this.switchService.setCharacteristic(Characteristic.On, 0);
         }
       })
-    }, pingFrequency);
+    }, pingFrequency * 1000);
   }
 
   async setSwitchState (hexData) {
