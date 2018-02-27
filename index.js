@@ -22,6 +22,8 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
   addAccessories (accessories) {
     const { config, log } = this;
 
+    if (!config.accessories) config.accessories = []
+
     // Add a Learn Code accessory if none exist in the config
     const learnIRAccessories = (config && config.accessories && Array.isArray(config.accessories)) ? config.accessories.filter((accessory) => (accessory.type === 'learn-ir' || accessory.type === 'learn-code')) : [];
 
