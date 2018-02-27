@@ -175,6 +175,7 @@ key | description
 --- | -----------
 off | A hex code string to be sent when the switch is changed to the off position.
 brightnessX | A hex code string where X is any brightness you wish to support e.g. "brightness100".
+hueX | A hex code string where X is any hue you wish to support between 0 and 359 e.g. "hue42".
 on (optional) | You only need t add this if you need to send an "on" code before the "brightnessX" code is sent
 
 
