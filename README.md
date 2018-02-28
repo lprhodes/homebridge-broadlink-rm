@@ -101,11 +101,11 @@ Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
+`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
 `pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | - | No
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
 `pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No
 `pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No
 
@@ -122,10 +122,10 @@ key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
 `data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | Yes
 `interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No
-`disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
+`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
+`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
 
 ### switch-repeat
 Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. You can also set the interval between each send.
@@ -137,10 +137,10 @@ key | description | example | default | required
 `onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | No
 `offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | No
 `interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No
-`disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
+`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
+`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
 
 ### outlet
 Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
@@ -148,10 +148,10 @@ Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
+`enableAutoOff` | Turn the outlet off automatically when `onDuration` has been reached. | true | false | No
+`onDuration` | The amount of time before the outlet automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
+`enableAutoOn` | Turn the outlet on automatically when `offDuration` has been reached | false | true | No
+`offDuration` | The amount of time before the outlet automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
 `pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | - | No
 `pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No
 `pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No
@@ -199,10 +199,10 @@ key | description | example | default | required
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
 `defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | No
 `useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | No
-`disableAutomaticOff` | Prevent the light from turning off automatically after a given amount of time. | false | true | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
+`enableAutoOff` | Turn the light off automatically when `onDuration` has been reached. | true | false | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
+`enableAutoOn` | Turn the light on automatically when `offDuration` has been reached | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
 `onDelay` | The time in seconds between when the on code and the requested brightness code are sent. | 1 | 0.1 | No
 
 #### "data" key-value object
@@ -307,8 +307,8 @@ You do not need to add this accessory type yourself as we add one automatically.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`disableAutomaticOff` | Prevent the learn-code accessory from turning off automatically after a given amount of time or when a hex code has been received. | false | true | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`enableAutoOff` | Allows the learn-code accessory to turn off automatically after a given amount of time or when a hex code has been received. | false | true | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
 `scanFrequency` | This changes the type of learning to be the same as the default "Scan Frequency" | true | false | No
 
 ## Air Conditioner Notes

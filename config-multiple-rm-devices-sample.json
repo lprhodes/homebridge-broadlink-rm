@@ -18,7 +18,7 @@
           "name":"Auto-off Switch",
           "type":"switch",
           "host":"192.168.1.5",
-          "disableAutomaticOff": false,
+          "enableAutoOff": true,
           "onDuration": 5,
           "data":{
             "on":"2600500000012...",

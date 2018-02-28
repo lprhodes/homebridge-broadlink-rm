@@ -49,15 +49,19 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
   checkAutoOff () {
     const { config, log, name, state } = this;
-    let { disableAutomaticOff, onDuration } = config;
+    let { disableAutomaticOff, enableAutoOff, onDuration } = config;
 
     // Set defaults
-    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
+    if (enableAutoOff === undefined && disableAutomaticOff === undefined) {
+      enableAutoOff = false;
+    } else if (disableAutomaticOff !== undefined) {
+      enableAutoOff = !disableAutomaticOff
+    }
     if (!onDuration) onDuration = 60;
 
     if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
 
-    if (state.switchState && !disableAutomaticOff) {
+    if (state.switchState && enableAutoOff) {
       log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
 
       this.autoOffTimeout = setTimeout(() => {
@@ -68,15 +72,20 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
   checkAutoOn () {
     const { config, log, name, state } = this;
-    let { disableAutomaticOn, offDuration } = config;
+    let { disableAutomaticOn, enableAutoOn, offDuration } = config;
 
     // Set defaults
-    if (disableAutomaticOn === undefined) disableAutomaticOn = true;
+    if (enableAutoOn === undefined && disableAutomaticOn === undefined) {
+      enableAutoOn = false;
+    } else if (disableAutomaticOn !== undefined) {
+      enableAutoOn = !disableAutomaticOn
+    }
+
     if (!offDuration) offDuration = 60;
 
     if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
 
-    if (!state.switchState && !disableAutomaticOn) {
+    if (!state.switchState && enableAutoOn) {
       log(`${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`);
 
       this.autoOnTimeout = setTimeout(() => {

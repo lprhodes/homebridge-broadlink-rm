@@ -19,7 +19,7 @@
         {
           "name":"Auto-off Switch",
           "type":"switch",
-          "disableAutomaticOff": false,
+          "enableAutoOff": true,
           "onDuration": 5,
           "data":{
             "on":"2600500000012...",
@@ -124,8 +124,8 @@
           "type":"light",
           "defaultBrightness": 70,
           "useLastKnownBrightness": true,
-          "disableAutomaticOff": false,
-          "onDuration": 5,
+          "enableAutoOff": true,
+          "onDuration": 10,
           "data":{
             "off":"2600500000012...",
             "brightness10": "2600500000012...",
