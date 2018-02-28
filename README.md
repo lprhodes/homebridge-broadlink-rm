@@ -100,6 +100,7 @@ Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex 
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
 `disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | no
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
 `pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | - | no
@@ -146,6 +147,7 @@ Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex 
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
 `disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | no
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
 `disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | no
