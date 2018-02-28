@@ -276,8 +276,8 @@ This allows you to send a hex code for any temperature that you've defined a hex
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`minTemperature` | The number of times the hex code should be sent. | 14 | 0 | no
-`maxTemperature` | The amount of time between each send of a hex code in seconds. | 28 | 30
+`minTemperature` | The minimum temperature you can set. | 14 | 0 | no
+`maxTemperature` | The maximum temperature you can set. | 28 | 30
 temperatureDisplayUnits | Specify celsius or fahrenheit. | F | C | no
 temperatureDisplayUnits | Specify Celsius or Fahrenheit. | F | C | no
 `defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | no
