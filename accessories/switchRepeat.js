@@ -1,38 +1,38 @@
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
-const BroadlinkRMAccessory = require('./accessory');
+const SwitchAccessory = require('./switch');
 
-class SwitchRepeatAccessory extends BroadlinkRMAccessory {
+class SwitchRepeatAccessory extends SwitchAccessory {
+
+  checkStateWithPing () { }
 
   async setSwitchState (hexData) {
     if (hexData) this.performSend(hexData);
   }
 
   async performSend (data) {
-    const { config, host, log, name, state } = this;
-    let { disableAutomaticOff, interval, onSendCount, offSendCount, sendCount  } = config;
+    const { config, host, log, name, state, debug } = this;
+    let { interval, onSendCount, offSendCount, sendCount  } = config;
 
     if (state.switchState && onSendCount) sendCount = onSendCount;
     if (!state.switchState && offSendCount) sendCount = offSendCount;
 
+    // Set defaults
     interval = interval || 1;
 
     // Itterate through each hex config in the array
     for (let index = 0; index < sendCount; index++) {
-      sendData({ host, hexData: data, log, name });
+      sendData({ host, hexData: data, log, name, debug });
 
       if (index < sendCount - 1) await delayForDuration(interval);
     }
 
-    if (state.switchState && !disableAutomaticOff) {
-      await delayForDuration(0.1);
-
-      this.switchService.setCharacteristic(Characteristic.On, 0);
-    }
+    this.checkAutoOff();
+    this.checkAutoOn();
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, name } = this;
 
     const service = new Service.Switch(name);

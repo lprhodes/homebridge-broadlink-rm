@@ -13,6 +13,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     state.targetHeatingCoolingState = state.currentHeatingCoolingState;
+
+    if (state.userSpecifiedTargetTemperature) state.targetTemperature = state.userSpecifiedTargetTemperature
   }
 
   constructor (log, config) {
@@ -58,9 +60,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, config, name } = this;
-    const { minTemperature, maxTemperature } = config;
+    const { minTemperature, maxTemperature, allowResend } = config;
 
     const service = new Service.Thermostat(name);
     this.addNameService(service);
@@ -221,8 +223,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   // Thermostat
   sendTemperature (temperature, previousTemperature) {
-    const { config, data, host, log, name, state } = this;
-    const { defaultHeatTemperature, defaultCoolTemperature, heatTemperature } = config;
+    const { config, data, host, log, name, state, debug } = this;
+    const { allowResend, defaultHeatTemperature, defaultCoolTemperature, heatTemperature, sendOnWhenOff } = config;
 
     log(`${name} Potential sendTemperature (${temperature})`);
 
@@ -240,8 +242,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
           or at the very least, the default mode/temperature
           ({ "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })`);
 
+          console.log('error', error)
         throw new Error(`${name} ${error.message}`);
       }
+
 
       hasTemperatureChanged = (state.targetTemperature !== defaultTemperature);
       this.log(`${name} Update to default temperature (${defaultTemperature})`);
@@ -251,9 +255,21 @@ class AirConAccessory extends BroadlinkRMAccessory {
       state.targetTemperature = temperature;
     }
 
-    if (!hasTemperatureChanged && !state.firstTemperatureUpdate && state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF) return;
+    if (!hasTemperatureChanged && !state.firstTemperatureUpdate && state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF) {
+      if (!allowResend) {
+        return;
+      }
+    }
 
     state.firstTemperatureUpdate = false;
+
+    if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && sendOnWhenOff) {
+      log(`${name} sendTemperature (turning on before setting temperature)`);
+
+      
+      this.targetHeatingCoolingState = 'auto'
+      this.setTargetHeatingCoolingState()
+    }
 
     const mode = hexData['pseudo-mode'];
     this.log(`${name} sendTemperature (${state.targetTemperature}, ${mode})`);
@@ -264,7 +280,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     state.lastUsedTemperature = state.targetTemperature;
     state.lastUsedHeatingCoolingState = state.currentHeatingCoolingState;
 
-    sendData({ host, hexData: hexData.data, log, name });
+    sendData({ host, hexData: hexData.data, log, name, debug });
   }
 
 	getCurrentHeatingCoolingState () {
@@ -274,7 +290,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 	}
 
 	setTargetHeatingCoolingState () {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     const { defaultCoolTemperature, defaultHeatTemperature, replaceAutoMode } = config;
 
     // Perform the auto -> cool/heat conversion descrived in constructor()
@@ -315,7 +331,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.resetAutoOnTimeout();
 
       this.updateServiceHeatingCoolingState(state.targetHeatingCoolingState);
-      sendData({ host, hexData: data.off, log, name });
+      sendData({ host, hexData: data.off, log, name, debug });
     } else {
       this.sendTemperature(temperature, state.targetTemperature);
     }
@@ -394,6 +410,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (state.targetTemperature > maxTemperature) return log(`The target temperature (${this.targetTemperature}) must be less than the maxTemperature (${maxTemperature})`);
 
     if (state.targetTemperature === previousValue) return
+
+    state.userSpecifiedTargetTemperature = state.targetTemperature  
 
     this.sendTemperature(state.targetTemperature, previousValue);
 	}

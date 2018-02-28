@@ -1,19 +1,34 @@
 const assert = require('assert')
 
 const getDevice = require('./getDevice');
+const convertProntoCode = require('./convertProntoCode')
 
-module.exports = ({ host, hexData, log, name }) => {
-  assert(hexData && typeof hexData === 'string', 'HEX value is missing')
+module.exports = ({ host, hexData, log, name, debug }) => {
+  assert(hexData && typeof hexData === 'string', '\x1b[31m[ERROR]: \x1b[30mHEX value is missing')
+
+  // Check for pronto code
+  if (hexData.substring(0, 4) === '0000') {
+    if (debug) log(`${name} sendHex (Converting Pronto code "${hexData}" to Broadlink code)`)
+    hexData = convertProntoCode(hexData)
+    if (debug) log(`${name} sendHex (Pronto code successfuly converted: "${hexData}")`)
+    
+    if (!hexData) return log(`\x1b[31m[ERROR] \x1b[30m${name} sendData (A Pronto code was detected however its conversion to a Broadlink code failed.)`);
+
+  }
 
   // Get the Broadlink device
   const device = getDevice({ host, log })
-  if (!device) return log(`${name} sendData(no device found at ${host})`);
+  if (!device) {
+    if (!host) return log(`\x1b[31m[ERROR] \x1b[30m${name} sendData (no auto-discovered device found and no "host" option set)`);
 
-  if (!device.sendData) return log(`[ERROR] The device at ${device.host.address} (${device.host.macAddress}) doesn't support the sending of IR or RF codes.`);
-  if (hexData.includes('5aa5aa555')) return log('[ERROR] This type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn Code" accessory to find new (decrypted) codes.');
+    return log(`\x1b[31m[ERROR] \x1b[30m${name} sendData (no device found at ${host})`);
+  }
+
+  if (!device.sendData) return log(`\x1b[31m[ERROR] \x1b[30mThe device at ${device.host.address} (${device.host.macAddress}) doesn't support the sending of IR or RF codes.`);
+  if (hexData.includes('5aa5aa555')) return log('\x1b[31m[ERROR] \x1b[30mThis type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn Code" accessory to find new (decrypted) codes.');
 
   const hexDataBuffer = new Buffer(hexData, 'hex');
-  device.sendData(hexDataBuffer);
+  device.sendData(hexDataBuffer, debug);
 
   log(`${name} sendHex (${device.host.address}; ${device.host.macAddress})`);
 }

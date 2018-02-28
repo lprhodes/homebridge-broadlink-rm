@@ -4,7 +4,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class FanAccessory extends BroadlinkRMAccessory {
 
   async setFanSpeed (hexData) {
-    const { data, host, log, state , name} = this;
+    const { data, host, log, state, name, debug} = this;
 
     const allHexKeys = Object.keys(data);
 
@@ -28,18 +28,28 @@ class FanAccessory extends BroadlinkRMAccessory {
     // Get the closest speed's hex data
     hexData = data[`fanSpeed${closest}`];
 
-    sendData({ host, hexData, log, name });
+    sendData({ host, hexData, log, name, debug });
+  }
+
+  async setRotationDirection (hexData) {
+    const { config, data, host, log, name, state, debug } = this;
+
+    if (hexData) sendData({ host, hexData, log, name, debug });
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { config, data, name } = this;
-    const { hideSwingMode, hideV1Fan, hideV2Fan } = config;
-    const { on, off, swingToggle } = data;
+    let { showSwingMode, showRotationDirection, showV1Fan, showV2Fan } = config;
+    const { on, off, clockwise, counterClockwise, swingToggle } = data;
+
+    if (showV2Fan !== false) showV2Fan = true
+    if (showSwingMode !== false) showSwingMode = true
+    if (showRotationDirection !== false) showRotationDirection = true
 
     let service
 
-    if (!hideV1Fan) {
+    if (showV1Fan) {
   	  // Until FanV2 service is supported completely in Home app, we have to add legacy
       service = new Service.Fan(name);
 
@@ -59,10 +69,21 @@ class FanAccessory extends BroadlinkRMAccessory {
         setValuePromise: this.setFanSpeed.bind(this)
       });
 
+      if (showRotationDirection) {
+        this.createToggleCharacteristic({
+          service,
+          characteristicType: Characteristic.RotationDirection,
+          propertyName: 'rotationDirection',
+          setValuePromise: this.setRotationDirection.bind(this),
+          onData: clockwise,
+          offData: counterClockwise
+        });
+      }
+
       services.push(service);
     }
 
-    if (!hideV2Fan) {
+    if (showV2Fan) {
       // Fanv2 service
       service = new Service.Fanv2(name);
       this.addNameService(service);
@@ -75,7 +96,7 @@ class FanAccessory extends BroadlinkRMAccessory {
         offData: off
       });
 
-      if (!hideSwingMode) {
+      if (showSwingMode) {
         this.createToggleCharacteristic({
           service,
           characteristicType: Characteristic.SwingMode,
@@ -91,6 +112,17 @@ class FanAccessory extends BroadlinkRMAccessory {
         propertyName: 'fanSpeed',
         setValuePromise: this.setFanSpeed.bind(this)
       });
+
+      if (showRotationDirection) {
+        this.createToggleCharacteristic({
+          service,
+          characteristicType: Characteristic.RotationDirection,
+          propertyName: 'rotationDirection',
+          setValuePromise: this.setRotationDirection.bind(this),
+          onData: clockwise,
+          offData: counterClockwise
+        });
+      }
 
       services.push(service);
     }

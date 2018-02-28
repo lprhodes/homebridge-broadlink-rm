@@ -1,8 +1,8 @@
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration')
-const BroadlinkRMAccessory = require('./accessory');
+const SwitchAccessory = require('./switch');
 
-class SwitchMultiAccessory extends BroadlinkRMAccessory {
+class SwitchMultiAccessory extends SwitchAccessory {
 
   constructor (log, config = {}) {
     super(log, config)
@@ -12,32 +12,32 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
     if (!Array.isArray(data)) return log('The "switch-multi" type requires the config value for "data" to be an array of hex codes.')
   }
 
+  checkStateWithPing () { }
+
   async setSwitchState (hexData) {
     if (hexData) this.performSend(hexData);
   }
 
   async performSend (data) {
-    const { config, host, log, name, state } = this;
-    let { disableAutomaticOff, interval } = config;
+    const { config, host, log, name, state, debug } = this;
+    let { interval } = config;
+
 
     // Itterate through each hex config in the array
     for (let index = 0; index < data.length; index++) {
       const hexData = data[index]
 
-      sendData({ host, hexData, log, name });
+      sendData({ host, hexData, log, name, debug });
 
       if (index < data.length - 1) await delayForDuration(interval);
     }
 
-    if (state.switchState && !disableAutomaticOff) {
-      await delayForDuration(0.1);
-
-      this.switchService.setCharacteristic(Characteristic.On, 0);
-    }
+    this.checkAutoOff();
+    this.checkAutoOn();
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, name } = this;
 
     const service = new Service.Switch(name);

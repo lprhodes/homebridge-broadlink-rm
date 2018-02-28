@@ -3,7 +3,7 @@
     "name":"Homebridge",
     "username":"CD:22:3D:E3:CE:30",
     "port":51826,
-    "pin":"031-45-156"
+    "pin":"031-45-154"
   },
   "description":"Homebridge",
   "accessories":[
@@ -89,6 +89,37 @@
           ]
         },
         {
+          "name":"Entertainment 3",
+          "type":"switch-multi-repeat",
+          "interval":2,
+          "data": {
+            "on": [
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              },
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              }
+            ],
+            "off": [
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              },
+              {
+                "data": "2600500000012...",
+                "sendCount": 1,
+                "pause": 0.3
+              }
+            ]
+          }
+        },
+        {
           "name":"Light",
           "type":"light",
           "defaultBrightness": 70,
@@ -106,7 +137,12 @@
             "brightness70": "2600500000012...",
             "brightness80": "2600500000012...",
             "brightness90": "2600500000012...",
-            "brightness100": "2600500000012..."
+            "brightness100": "2600500000012...",
+            "hue0": "2600500000012...",
+            "hue99": "2600500000012...",
+            "hue199": "2600500000012...",
+            "hue299": "2600500000012...",
+            "hue359": "2600500000012..."
           }
         },
         {
@@ -130,7 +166,7 @@
           "autoSchedule": [
             { "days": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ], "startTime": 6, "endTime": 8 },
             { "days": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ], "startTime": 16, "endTime": 22 },
-            { "days": [ "Saturday", "Sunday" ], "startTime": 6, "endTime": 22 },
+            { "days": [ "Saturday", "Sunday" ], "startTime": 6, "endTime": 22 }
           ],
           "autoSwitch": "A/C Auto Switch",
           "data":{

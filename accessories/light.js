@@ -4,7 +4,7 @@ const BroadlinkRMAccessory = require('./accessory');
 class LightAccessory extends BroadlinkRMAccessory {
 
   async setLightState (hexData, previousValue) {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     let { defaultBrightness, useLastKnownBrightness } = config;
 
     if (!defaultBrightness) defaultBrightness = 100;
@@ -30,8 +30,50 @@ class LightAccessory extends BroadlinkRMAccessory {
     } else {
       this.stopAutoOffTimeout();
 
-      sendData({ host, hexData, log, name });
+      sendData({ host, hexData, log, name, debug });
     }
+  }
+
+  async setHue () {
+    const { config } = this;
+    let { initialDelay } = config;
+
+    // Defaults
+    if (!initialDelay) initialDelay = 0.6;
+
+    this.stopAutoOffTimeout();
+    if (this.initialDelayHueTimeout) clearTimeout(this.initialDelayHueTimeout);
+
+    this.initialDelayHueTimeout = setTimeout(() => {
+      this.setHueAfterTimeout();
+    }, initialDelay * 1000);
+  }
+
+  async setHueAfterTimeout () {
+    const { config, data, host, log, name, state, debug } = this;
+    const { off, on } = data;
+    let { onDelay } = config;
+
+    if (!onDelay) onDelay = 0.1;
+
+    const foundValues = this.dataKeys('hue')
+
+    // Find hue closest to the one requested
+    const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.hue) < Math.abs(prev - state.hue) ? curr : prev);
+    log(`${name} setHue: (closest: hue${closest})`)
+
+    // Get the closest hue's hex data
+    const hexData = data[`hue${closest}`];
+
+    log(`${name} setHue: (wait ${onDelay}s then send data)`);
+    setTimeout(() => {
+      if (!state.lightState) return;
+
+      log(`${name} setHue: (sendData)`);
+      sendData({ host, hexData, log, name, debug });
+
+      this.resetAutoOffTimeout();
+    }, onDelay * 1000);
   }
 
   async setBrightness () {
@@ -50,25 +92,14 @@ class LightAccessory extends BroadlinkRMAccessory {
   }
 
   async setBrightnessAfterTimeout () {
-    const { config, data, host, log, name, state } = this;
+    const { config, data, host, log, name, state, debug } = this;
     const { off, on } = data;
     let { onDelay } = config;
 
     if (!onDelay) onDelay = 0.1;
 
     if (state.brightness > 0) {
-      const allHexKeys = Object.keys(data);
-
-      // Create an array of value specified in the data config
-      const foundValues = [];
-
-      allHexKeys.forEach((key) => {
-        const parts = key.split('brightness');
-
-        if (parts.length !== 2) return;
-
-        foundValues.push(parts[1])
-      })
+      const foundValues = this.dataKeys('brightness')
 
       // Find brightness closest to the one requested
       const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.brightness) < Math.abs(prev - state.brightness) ? curr : prev);
@@ -78,19 +109,19 @@ class LightAccessory extends BroadlinkRMAccessory {
 
       if (on) {
         log(`${name} setBrightness: (turn on, wait ${onDelay}s)`);
-        sendData({ host, hexData: on, log, name });
+        sendData({ host, hexData: on, log, name, debug });
 
         setTimeout(() => {
           if (!state.lightState) return;
 
           log(`${name} setBrightness: (closest: ${closest})`);
-          sendData({ host, hexData, log, name });
+          sendData({ host, hexData, log, name, debug });
 
           this.resetAutoOffTimeout();
         }, onDelay * 1000);
       } else {
         log(`setBrightness: (closest: ${closest})`);
-        sendData({ host, hexData, log, name });
+        sendData({ host, hexData, log, name, debug });
 
         this.resetAutoOffTimeout();
       }
@@ -98,7 +129,7 @@ class LightAccessory extends BroadlinkRMAccessory {
       log(`${name} setBrightness: (off)`);
 
       this.stopAutoOffTimeout();
-      sendData({ host, hexData: off, log, name });
+      sendData({ host, hexData: off, log, name, debug });
     }
   }
 
@@ -123,8 +154,28 @@ class LightAccessory extends BroadlinkRMAccessory {
     }, onDuration * 1000)
   }
 
+  dataKeys (filter) {
+    const { data } = this;
+    const allHexKeys = Object.keys(data);
+
+    if (!filter) return allHexKeys;
+
+    // Create an array of value specified in the data config
+    const foundValues = [];
+
+    allHexKeys.forEach((key) => {
+      const parts = key.split(filter);
+
+      if (parts.length !== 2) return;
+
+      foundValues.push(parts[1])
+    })
+
+    return foundValues
+  }
+
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, name } = this;
     const { on, off, swingToggle } = data;
 
@@ -138,6 +189,23 @@ class LightAccessory extends BroadlinkRMAccessory {
       setValuePromise: this.setBrightness.bind(this),
       ignorePreviousValue: true
     });
+
+    if (this.dataKeys('hue').length > 0) {
+      this.createToggleCharacteristic({
+        service,
+        characteristicType: Characteristic.Hue,
+        propertyName: 'hue',
+        setValuePromise: this.setHue.bind(this),
+        ignorePreviousValue: true
+      });
+
+      this.createToggleCharacteristic({
+        service,
+        characteristicType: Characteristic.Saturation,
+        propertyName: 'Saturation',
+        ignorePreviousValue: true
+      });
+    }
 
     this.createToggleCharacteristic({
       service,
