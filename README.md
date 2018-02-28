@@ -81,7 +81,7 @@ key | description | example | default | required
 `resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | No
 `disableLogs` | Disables the log output for this accessory. | true | false | No
 `debug` | Outputs some additional logs, useful for figuring out issues. | true | false | No
-`host` | As described [above](#multiple-broadlink-rm-devices). | “192.168.1.33” |   | No
+`host` | As described [above](#multiple-broadlink-rm-devices). | “192.168.1.33” | - | No
 
 ## Accessory Types
 
@@ -169,8 +169,8 @@ Additionally, Siri supports the toggling of the swing mode and setting of the fa
 
 If you don't specify every fan speed then the accessory will choose the hex code of the fan speed closest to the one requested. e.g. If you only specify fan speeds of 10%, 50% and 100% then ask "Set Fan to 40%" then the hex code for 50% will be used.
 
-key | description | example | default
---- | ----------- | ------- | -------
+key | description | example | default | required
+--- | ----------- | ------- | ------- | -------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
 `showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | No
 `showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | No
@@ -203,7 +203,7 @@ key | description | example | default | required
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
 `disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
 `offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
-`onDelay` | The time in seconds between when the on code and the requested brightness code are sent. (default: 0.1s) | No
+`onDelay` | The time in seconds between when the on code and the requested brightness code are sent. | 1 | 0.1 | No
 
 #### "data" key-value object
 key | description
