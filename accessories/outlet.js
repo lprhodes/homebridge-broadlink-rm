@@ -7,7 +7,6 @@ const SwitchAccessory = require('./switch');
 class OutletAccessory extends SwitchAccessory {
 
   checkStateWithPing () {
-    console.log('HELLO!!!!')
     const { config, debug, log, state } = this;
     let { pingIPAddress, pingIPAddressStateOnly, name, pingFrequency } = config;
 

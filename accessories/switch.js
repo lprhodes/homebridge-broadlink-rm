@@ -9,8 +9,6 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   constructor (log, config) {
     super(log, config);
 
-     console.log("HELLO!")
-
     if (config.pingIPAddress) this.checkStateWithPing()
   }
 
