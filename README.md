@@ -277,7 +277,7 @@ key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | yes
 `minTemperature` | The minimum temperature you can set. | 14 | 0 | no
-`maxTemperature` | The maximum temperature you can set. | 28 | 30
+`maxTemperature` | The maximum temperature you can set. | 28 | 30 | no
 `temperatureDisplayUnits` | Specify Celsius or Fahrenheit. | F | C | no
 `defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | no
 `defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | no
