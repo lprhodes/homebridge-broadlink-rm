@@ -75,13 +75,13 @@ The following configuration keys are common between each accessory:
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`name` | A descriptor for the accessory that will show in HomeKit apps. | "TV" | - | yes
-`type` | The type of accessory. | "switch" | - | yes
-`persistState` | Determines whether the state of accessory persists after homebridge has been restarted. | false | true | no
-`resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | no
-`disableLogs` | Disables the log output for this accessory. | true | false | no
-`debug` | Outputs some additional logs, useful for figuring out issues. | true | false | no
-`host` | As described [above](#multiple-broadlink-rm-devices). | “192.168.1.33” |   | no
+`name` | A descriptor for the accessory that will show in HomeKit apps. | "TV" | - | Yes
+`type` | The type of accessory. | "switch" | - | Yes
+`persistState` | Determines whether the state of accessory persists after homebridge has been restarted. | false | true | No
+`resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | No
+`disableLogs` | Disables the log output for this accessory. | true | false | No
+`debug` | Outputs some additional logs, useful for figuring out issues. | true | false | No
+`host` | As described [above](#multiple-broadlink-rm-devices). | “192.168.1.33” |   | No
 
 ## Accessory Types
 
@@ -100,14 +100,14 @@ Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex 
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | no
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
-`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | - | no
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | no
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | no
-`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | no
-`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | - | No
+`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
+`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No
+`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No
 
 #### "data" key-value object
 key | description
@@ -120,41 +120,41 @@ Turn the switch on and the switch will send each hex code in the provided array.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | yes
-`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | no
-`disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | no
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | no
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | no
+`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | Yes
+`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No
+`disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
 
 ### switch-repeat
 Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. It then turns itself off automatically. You can also set the interval between each send.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | yes
-`sendCount` | The number of times the hex code should be sent. | 5 | 1 | no
-`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | no
-`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | no
-`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | no
-`disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | no
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | no
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | no
+`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | Yes
+`sendCount` | The number of times the hex code should be sent. | 5 | 1 | No
+`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | No
+`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | No
+`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No
+`disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
 
 ### outlet
 Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | no
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | no
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | no
-`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | - | no
-`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | no
-`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
+`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | - | No
+`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No
+`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No
 
 #### "data" key-value object
 key | description
@@ -171,11 +171,11 @@ If you don't specify every fan speed then the accessory will choose the hex code
 
 key | description | example | default
 --- | ----------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | no
-`showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | no
-`showV1Fan` | Determines whether we should show the V1 fan or not. | true | false | no
-`showV2Fan` | Determines whether we should show the V2 fan or not. | false | true | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | No
+`showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | No
+`showV1Fan` | Determines whether we should show the V1 fan or not. | true | false | No
+`showV2Fan` | Determines whether we should show the V2 fan or not. | false | true | No
 
 #### "data" key-value object
 key | description
@@ -196,14 +196,14 @@ If you don't specify every brightness then the accessory will choose the hex cod
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | no
-`useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | no
-`disableAutomaticOff` | Prevent the light from turning off automatically after a given amount of time. | false | true | no
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
-`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | no
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | no
-`onDelay` | The time in seconds between when the on code and the requested brightness code are sent. (default: 0.1s) | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | No
+`useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | No
+`disableAutomaticOff` | Prevent the light from turning off automatically after a given amount of time. | false | true | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
+`onDelay` | The time in seconds between when the on code and the requested brightness code are sent. (default: 0.1s) | No
 
 #### "data" key-value object
 key | description
@@ -218,10 +218,10 @@ Set the switch to open and the `open` hex code is sent, set it to close and the 
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`openCloseDuration` | The amount of time in seconds that the accessory will show as "Opening" or "Closing" | 10 | 8 | no
-`autoCloseDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Closing" state. | 10 | 30 | no
-`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`openCloseDuration` | The amount of time in seconds that the accessory will show as "Opening" or "Closing" | 10 | 8 | No
+`autoCloseDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Closing" state. | 10 | 30 | No
+`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No
 
 #### "data" key-value object
 key | description
@@ -236,9 +236,9 @@ Set the switch to unlock and the `unlock` hex code is sent, set it to lock and t
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`autoLockDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30 | no
-`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`autoLockDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30 | No
+`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No
 
 #### "data" key-value object
 key | description
@@ -255,11 +255,11 @@ If you simply want to open or close the blinds with a single hex code then you c
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-totalDurationOpen | The amount of time in seconds it takes to open the window-covering completely. | 45 | - | yes
-`totalDurationClose` | The amount of time in seconds it takes to close the window-covering completely. It will work these values out based on the total. | 45 | - | yes
-`sendStopAt0` | Determines where the stop command is sent when the blind position reaches 0% | true | false | no
-`sendStopAt100` | Determines where the stop command is sent when the blind position reaches 100% | true | false | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+totalDurationOpen | The amount of time in seconds it takes to open the window-covering completely. | 45 | - | Yes
+`totalDurationClose` | The amount of time in seconds it takes to close the window-covering completely. It will work these values out based on the total. | 45 | - | Yes
+`sendStopAt0` | Determines where the stop command is sent when the blind position reaches 0% | true | false | No
+`sendStopAt100` | Determines where the stop command is sent when the blind position reaches 100% | true | false | No
 
 #### "data" key-value object
 key | description
@@ -275,20 +275,20 @@ This allows you to send a hex code for any temperature that you've defined a hex
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
-`minTemperature` | The minimum temperature you can set. | 14 | 0 | no
-`maxTemperature` | The maximum temperature you can set. | 28 | 30 | no
-`temperatureDisplayUnits` | Specify Celsius or Fahrenheit. | F | C | no
-`defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | no
-`defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | no
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`minTemperature` | The minimum temperature you can set. | 14 | 0 | No
+`maxTemperature` | The maximum temperature you can set. | 28 | 30 | No
+`temperatureDisplayUnits` | Specify Celsius or Fahrenheit. | F | C | No
+`defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | No
+`defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | No
 `heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether `defaultCoolTemperature` or `defaultHeatTemperature` is used. | 20 | 22
-`replaceAutoMode` | When we turn on the thermostat with Siri it sets the mode as `auto` which isn't  supported at this time so we set the mode to `cool` or `heat` instead depending on the value of this key. | "heat" | "cool" | no
-`pseudoDeviceTemperature` | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0 | no
-`autoHeatTemperature` | When the temperature is below this value, the heat mode will be enabled. | 18 | - | no
-`autoCoolTemperature` | When the temperature is above this value, the cool mode will enabled. | 27 | - | no
-`autoMinimumDuration` | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120 | no
-`temperatureAdjustment` | The number of degrees that the reported temperature should be offset by. | 3 | 0 | no
-`sendOnWhenOff` | If the air-con unit state is off then the on code will be sent before sending the temperature code. | true | false | no
+`replaceAutoMode` | When we turn on the thermostat with Siri it sets the mode as `auto` which isn't  supported at this time so we set the mode to `cool` or `heat` instead depending on the value of this key. | "heat" | "cool" | No
+`pseudoDeviceTemperature` | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0 | No
+`autoHeatTemperature` | When the temperature is below this value, the heat mode will be enabled. | 18 | - | No
+`autoCoolTemperature` | When the temperature is above this value, the cool mode will enabled. | 27 | - | No
+`autoMinimumDuration` | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120 | No
+`temperatureAdjustment` | The number of degrees that the reported temperature should be offset by. | 3 | 0 | No
+`sendOnWhenOff` | If the air-con unit state is off then the on code will be sent before sending the temperature code. | true | false | No
 
 #### "data" key-value object
 key | description
@@ -307,9 +307,9 @@ You do not need to add this accessory type yourself as we add one automatically.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`disableAutomaticOff` | Prevent the learn-code accessory from turning off automatically after a given amount of time or when a hex code has been received. | false | true | no
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
-`scanFrequency` | This changes the type of learning to be the same as the default "Scan Frequency" | true | false | no
+`disableAutomaticOff` | Prevent the learn-code accessory from turning off automatically after a given amount of time or when a hex code has been received. | false | true | No
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | No
+`scanFrequency` | This changes the type of learning to be the same as the default "Scan Frequency" | true | false | No
 
 ## Air Conditioner Notes
 There looks to be a glitch in the Apple Home app in that nothing happens when setting the mode to Off when you've turned the thermostat on by setting a specific temperature. Siri and other HomeKit apps don't have the same glitch. As a work-around you can just select a different mode and then press Off. This only happens the first time after launching homebridge.
