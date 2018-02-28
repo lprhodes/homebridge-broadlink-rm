@@ -4,7 +4,7 @@ Broadlink RM Mini and Pro plugin for [Homebridge](https://github.com/nfarina/hom
 
 This allows you to control your RM Mini and Pro with HomeKit and Siri.
 
-## IMPORTANT
+## Requirements
 
 - Requires Node.js >= 7.6.0
 - If you're seeing something like `ERROR LOADING PLUGIN"..."async setCharacteristicValue (props, value, callback) {` then please check your node version before creating a new issue: `node -v`.
@@ -171,10 +171,8 @@ key | description
 `on` | A hex code string to be sent when the plug is changed to the on position.
 `off` | A hex code string to be sent when the plug is changed to the off position.
 
-
 ### fan
-
-Turn the fan on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
+Turn the fan on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
 
 Additionally, Siri supports the toggling of the swing mode and setting of the fan speed as a %.
 
@@ -188,9 +186,7 @@ key | description | example | default
 `showV1Fan` | Determines whether we should show the V1 fan or not. | true | false | no
 `showV2Fan` | Determines whether we should show the V2 fan or not. | false | true | no
 
-
 #### "data" key-value object
-
 key | description
 --- | -----------
 `on` | A hex code string to be sent when the switch is changed to the on position.
@@ -200,11 +196,10 @@ key | description
 `swingToggle` | A hex code string used to toggle the swing mode on/off.
 `fanSpeedX` | A hex code string where X is any fan speed you wish to support e.g. "fanSpeed100".
 
-
 ### light
+Turn the light on and the `defaultBrightness` is set unless `useLastKnownBrightness` is set to true in which case the last brightness that was set will be used.
 
-Turn the light on and the "defaultBrightness" is set unless "useLastKnownBrightness" is set to true in which case the last brightness that was set will be used.
-Turn the light off and the "off" hex code is sent.
+Turn the light off and the `off` hex code is sent.
 
 If you don't specify every brightness then the accessory will choose the hex code of the brightness closest to the one requested. e.g. If you only specify brightness values of 10%, 50% and 100% then ask "Set light to 40%" then the hex code for 50% will be used.
 
@@ -220,19 +215,15 @@ key | description | example | default | required
 `onDelay` | The time in seconds between when the on code and the requested brightness code are sent. (default: 0.1s) | no
 
 #### "data" key-value object
-
 key | description
 --- | -----------
 `off` | A hex code string to be sent when the switch is changed to the off position.
 `brightnessX` | A hex code string where X is any brightness you wish to support e.g. "brightness100".
 `hueX` | A hex code string where X is any hue you wish to support between 0 and 359 e.g. "hue42".
-`on` | You only need t add this if you need to send an "on" code before the "brightnessX" code is sent
-
-
+`on` | You only need t add this if you need to send an `on` code before the `brightnessX` code is sent
 
 ### garage-door-opener
-
-Set the switch to open and the "open" hex code is sent, set it to close and the "close" hex code is sent.
+Set the switch to open and the `open` hex code is sent, set it to close and the `close` hex code is sent.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
@@ -249,11 +240,8 @@ key | description
 `unlock` | A hex code string to be sent when the switch is set to unlock.
 `lock` | A hex code string to be sent when the switch is set to lock.
 
-
-
 ### lock
-
-Set the switch to unlock and the "unlock" hex code is sent, set it to lock and the "lock" hex code is sent.
+Set the switch to unlock and the `unlock` hex code is sent, set it to lock and the `lock` hex code is sent.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
@@ -267,15 +255,12 @@ key | description
 `unlock` | A hex code string to be sent when the switch is set to unlock.
 `lock` | A hex code string to be sent when the switch is set to lock.
 
-
-
 ### window-covering
+The window-covering accessory designed to be used by IR_RF controlled blinds_shades/shutters.
 
-The window-covering accessory designed to be used by IR/RF controlled blinds/shades/shutters.
+The accessory will calculate how many times the open and close hex code needs to be sent based on the existing % and requested %. In order to do this a `percentageChangePerSend` needs to be set. e.g. If it takes 10 sends of the code to open the covering then the value of `percentageChangePerSend` should be 10. If it takes 20 then it should be 5.
 
-The accessory will calculate how many times the open and close hex code needs to be sent based on the existing % and requested %. In order to do this a "percentageChangePerSend" needs to be set. e.g. If it takes 10 sends of the code to open the covering then the value of "percentageChangePerSend" should be 10. If it takes 20 then it should be 5.
-
-If you simply want to open or close the blinds with a single hex code then you could set "percentageChangePerSend" to 100 which will just sent the command once.
+If you simply want to open or close the blinds with a single hex code then you could set `percentageChangePerSend` to 100 which will just sent the command once.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
@@ -286,7 +271,6 @@ totalDurationOpen | The amount of time in seconds it takes to open the window-co
 `sendStopAt100` | Determines where the stop command is sent when the blind position reaches 100% | true | false | no
 
 #### "data" key-value object
-
 key | description
 --- | -----------
 `open` | A hex code string to be sent when the window-covering is requested to open.
@@ -295,9 +279,7 @@ key | description
 `openCompletely` | When set, this hex code will be sent when a value of 100% is requested.
 `closeCompletely` | When set, this hex code will be sent when a value of 0% is requested.
 
-
 ### air-conditioner
-
 This allows you to send a hex code for any temperature that you've defined a hex code for. If you simply want to heat up or cool down a room (and not learn every single temperature code) you can just set hex codes for the lowest and highest temperatures and those will be used whatever temperature you request.
 
 key | description | example | default | required
@@ -308,8 +290,8 @@ key | description | example | default | required
 temperatureDisplayUnits | Specify celsius or fahrenheit. | F | C | no
 `defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | no
 `defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | no
-`heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether "defaultCoolTemperature" or "defaultHeatTemperature" is used. | 20 | 22
-replaceAutoMode | When we turn on the thermostat with Siri it sets the mode as "auto" which isn't  supported at this time so we set the mode to "cool" or "heat" instead depending on the value of this key. | "heat" | "cool" | no
+`heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether `defaultCoolTemperature` or `defaultHeatTemperature` is used. | 20 | 22
+`replaceAutoMode` | When we turn on the thermostat with Siri it sets the mode as `auto` which isn't  supported at this time so we set the mode to `cool` or `heat` instead depending on the value of this key. | "heat" | "cool" | no
 `pseudoDeviceTemperature` | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0 | no
 `autoHeatTemperature` | When the temperature is below this value, the heat mode will be enabled. | 18 | - | no
 `autoCoolTemperature` | When the temperature is above this value, the cool mode will enabled. | 27 | - | no
@@ -318,23 +300,19 @@ replaceAutoMode | When we turn on the thermostat with Siri it sets the mode as "
 `sendOnWhenOff` | If the air-con unit state is off then the on code will be sent before sending the temperature code. | true | false | no
 
 #### "data" key-value object
-
 key | description
 --- | -----------
 `off` | A hex code string to be sent when the air conditioner is asked to be turned off.
-temperatureX | A hex code string where X is any temperature you wish to support e.g. "temperature30".
+`temperatureX` | A hex code string where X is any temperature you wish to support e.g. `temperature30`.
 
 #### "temperatureX" key-value object
-
 key | description
 --- | -----------
 `data` | Hex data stored as string.
-`pseudo-mode` | The mode we set when this hex is sent. i.e. "heat" or "cool". For graphical purposes only (hence use of the term "pseudo").
-
+`pseudo-mode` | The mode we set when this hex is sent. i.e. `heat` or `cool`. For graphical purposes only (hence use of the term "pseudo").
 
 ### learn-code
-
-You do not need to add this accessory type yourself as we add one automatically. However if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the "learn-code" type along with a host so that you can learn from each of them.
+You do not need to add this accessory type yourself as we add one automatically. However if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the `learn-code` type along with a host so that you can learn from each of them.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
@@ -343,12 +321,9 @@ key | description | example | default | required
 `scanFrequency` | This changes the type of learning to be the same as the default "Scan Frequency" | true | false | no
 
 ## Air Conditioner Notes
-
 There looks to be a glitch in the Apple Home app in that nothing happens when setting the mode to Off when you've turned the thermostat on by setting a specific temperature. Siri and other HomeKit apps don't have the same glitch. As a work-around you can just select a different mode and then press Off. This only happens the first time after launching homebridge.
 
-Adding "autoHeatTemperature" and "autoCoolTemperature" can help automatically maintain a temperature. When the temperature falls below and hits above the "autoHeatTemperature" and "autoCoolTemperature" temperatures the accessory will automatically set the temperature to whatever the "defaultHeatTemperature" and "defaultCoolTemperature" is. The accessory will then keep checking (every "autoMinimumDuration" seconds) and if the temperature changes to be between the "autoHeatTemperature" and "autoCoolTemperature" temperatures then it will turn itself off. Something to note however is that if you decide to set a new temperature when the accessory has automatically turned itself on then it will still attempt to turn itself back off. To stop this automatic turn-off you can turn off the accessory manually and then turn it back on manually. Bare in mind that while the Home app may say 22C, the temperature may actually be 22.4C and if the Home app says 23C then it may actually be 22.5C.
-
+Adding `autoHeatTemperature` and `autoCoolTemperature` can help automatically maintain a temperature. When the temperature falls below and hits above the `autoHeatTemperature` and `autoCoolTemperature` temperatures the accessory will automatically set the temperature to whatever the `defaultHeatTemperature` and `defaultCoolTemperature` is. The accessory will then keep checking (every `autoMinimumDuration` seconds) and if the temperature changes to be between the `autoHeatTemperature` and `autoCoolTemperature` temperatures then it will turn itself off. Something to note however is that if you decide to set a new temperature when the accessory has automatically turned itself on then it will still attempt to turn itself back off. To stop this automatic turn-off you can turn off the accessory manually and then turn it back on manually. Bare in mind that while the Home app may say 22C, the temperature may actually be 22.4C and if the Home app says 23C then it may actually be 22.5C.
 
 ## Thanks
-
 Thanks to @tattn (https://github.com/tattn/homebridge-rm-mini3), @PJCzx (https://github.com/PJCzx/homebridge-thermostat) @momodalo (https://github.com/momodalo/broadlinkjs) whose time and effort got me started.
