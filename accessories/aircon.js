@@ -60,7 +60,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, config, name } = this;
     const { minTemperature, maxTemperature, allowResend } = config;
 

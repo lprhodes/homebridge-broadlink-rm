@@ -175,7 +175,7 @@ class LightAccessory extends BroadlinkRMAccessory {
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, name } = this;
     const { on, off, swingToggle } = data;
 

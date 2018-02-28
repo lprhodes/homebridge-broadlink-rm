@@ -53,6 +53,8 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
   }
 }
 
+// module.exports.BroadlinkRMPlatform = BroadlinkRMPlatform
+
 module.exports = (homebridge) => {
   global.Service = homebridge.hap.Service;
   global.Characteristic = homebridge.hap.Characteristic;

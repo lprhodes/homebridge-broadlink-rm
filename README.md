@@ -76,6 +76,8 @@ key | description | example | default
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
 pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | -
+disableAutomaticOn (optional) | Prevent the switch from turning on automatically when turned off. | false | true
+offDuration (optional) | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60
 pingIPAddressStateOnly (optional) | Using this option will prevent the hex code from being sent when the state changes | true | false
 pingFrequency (optional) | The frequency in seconds that the IP address should be pinged | 5 | 1
 
@@ -97,6 +99,8 @@ data (required) | Hex data stored as an array of strings. You can also set separ
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
+disableAutomaticOn (optional) | Prevent the switch from turning on automatically when turned off. | false | true
+offDuration (optional) | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60
 
 ### switch-repeat
 
@@ -111,6 +115,8 @@ offSendCount (optional) | If you set separate "on" and "off" codes you can use t
 interval (optional) | The amount of time between each send of a hex code in seconds. | 0.3 | 1
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically when complete. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
+disableAutomaticOn (optional) | Prevent the switch from turning on automatically when turned off. | false | true
+offDuration (optional) | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60
 
 ### outlet
 
@@ -120,6 +126,8 @@ key | description | example | default
 --- | ----------- | ------- | -------
 disableAutomaticOff (optional) | Prevent the switch from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
+disableAutomaticOn (optional) | Prevent the switch from turning on automatically when turned off. | false | true
+offDuration (optional) | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60
 pingIPAddress (optional) | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | -
 pingIPAddressStateOnly (optional) | Using this option will prevent the hex code from being sent when the state changes | true | false
 pingFrequency (optional) | The frequency in seconds that the IP address should be pinged | 5 | 1
@@ -174,6 +182,8 @@ defaultBrightness (optional) | The default brightness to be set when you turn th
 useLastKnownBrightness (optional) | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true
 disableAutomaticOff (optional) | Prevent the light from turning off automatically after a given amount of time. | false | true
 onDuration (optional) | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60
+disableAutomaticOn (optional) | Prevent the switch from turning on automatically when turned off. | false | true
+offDuration (optional) | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60
 onDelay (optional) | The time in seconds between when the (optional) on code and the requested brightness code are sent. (default: 0.1s)
 
 #### "data" key-value object

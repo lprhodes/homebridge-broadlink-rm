@@ -38,7 +38,7 @@ class FanAccessory extends BroadlinkRMAccessory {
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { config, data, name } = this;
     let { showSwingMode, showRotationDirection, showV1Fan, showV2Fan } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data;

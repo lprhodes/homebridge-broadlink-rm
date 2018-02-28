@@ -2,23 +2,12 @@ const ping = require('ping');
 
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration')
-const BroadlinkRMAccessory = require('./accessory');
+const SwitchAccessory = require('./switch');
 
-class SwitchAccessory extends BroadlinkRMAccessory {
-
-  constructor (log, config) {
-    super(log, config);
-
-    this.manufacturer = 'Broadlink';
-    this.model = 'RM Mini or Pro';
-    this.serialNumber = this.host;
-
-    config.resendDataAfterReload = config.resendHexAfterReload;
-
-    if (config.pingIPAddress) this.checkStateWithPing()
-  }
+class OutletAccessory extends SwitchAccessory {
 
   checkStateWithPing () {
+    console.log('HELLO!!!!')
     const { config, debug, log, state } = this;
     let { pingIPAddress, pingIPAddressStateOnly, name, pingFrequency } = config;
 
@@ -26,7 +15,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     
     setInterval(() => {
       ping.sys.probe(pingIPAddress, (active) => {
-        log(`${name} ping "${pingIPAddress}": ${active ? 'active' : 'inactive'}`);
+        if (debug) log(`${name} ping "${pingIPAddress}": ${active ? 'active' : 'inactive'}`);
 
         if (pingIPAddressStateOnly) {
           state.outletInUse = active ? 1 : 0;
@@ -49,28 +38,16 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   }
 
   async setSwitchState (hexData) {
-    const { config, data, host, log, name, state, debug } = this;
-    let { disableAutomaticOff, onDuration } = config;
-
-    // Set defaults
-    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
-    if (!onDuration) onDuration = 60;
+    const { data, host, log, name, state, debug } = this;
 
     if (hexData) sendData({ host, hexData, log, name, debug });
 
-    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
-
-    if (state.switchState && !disableAutomaticOff) {
-      log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
-
-      this.autoOffTimeout = setTimeout(() => {
-        this.switchService.setCharacteristic(Characteristic.On, 0);
-      }, onDuration * 1000);
-    }
+    this.checkAutoOff();
+    this.checkAutoOn();
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
 
     const { data, name } = this;
     const { on, off } = data || { };

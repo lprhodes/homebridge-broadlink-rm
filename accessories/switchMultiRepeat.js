@@ -1,8 +1,8 @@
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
-const BroadlinkRMAccessory = require('./accessory');
+const SwitchAccessory = require('./switch');
 
-class SwitchMultiAccessory extends BroadlinkRMAccessory {
+class SwitchMultiAccessory extends SwitchAccessory {
 
   constructor (log, config = {}) {
     super(log, config)
@@ -15,17 +15,17 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
     if (nonObjects.length > 0) return log('The "switch-multi-repeat" type requires the config value for "data" an array of objects.')
   }
 
+  checkStateWithPing () { }
+
   async setSwitchState (hexData) {
     if (hexData) this.performSend(hexData);
   }
 
   async performSend (data) {
     const { name, config, log, state } = this;
-    let { disableAutomaticOff, onDuration, interval, pause, sendCount } = config;
+    let { interval, pause, sendCount } = config;
 
     // Set defaults
-    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
-    if (!onDuration) onDuration = 60;
     if (!interval) interval = 1;
 
     // Itterate through each hex config in the array
@@ -41,15 +41,8 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
       }
     }
 
-    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
-
-    if (state.switchState && !disableAutomaticOff) {
-      log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
-
-      this.autoOffTimeout = setTimeout(() => {
-        this.switchService.setCharacteristic(Characteristic.On, 0);
-      }, onDuration * 1000);
-    }
+    this.checkAutoOff();
+    this.checkAutoOn();
   }
 
   async performRepeatSend (hexConfig) {
@@ -67,7 +60,7 @@ class SwitchMultiAccessory extends BroadlinkRMAccessory {
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, name } = this;
 
     const service = new Service.Switch(name);

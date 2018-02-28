@@ -56,7 +56,7 @@ class LockAccessory extends BroadlinkRMAccessory {
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
 
     const { data, name } = this;
     const { lock, unlock } = data;

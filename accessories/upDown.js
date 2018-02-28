@@ -22,7 +22,7 @@ class UpDownAccessory extends BroadlinkRMAccessory {
   }
 
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, name } = this;
 
     const service = new Service.UpDown(name);

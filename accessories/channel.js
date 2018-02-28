@@ -9,9 +9,9 @@ class ChannelAccessory extends BroadlinkRMAccessory {
     log(`setChannel: ${channel}`);
     sendData({ host, hexData: hexData[channel], callback, log, name, debug });
   }
-
+  
   getServices () {
-    const services = super.getServices();
+    const services = super.getInformationServices();
     const { data, name } = this;
 
     const service = new Service.Channel(name);
