@@ -116,7 +116,7 @@ key | description
 `off` | A hex code string to be sent when the switch is changed to the off position.
 
 ### switch-multi
-Turn the switch on and the switch will send each hex code in the provided array. It then turns itself off automatically. You can also set the interval between each send.
+Turn the switch on and the switch will send each hex code in the provided array. You can also set the interval between each send.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
@@ -128,7 +128,7 @@ key | description | example | default | required
 `offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | No
 
 ### switch-repeat
-Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. It then turns itself off automatically. You can also set the interval between each send.
+Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. You can also set the interval between each send.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
