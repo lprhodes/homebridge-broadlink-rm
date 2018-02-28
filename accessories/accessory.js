@@ -11,6 +11,8 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
     this.model = 'RM Mini or Pro';
     this.serialNumber = this.host;
 
+    if (config.debug) this.debug = true
+
     config.resendDataAfterReload = config.resendHexAfterReload;
   }
 
