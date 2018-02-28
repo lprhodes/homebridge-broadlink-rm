@@ -262,6 +262,9 @@ key | description
 open | A hex code string to be sent when the window-covering is requested to open.
 close | A hex code string to be sent when the window-covering is requested to close.
 stop | A hex code string to be sent when the window-covering is stopped automatically.
+openCompletely | When set, this hex code will be sent when a value of 100% is requested.
+closeCompletely | When set, this hex code will be sent when a value of 0% is requested.
+
 
 
 ### air-conditioner

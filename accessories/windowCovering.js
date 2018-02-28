@@ -33,12 +33,30 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async performSetTargetPosition (hexData, previousValue) {
-    const { config, data, log, name, state } = this;
-    const { open, close, stop } = data;
+    const { config, host, debug, data, log, name, state } = this;
+    const { open, close, stop, openCompletely, closeCompletely } = data;
 
     if (stop && state.operationID ) {
       log(`${name} setTargetPosition: cancel last operation`);
       this.stop(true);
+    }
+
+    if (state.targetPosition === 0) {
+      this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
+      this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
+
+      sendData({ host, hexData: closeCompletely, log, name, debug })
+
+      return
+    }
+
+    if (state.targetPosition === 100) {
+      this.windowCoveringService.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
+      this.windowCoveringService.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
+    
+      sendData({ host, hexData: openCompletely, log, name, debug })
+
+      return
     }
 
     state.operationID = Date.now();
