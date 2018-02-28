@@ -31,6 +31,9 @@ The switch will toggle off automatically once the code has been received. You ca
 
 More details [below](#accessory-types)
 
+## Pronto IR Codes
+We support the use of Pronto codes; you can use them wherever you would normally use a Broadlink IR code. Pronto codes are automatically detected by their first 4 characters being 0 i.e. 0000.
+
 ## Common Accessory Configuration Keys
 
 The following configuration keys are common between each accessory:

@@ -1,9 +1,20 @@
 const assert = require('assert')
 
 const getDevice = require('./getDevice');
+const convertProntoCode = require('./convertProntoCode')
 
 module.exports = ({ host, hexData, log, name, debug }) => {
   assert(hexData && typeof hexData === 'string', '\x1b[31m[ERROR]: \x1b[30mHEX value is missing')
+
+  // Check for pronto code
+  if (hexData.substring(0, 4) === '0000') {
+    if (debug) log(`${name} sendHex (Converting Pronto code "${hexData}" to Broadlink code)`)
+    hexData = convertProntoCode(hexData)
+    if (debug) log(`${name} sendHex (Pronto code successfuly converted: "${hexData}")`)
+    
+    if (!hexData) return log(`\x1b[31m[ERROR] \x1b[30m${name} sendData (A Pronto code was detected however its conversion to a Broadlink code failed.)`);
+
+  }
 
   // Get the Broadlink device
   const device = getDevice({ host, log })
