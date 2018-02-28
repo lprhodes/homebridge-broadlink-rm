@@ -100,6 +100,7 @@ Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex 
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
 `disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | no
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
 `pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | - | no
@@ -146,6 +147,7 @@ Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex 
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | yes
 `disableAutomaticOff` | Prevent the switch from turning off automatically after a given amount of time. | false | true | no
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
 `disableAutomaticOn` | Prevent the switch from turning on automatically when turned off. | false | true | no
@@ -277,6 +279,7 @@ key | description | example | default | required
 `minTemperature` | The number of times the hex code should be sent. | 14 | 0 | no
 `maxTemperature` | The amount of time between each send of a hex code in seconds. | 28 | 30
 temperatureDisplayUnits | Specify celsius or fahrenheit. | F | C | no
+temperatureDisplayUnits | Specify Celsius or Fahrenheit. | F | C | no
 `defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | no
 `defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | no
 `heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether `defaultCoolTemperature` or `defaultHeatTemperature` is used. | 20 | 22
