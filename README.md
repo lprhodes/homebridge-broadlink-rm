@@ -39,17 +39,15 @@ Example BroadlinkRM platform in the homebridge configuration:
 ```
 
 ## Overriding the homebridge directory (AKA where the consig.json file lives)
-Generally the plugin can find where your config.json lives as it commonly sits in the .homebridge directory of your user account. If you're doing something out of the ordinary however you may need to override this. You can do so by adding a "homebridgeDirectory" key/value pair to the platform config.
+Generally the plugin can find where your `config.json` lives as it commonly sits in the `.homebridge` directory of your user account. If you're doing something out of the ordinary however you may need to override this. You can do so by adding a `"homebridgeDirectory”` key/value pair to the platform config.
 
 ## Broadlink RM Device Discovery
-
-As of version 1.0.0 your Broadlink RM Device is automatically discovered so you no longer need to specify a "host" value.
+As of version 1.0.0, your Broadlink RM Device is automatically discovered so you no longer need to specify a "host" value.
 
 ## Learning Hex IR and RF codes
-
 "Learn" and "Scan Frequency" accessories are automatically added to the Home app (so long as you've not added either manually in the config).
 
-![Home App](https://user-images.githubusercontent.com/3083780/33922435-d6ce64f8-df98-11e7-8da3-16113eb726e0.png)
+Home App
 
 Simply toggle the switch on, perform the IR or RF command in front of your Broadlink RM device and copy the HEX output from the homebridge console log to wherever you want the code in the config.
 
@@ -57,25 +55,22 @@ Simply toggle the switch on, perform the IR or RF command in front of your Broad
 homebridge[16748]: [Broadlink RM] Learn Code (ready)
 homebridge[16748]: [Broadlink RM] Learn Code (learned hex code: 2600500000012...)
 homebridge[16748]: [Broadlink RM] Learn Code (complete)
-    homebridge[16748]: [Broadlink RM] Learn Code (stopped)
+homebridge[16748]: [Broadlink RM] Learn Code (stopped)
 ```
 
 The switch will toggle off automatically once the code has been received. You can optionally stop attempting to learn a code by toggling the switch off yourself.
 
 ## Multiple Broadlink RM Devices
+If you have multiple devices (e.g. one in the bedroom, one in the lounge) then you  can additionally specify the Broadlink RM's IP or MAC address in a `"host"` key/value pair on each accessory.
 
-If you have multiple devices (e.g. one in the bedroom, one in the lounge) then you  can additionally specify a `"host"` value with the Broadlink RM's IP or MAC address.
-
-If you wish to have multiple Learn Code accessories (e.g. for each device) then you can add accessories with a type of `"learn-code"` and then specify the `"host"` and `"name"` values.
-
+If you wish to have multiple Learn Code accessories (e.g. for each device) then you can add accessories with a type of `learn-code` and then specify  `"host"` and `"name"`  key/value pairs.
 
 ## Pronto IR Codes
-We support the use of Pronto codes; you can use them wherever you would normally use a Broadlink IR code. Pronto codes are automatically detected by their first 4 characters being 0 i.e. 0000.
+We support the use of Pronto codes; you can put them wherever you would normally put a Broadlink IR code. Pronto codes are automatically detected by their first 4 characters being 0 i.e. `0000`.
 
 # Accessories
 
 ## Common Accessory Configuration Keys
-
 The following configuration keys are common between each accessory:
 
 key | description | example | default | required
@@ -86,7 +81,7 @@ key | description | example | default | required
 `resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | no
 `disableLogs` | Disables the log output for this accessory. | true | false | no
 `debug` | Outputs some additional logs, useful for figuring out issues. | true | false | no
-
+`host` | As described [above](#multiple-broadlink-rm-devices). | “192.168.1.33” |   | no
 
 ## Accessory Types
 
@@ -101,8 +96,7 @@ key | description | example | default | required
 - [learn-code](#learn-code)
 
 ### switch
-
-Turn the switch on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
+Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
@@ -114,21 +108,18 @@ key | description | example | default | required
 `pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | no
 `pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | no
 
-
 #### "data" key-value object
 key | description
 --- | -----------
 `on` | A hex code string to be sent when the switch is changed to the on position.
 `off` | A hex code string to be sent when the switch is changed to the off position.
 
-
 ### switch-multi
-
 Turn the switch on and the switch will send each hex code in the provided array. It then turns itself off automatically. You can also set the interval between each send.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as an array of strings. You can also set separate "on" and "off" arrays of codes similar to the "switch" accessory. | [ "26005800000..." ] | - | yes
+`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | yes
 `interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | no
 `disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | no
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
@@ -136,15 +127,14 @@ key | description | example | default | required
 `offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | no
 
 ### switch-repeat
-
 Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. It then turns itself off automatically. You can also set the interval between each send.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as string. You can also set separate "on" and "off" codes similar to the "switch" accessory. | 26005800000... | - | yes
+`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | yes
 `sendCount` | The number of times the hex code should be sent. | 5 | 1 | no
-`onSendCount` | If you set separate "on" and "off" codes you can use this to override the "sendCount" when the switch is turned on. | 5 | 1 | no
-`offSendCount` | If you set separate "on" and "off" codes you can use this to override the "sendCount" when the switch is turned off. | 5 | 1 | no
+`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | no
+`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | no
 `interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | no
 `disableAutomaticOff` | Prevent the switch from turning off automatically when complete. | false | true | no
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with disableAutomaticOff). | 5 | 60 | no
@@ -152,8 +142,7 @@ key | description | example | default | required
 `offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with disableAutomaticOn). | 5 | 60 | no
 
 ### outlet
-
-Turn the outlet on and the "on" hex code is sent, turn it off and the "off" hex code is sent.
+Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
