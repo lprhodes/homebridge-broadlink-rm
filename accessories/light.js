@@ -28,7 +28,7 @@ class LightAccessory extends BroadlinkRMAccessory {
         }
       }
     } else {
-      this.stopAutoOffTimeout();
+      this.resetAutoOffTimeout();
 
       sendData({ host, hexData, log, name, debug });
     }
@@ -128,30 +128,66 @@ class LightAccessory extends BroadlinkRMAccessory {
     } else {
       log(`${name} setBrightness: (off)`);
 
-      this.stopAutoOffTimeout();
+      this.resetAutoOffTimeout();
       sendData({ host, hexData: off, log, name, debug });
     }
   }
 
   stopAutoOffTimeout () {
     if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
+    if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
   }
 
   resetAutoOffTimeout () {
-    const { config, data, host, log } = this;
-    let { disableAutomaticOff, onDuration } = config;
+    this.checkAutoOff();
+    this.checkAutoOn();
+  }
+
+  checkAutoOff () {
+    const { config, log, name, state } = this;
+    let { disableAutomaticOff, enableAutoOff, onDuration } = config;
 
     // Set defaults
-    if (disableAutomaticOff === undefined) disableAutomaticOff = true;
+    if (enableAutoOff === undefined && disableAutomaticOff === undefined) {
+      enableAutoOff = false;
+    } else if (disableAutomaticOff !== undefined) {
+      enableAutoOff = !disableAutomaticOff
+    }
     if (!onDuration) onDuration = 60;
 
-    this.stopAutoOffTimeout();
+    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
 
-    if (disableAutomaticOff) return;
+    if (state.lightState && enableAutoOff) {
+      log(`${name} setLightState: (automatically turn off in ${onDuration} seconds)`);
 
-    this.autoOffTimeout = setTimeout(() => {
-      this.lightService.setCharacteristic(Characteristic.On, 0);
-    }, onDuration * 1000)
+      this.autoOffTimeout = setTimeout(() => {
+        this.lightService.setCharacteristic(Characteristic.On, 0);
+      }, onDuration * 1000);
+    }
+  }
+
+  checkAutoOn () {
+    const { config, log, name, state } = this;
+    let { disableAutomaticOn, enableAutoOn, offDuration } = config;
+
+    // Set defaults
+    if (enableAutoOn === undefined && disableAutomaticOn === undefined) {
+      enableAutoOn = false;
+    } else if (disableAutomaticOn !== undefined) {
+      enableAutoOn = !disableAutomaticOn
+    }
+
+    if (!offDuration) offDuration = 60;
+
+    if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
+
+    if (!state.lightState && enableAutoOn) {
+      log(`${name} setLightState: (automatically turn on in ${offDuration} seconds)`);
+
+      this.autoOnTimeout = setTimeout(() => {
+        this.lightService.setCharacteristic(Characteristic.On, 1);
+      }, offDuration * 1000);
+    }
   }
 
   dataKeys (filter) {
