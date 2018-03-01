@@ -18,7 +18,7 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
-        persistState: false
+      persistState: false
     }
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')

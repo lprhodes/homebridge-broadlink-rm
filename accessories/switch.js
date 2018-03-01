@@ -48,7 +48,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     this.checkAutoOn();
   }
 
-  checkAutoOff () {
+  async checkAutoOff () {
     const { config, log, name, state, serviceManager } = this;
     let { disableAutomaticOff, enableAutoOff, onDuration } = config;
 
@@ -56,22 +56,25 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     if (enableAutoOff === undefined && disableAutomaticOff === undefined) {
       enableAutoOff = false;
     } else if (disableAutomaticOff !== undefined) {
-      enableAutoOff = !disableAutomaticOff
+      enableAutoOff = !disableAutomaticOff;
     }
     if (!onDuration) onDuration = 60;
 
-    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
+    // Clear Timeouts
+    if (this.autoOffTimeoutPromise) {
+      this.autoOffTimeoutPromise.cancel();
+      this.autoOffTimeoutPromise = null;
+    }
 
     if (state.switchState && enableAutoOff) {
       log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
 
-      this.autoOffTimeout = setTimeout(() => {
-        serviceManager.setCharacteristic(Characteristic.On, 0);
-      }, onDuration * 1000);
+      this.autoOffTimeoutPromise = await delayForDuration(onDuration);
+      serviceManager.setCharacteristic(Characteristic.On, 0);
     }
   }
 
-  checkAutoOn () {
+  async checkAutoOn () {
     const { config, log, name, state, serviceManager } = this;
     let { disableAutomaticOn, enableAutoOn, offDuration } = config;
 
@@ -84,14 +87,17 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     if (!offDuration) offDuration = 60;
 
-    if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
+    // Clear Timeouts
+    if (this.autoOnTimeoutPromise) {
+      this.autoOnTimeoutPromise.cancel();
+      this.autoOnTimeoutPromise = null
+    }
 
     if (!state.switchState && enableAutoOn) {
       log(`${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`);
 
-      this.autoOnTimeout = setTimeout(() => {
-        serviceManager.setCharacteristic(Characteristic.On, 1);
-      }, offDuration * 1000);
+      this.autoOnTimeoutPromise = await delayForDuration(offDuration)
+      serviceManager.setCharacteristic(Characteristic.On, 1);
     }
   }
 

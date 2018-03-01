@@ -76,13 +76,8 @@ const getDevice = ({ host, log, learnOnly }) => {
     const hosts = Object.keys(discoveredDevices);
     if (hosts.length === 0) {
       log(`Send data (no devices found)`);
-      if (!discovering) {
-        log(`Attempting to discover RM devices for 5s`);
 
-        discoverDevices()
-      }
-
-      return
+      return;
     }
 
     // Only return device that can Learn Code codes
@@ -97,21 +92,11 @@ const getDevice = ({ host, log, learnOnly }) => {
         }
       }
 
-      if (!device) log(`Learn Code (no device found at ${host})`)
-      if (!device && !discovering) {
-        log(`Attempting to discover RM devices for 5s`);
-
-        discoverDevices()
-      }
+      if (!device) log(`Learn Code (no device found at ${host})`);
     } else {
       device = discoveredDevices[hosts[0]];
 
       if (!device) log(`Send data (no device found at ${host})`);
-      if (!device && !discovering) {
-        log(`Attempting to discover RM devices for 5s`);
-
-        discoverDevices()
-      }
     }
   }
 

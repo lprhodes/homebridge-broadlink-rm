@@ -9,6 +9,7 @@ const delayForDuration = require('../helpers/delayForDuration')
 const { Switch } = require('../accessories')
 
 // TODO: Check actual sending of a hex code
+// TODO: Check cancellation of timeouts
 
 describe('switchAccessory', () => {
 

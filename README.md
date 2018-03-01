@@ -73,14 +73,14 @@ We support the use of Pronto codes; you can put them wherever you would normally
 ## Common Accessory Configuration Keys
 The following configuration keys are common between each accessory:
 
-key | description | example | default | required
+key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------
-`name` | A descriptor for the accessory that will show in HomeKit apps. | "TV" | - | Yes
-`type` | The type of accessory. | "switch" | - | Yes
-`persistState` | Determines whether the state of accessory persists after homebridge has been restarted. | false | true | No
-`resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | No
-`disableLogs` | Disables the log output for this accessory. | true | false | No
-`debug` | Outputs some additional logs, useful for figuring out issues. | true | false | No
+`name` | A descriptor for the accessory that will show in HomeKit apps. | "TV" | - | Yes | No
+`type` | The type of accessory. | "switch" | - | Yes | No
+`persistState` | Determines whether the state of accessory persists after homebridge has been restarted. | false | true | No | Yes
+`resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | No | Yes
+`disableLogs` | Disables the log output for this accessory. | true | false | No | Yes
+`debug` | Outputs some additional logs, useful for figuring out issues. | true | false | No | Yes
 `host` | As described [above](#multiple-broadlink-rm-devices). | “192.168.1.33” | - | No
 
 ## Accessory Types
@@ -98,16 +98,16 @@ key | description | example | default | required
 ### switch
 Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
 
-key | description | example | default | required
+key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
-`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
-`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | - | No
-`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No
-`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
+`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
+`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No | Yes
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
+`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the switch turns on, otherwise it turns off. | "192.167.1.77" | - | No | Yes
+`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No | Yes
+`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No | Yes
 
 #### "data" key-value object
 key | description
@@ -118,43 +118,43 @@ key | description
 ### switch-multi
 Turn the switch on and the switch will send each hex code in the provided array. You can also set the interval between each send.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | Yes
-`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No
-`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
-`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | Yes | No
+`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | No
+`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
+`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No | Yes
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
 
 ### switch-repeat
 Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. You can also set the interval between each send.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | Yes
-`sendCount` | The number of times the hex code should be sent. | 5 | 1 | No
-`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | No
-`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | No
-`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No
-`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | Yes | No
+`sendCount` | The number of times the hex code should be sent. | 5 | 1 | No | No
+`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | No | No
+`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | No | No
+`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | No
+`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
 `enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
 
 ### outlet
 Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`enableAutoOff` | Turn the outlet off automatically when `onDuration` has been reached. | true | false | No
-`onDuration` | The amount of time before the outlet automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
-`enableAutoOn` | Turn the outlet on automatically when `offDuration` has been reached | false | true | No
-`offDuration` | The amount of time before the outlet automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
-`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | - | No
-`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No
-`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No
+`enableAutoOff` | Turn the outlet off automatically when `onDuration` has been reached. | true | false | No | Yes
+`onDuration` | The amount of time before the outlet automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
+`enableAutoOn` | Turn the outlet on automatically when `offDuration` has been reached | false | true | No | Yes
+`offDuration` | The amount of time before the outlet automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
+`pingIPAddress` | When an IP address is provided, it is pinged every second. If a response is received then the outlet's "Outlet In Use" shows as "Yes", otherwise it shows as "No". | "192.167.1.77" | - | No | Yes
+`pingIPAddressStateOnly` | Using this option will prevent the hex code from being sent when the state changes | true | false | No | Yes
+`pingFrequency` | The frequency in seconds that the IP address should be pinged | 5 | 1 | No | Yes
 
 #### "data" key-value object
 key | description
@@ -169,11 +169,11 @@ Additionally, Siri supports the toggling of the swing mode and setting of the fa
 
 If you don't specify every fan speed then the accessory will choose the hex code of the fan speed closest to the one requested. e.g. If you only specify fan speeds of 10%, 50% and 100% then ask "Set Fan to 40%" then the hex code for 50% will be used.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | No
-`showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | No
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
+`showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | No | Yes
+`showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | No | Yes
 
 #### "data" key-value object
 key | description
@@ -232,11 +232,13 @@ key | description
 ### lock
 Set the switch to unlock and the `unlock` hex code is sent, set it to lock and the `lock` hex code is sent.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`autoLockDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30 | No
-`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
+`autoLockDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30 | No | Yes
+`lockDuration` | The amount of time in seconds that the accessory will show a status of "Locking" for. | 2 | 1 | No | No
+`unlockDuration` | The amount of time in seconds that the accessory will show a status of "Unlocking" for. | 2 | 1 | No | No
+`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No | No
 
 #### "data" key-value object
 key | description

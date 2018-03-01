@@ -1,6 +1,7 @@
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
+const { ServiceManagerTypes } = require('../helpers/serviceManager');
 
 class LockAccessory extends BroadlinkRMAccessory {
 
@@ -9,81 +10,99 @@ class LockAccessory extends BroadlinkRMAccessory {
   }
 
   async setLockTargetState (hexData, currentState) {
-    const { config, data, host, log, name, state, debug } = this;
-    let { autoLockDelay } = config;
+    const { host, log, name, debug } = this;
+    
+    // Clear existing timeouts
+    if (this.lockingTimeoutPromise) {
+      this.lockingTimeoutPromise.cancel();
+      this.lockingTimeoutPromise = null;
+    }
 
-    const lockUnlockDuration = 1;
-
+    if (this.unlockingTimeoutPromise) {
+      this.unlockingTimeoutPromise.cancel();
+      this.unlockingTimeoutPromise = null;
+    }
+    if (this.autoLockTimeoutPromise) {
+      this.autoLockTimeoutPromise.cancel();
+      this.autoLockTimeoutPromise = null
+    }
+    
+    // Send pre-determined hex data
     sendData({ host, hexData, log, name, debug });
 
-    console.log('state.currentState', currentState)
-
     if (currentState === Characteristic.LockTargetState.SECURED) {
-      if (this.finishedLockingTimeout) clearTimeout(this.finishedLockingTimeout);
-
-      log(`${name} setLockCurrentState: unlocking`);
-
-      setTimeout(() => {
-        log(`${name} setLockCurrentState: unlocked`);
-
-        this.lockService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
-
-        if (autoLockDelay) {
-          log(`${name} automatically locking in ${autoLockDelay}s`);
-
-          this.autoLockTimeout = setTimeout(() => {
-            log(`${name} setLockCurrentState: locked`);
-
-            this.lockService.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
-
-            setTimeout(() => {
-              this.lockService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
-            }, lockUnlockDuration * 1000);
-          }, autoLockDelay * 1000);
-        }
-      }, lockUnlockDuration * 1000);
+      this.unlock()
     } else {
-      if (this.lockService) clearTimeout(this.lockService);
-      if (this.autoLockTimeout) clearTimeout(this.autoLockTimeout);
-
-      this.finishedLockingTimeout = setTimeout(() => {
-        log(`${name} setLockCurrentState: locked`);
-
-        this.lockService.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
-        this.lockService.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
-      }, lockUnlockDuration * 1000)
+      this.lock()
     }
   }
 
-  getServices () {
-    const services = super.getInformationServices();
+  async unlock (hexData) {
+    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    let { autoLockDelay, unlockDuration } = config;
 
-    const { data, name } = this;
-    const { lock, unlock } = data;
+    // Defaults
+    if (!unlockDuration) unlockDuration = 1;
 
-    const service = new Service.LockMechanism(name);
-    this.addNameService(service);
+    log(`${name} setLockCurrentState: unlocking`);
+    this.unlockingTimeoutPromise = await delayForDuration(unlockDuration);
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.LockCurrentState,
-      propertyName: 'lockCurrentState',
+    log(`${name} setLockCurrentState: unlocked`);
+    serviceManager.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
+
+    if (!autoLockDelay) return;
+
+    log(`${name} automatically locking in ${autoLockDelay}s`);
+    this.autoLockTimeoutPromise = await delayForDuration(autoLockDelay);
+
+    //
+    serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
+    this.lock()
+  }
+
+  async lock () {
+    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    let { lockDuration } = config;
+
+    // Defaults
+    if (!lockDuration) lockDuration = 1;
+
+    log(`${name} setLockCurrentState: locking`);
+    this.lockingTimeoutPromise = await delayForDuration(lockDuration) ;
+    
+    log(`${name} setLockCurrentState: locked`);
+    serviceManager.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
+  }
+
+  setupServiceManager () {
+    const { data, name, serviceManagerType } = this;
+    const { lock, unlock } = data || {};
+
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.LockMechanism, this.log);
+
+    this.serviceManager.addToggleCharacteristic({
+      name: 'lockCurrentState',
+      type: Characteristic.LockCurrentState,
+      bind: this,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      props: {
+
+      }
     });
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.LockTargetState,
-      propertyName: 'lockTargetState',
-      onData: lock,
-      offData: unlock,
-      setValuePromise: this.setLockTargetState.bind(this)
+    this.serviceManager.addToggleCharacteristic({
+      name: 'lockTargetState',
+      type: Characteristic.LockTargetState,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        onData: lock,
+        offData: unlock,
+        setValuePromise: this.setLockTargetState.bind(this)
+      }
     });
-
-    this.lockService = service;
-
-    services.push(service);
-
-    return services;
   }
 }
 
