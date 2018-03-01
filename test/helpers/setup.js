@@ -1,4 +1,8 @@
-const { BroadlinkRMPlatform } = require('../index');
+const hap = require('hap-nodejs');
+const BroadlinkRMPlatform = require('../../platform');
+
+global.Service = hap.Service;
+global.Characteristic = hap.Characteristic;
 
 const log = (message, more) => {
   if (more) {
@@ -12,8 +16,8 @@ const setup = (config) => {
   const platform = new BroadlinkRMPlatform(log, config);
 }
 
-const getAccessories = (config) => {
-  const platform = new BroadlinkRMPlatform(log, config);
+const getAccessories = (config, replacementLog) => {
+  const platform = new BroadlinkRMPlatform(replacementLog || log, config);
 
     const accessoriesPromise = new Promise((resolve, reject) => {
       platform.accessories(resolve);
@@ -22,4 +26,4 @@ const getAccessories = (config) => {
     return accessoriesPromise
 }
 
-module.exports = { setup, getAccessories }
+module.exports = { log, setup, getAccessories }

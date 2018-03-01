@@ -4,12 +4,14 @@ const sendData = require('../helpers/sendData');
 
 class BroadlinkRMAccessory extends HomebridgeAccessory {
 
-  constructor (log, config) {
+  constructor (log, config = {}, serviceManagerType) {
     if (config.debug) this.debug = true
+    if (!config.name) config.name = "Unknown Accessory"
 
     config.resendDataAfterReload = config.resendHexAfterReload;
 
-    super(log, config);
+    super(log, config, serviceManagerType);
+
 
     this.manufacturer = 'Broadlink';
     this.model = 'RM Mini or Pro';

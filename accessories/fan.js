@@ -1,12 +1,13 @@
 const sendData = require('../helpers/sendData');
 const BroadlinkRMAccessory = require('./accessory');
+const { ServiceManagerTypes } = require('../helpers/serviceManager');
 
 class FanAccessory extends BroadlinkRMAccessory {
 
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
 
-    const allHexKeys = Object.keys(data);
+    const allHexKeys = Object.keys(data || {});
 
     // Create an array of speeds specified in the data config
     const foundSpeeds = [];
@@ -31,103 +32,67 @@ class FanAccessory extends BroadlinkRMAccessory {
     sendData({ host, hexData, log, name, debug });
   }
 
-  async setRotationDirection (hexData) {
-    const { config, data, host, log, name, state, debug } = this;
+  setupServiceManager () {
+    const { config, data, name, serviceManagerType } = this;
+    let { showSwingMode, showRotationDirection } = config;
+    const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
-    if (hexData) sendData({ host, hexData, log, name, debug });
-  }
-
-  getServices () {
-    const services = super.getInformationServices();
-    const { config, data, name } = this;
-    let { showSwingMode, showRotationDirection, showV1Fan, showV2Fan } = config;
-    const { on, off, clockwise, counterClockwise, swingToggle } = data;
-
-    if (showV2Fan !== false) showV2Fan = true
+    // Defaults
     if (showSwingMode !== false) showSwingMode = true
     if (showRotationDirection !== false) showRotationDirection = true
 
-    let service
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Fanv2, this.log);
 
-    if (showV1Fan) {
-  	  // Until FanV2 service is supported completely in Home app, we have to add legacy
-      service = new Service.Fan(name);
-
-      this.addNameService(service);
-      this.createToggleCharacteristic({
-        service,
-        characteristicType: Characteristic.On,
-        propertyName: 'switchState',
+    this.serviceManager.addToggleCharacteristic({
+      name: 'switchState',
+      type: Characteristic.On,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
         onData: on,
-        offData: off
-      });
-
-      this.createToggleCharacteristic({
-        service,
-        characteristicType: Characteristic.RotationSpeed,
-        propertyName: 'fanSpeed',
-        setValuePromise: this.setFanSpeed.bind(this)
-      });
-
-      if (showRotationDirection) {
-        this.createToggleCharacteristic({
-          service,
-          characteristicType: Characteristic.RotationDirection,
-          propertyName: 'rotationDirection',
-          setValuePromise: this.setRotationDirection.bind(this),
-          onData: clockwise,
-          offData: counterClockwise
-        });
+        offData: off,
       }
+    });
 
-      services.push(service);
-    }
-
-    if (showV2Fan) {
-      // Fanv2 service
-      service = new Service.Fanv2(name);
-      this.addNameService(service);
-
-      this.createToggleCharacteristic({
-        service,
-        characteristicType: Characteristic.Active,
-        propertyName: 'switchState',
-        onData: on,
-        offData: off
-      });
-
-      if (showSwingMode) {
-        this.createToggleCharacteristic({
-          service,
-          characteristicType: Characteristic.SwingMode,
-          propertyName: 'swingMode',
+    if (showSwingMode) {
+      this.serviceManager.addToggleCharacteristic({
+        name: 'swingMode',
+        type: Characteristic.SwingMode,
+        getMethod: this.getCharacteristicValue,
+        setMethod: this.setCharacteristicValue,
+        bind: this,
+        props: {
           onData: swingToggle,
-          offData: swingToggle
-        });
-      }
-
-      this.createToggleCharacteristic({
-        service,
-        characteristicType: Characteristic.RotationSpeed,
-        propertyName: 'fanSpeed',
-        setValuePromise: this.setFanSpeed.bind(this)
+          offData: swingToggle,
+        }
       });
-
-      if (showRotationDirection) {
-        this.createToggleCharacteristic({
-          service,
-          characteristicType: Characteristic.RotationDirection,
-          propertyName: 'rotationDirection',
-          setValuePromise: this.setRotationDirection.bind(this),
-          onData: clockwise,
-          offData: counterClockwise
-        });
-      }
-
-      services.push(service);
     }
 
-    return services;
+    this.serviceManager.addToggleCharacteristic({
+      name: 'fanSpeed',
+      type: Characteristic.RotationSpeed,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        setValuePromise: this.setFanSpeed.bind(this)
+      }
+    });
+
+    if (showRotationDirection) {
+      this.serviceManager.addToggleCharacteristic({
+        name: 'rotationDirection',
+        type: Characteristic.RotationDirection,
+        getMethod: this.getCharacteristicValue,
+        setMethod: this.setCharacteristicValue,
+        bind: this,
+        props: {
+          onData: clockwise,
+          offData: counterClockwise
+        }
+      });
+    }
   }
 }
 

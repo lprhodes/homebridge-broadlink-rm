@@ -1,6 +1,10 @@
 const { expect } = require('chai');
 
-const { getAccessories } = require('./setup')
+const { getAccessories } = require('./helpers/setup')
+
+const log = () => {
+  return null
+}
 
 // disableLogs
 describe('disableLogs', () => {
@@ -18,7 +22,7 @@ describe('disableLogs', () => {
       ]
     };
   
-    const accessories = await getAccessories(config);
+    const accessories = await getAccessories(config, log);
 
     const logFunctionAsString = accessories[0].log.toString();
     const isEmptyFunction = logFunctionAsString === '() => {}';
@@ -39,7 +43,7 @@ describe('disableLogs', () => {
       ]
     };
 
-    const accessories = await getAccessories(config);
+    const accessories = await getAccessories(config, log);
   
     const logFunctionAsString = accessories[0].log.toString();
     const isEmptyFunction = logFunctionAsString === '() => {}';

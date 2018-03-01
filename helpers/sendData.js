@@ -1,10 +1,10 @@
 const assert = require('assert')
 
-const getDevice = require('./getDevice');
+const { getDevice } = require('./getDevice');
 const convertProntoCode = require('./convertProntoCode')
 
 module.exports = ({ host, hexData, log, name, debug }) => {
-  assert(hexData && typeof hexData === 'string', '\x1b[31m[ERROR]: \x1b[30mHEX value is missing')
+  assert(hexData && typeof hexData === 'string', `\x1b[31m[ERROR]: \x1b[30m${name} sendData (HEX value is missing)`)
 
   // Check for pronto code
   if (hexData.substring(0, 4) === '0000') {
@@ -23,6 +23,8 @@ module.exports = ({ host, hexData, log, name, debug }) => {
 
     return log(`\x1b[31m[ERROR] \x1b[30m${name} sendData (no device found at ${host})`);
   }
+
+  // console.log('sendHex', hexData)
 
   if (!device.sendData) return log(`\x1b[31m[ERROR] \x1b[30mThe device at ${device.host.address} (${device.host.macAddress}) doesn't support the sending of IR or RF codes.`);
   if (hexData.includes('5aa5aa555')) return log('\x1b[31m[ERROR] \x1b[30mThis type of hex code (5aa5aa555...) is no longer valid. Use the included "Learn Code" accessory to find new (decrypted) codes.');

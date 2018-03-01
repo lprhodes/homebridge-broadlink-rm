@@ -44,8 +44,6 @@ const discoverDevices = (count = 0) => {
   }, 5 * 1000)
 }
 
-discoverDevices();
-
 broadlink.on('deviceReady', (device) => {
   const macAddressParts = device.mac.toString('hex').match(/[\s\S]{1,2}/g) || []
   const macAddress = macAddressParts.join(':')
@@ -120,4 +118,4 @@ const getDevice = ({ host, log, learnOnly }) => {
   return device;
 }
 
-module.exports = getDevice;
+module.exports = { getDevice, discoverDevices };

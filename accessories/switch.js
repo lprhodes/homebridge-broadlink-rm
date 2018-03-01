@@ -1,41 +1,42 @@
-const ping = require('ping');
-
+const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration')
+const ping = require('../helpers/ping')
 const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config) {
-    super(log, config);
+  constructor (log, config = {}, serviceManagerType) {    
+    super(log, config, serviceManagerType);
 
-    if (config.pingIPAddress) this.checkStateWithPing()
+    if (!config.isUnitTest) this.checkPing(ping)
   }
+  
+  checkPing (ping) {
+    const { config } = this
+    let { pingIPAddress, pingFrequency } = config;
 
-  checkStateWithPing () {
-    const { config, debug, log, state } = this;
-    let { name, pingIPAddress, pingIPAddressStateOnly, pingFrequency } = config;
-
+    if (!pingIPAddress) return
+    
+    // Defaults
     if (!pingFrequency) pingFrequency = 1;
     
-    setInterval(() => {
-      ping.sys.probe(pingIPAddress, (active) => {
-        if (debug) log(`${name} ping "${pingIPAddress}": ${active ? 'active' : 'inactive'}`);
+    // Setup Ping-based State
+    ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this))
+  }
 
-        if (pingIPAddressStateOnly) {
-          state.switchState = active ? 1 : 0;
-          this.switchService.getCharacteristic(Characteristic.On).getValue();
+  pingCallback (active) {
+    const { config, state, serviceManager } = this;
 
-          return
-        }
+    if (config.pingIPAddressStateOnly) {
+      state.switchState = active ? 1 : 0;
+      serviceManager.refreshCharacteristicUI(Characteristic.On);
 
-        if (active) {
-          this.switchService.setCharacteristic(Characteristic.On, 1);
-        } else {
-          this.switchService.setCharacteristic(Characteristic.On, 0);
-        }
-      })
-    }, pingFrequency * 1000);
+      return;
+    }
+    
+    const value = active ? 1 : 0
+    serviceManager.setCharacteristic(Characteristic.On, value);
   }
 
   async setSwitchState (hexData) {
@@ -48,7 +49,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   }
 
   checkAutoOff () {
-    const { config, log, name, state } = this;
+    const { config, log, name, state, serviceManager } = this;
     let { disableAutomaticOff, enableAutoOff, onDuration } = config;
 
     // Set defaults
@@ -65,20 +66,20 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
 
       this.autoOffTimeout = setTimeout(() => {
-        this.switchService.setCharacteristic(Characteristic.On, 0);
+        serviceManager.setCharacteristic(Characteristic.On, 0);
       }, onDuration * 1000);
     }
   }
 
   checkAutoOn () {
-    const { config, log, name, state } = this;
+    const { config, log, name, state, serviceManager } = this;
     let { disableAutomaticOn, enableAutoOn, offDuration } = config;
 
     // Set defaults
     if (enableAutoOn === undefined && disableAutomaticOn === undefined) {
       enableAutoOn = false;
     } else if (disableAutomaticOn !== undefined) {
-      enableAutoOn = !disableAutomaticOn
+      enableAutoOn = !disableAutomaticOn;
     }
 
     if (!offDuration) offDuration = 60;
@@ -89,34 +90,29 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       log(`${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`);
 
       this.autoOnTimeout = setTimeout(() => {
-        this.switchService.setCharacteristic(Characteristic.On, 1);
+        serviceManager.setCharacteristic(Characteristic.On, 1);
       }, offDuration * 1000);
     }
   }
 
-  getServices () {
-    const services = super.getInformationServices();
-
-    const { data, name } = this;
+  setupServiceManager () {
+    const { data, name, config, serviceManagerType } = this;
     const { on, off } = data || { };
+    
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
 
-    const service = new Service.Switch(name);
-    this.addNameService(service);
-
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.On,
-      propertyName: 'switchState',
-      onData: on,
-      offData: off,
-      setValuePromise: this.setSwitchState.bind(this)
-    });
-
-    this.switchService = service;
-
-    services.push(service);
-
-    return services;
+    this.serviceManager.addToggleCharacteristic({
+      name: 'switchState',
+      type: Characteristic.On,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        onData: on,
+        offData: off,
+        setValuePromise: this.setSwitchState.bind(this)
+      }
+    })
   }
 }
 

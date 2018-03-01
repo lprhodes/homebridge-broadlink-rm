@@ -174,8 +174,6 @@ key | description | example | default | required
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
 `showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | No
 `showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | No
-`showV1Fan` | Determines whether we should show the V1 fan or not. | true | false | No
-`showV2Fan` | Determines whether we should show the V2 fan or not. | false | true | No
 
 #### "data" key-value object
 key | description

@@ -1,4 +1,5 @@
 const ping = require('ping');
+const { ServiceManagerTypes } = require('../helpers/serviceManager');
 
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration')
@@ -6,34 +7,24 @@ const SwitchAccessory = require('./switch');
 
 class OutletAccessory extends SwitchAccessory {
 
-  checkStateWithPing () {
-    const { config, debug, log, state } = this;
-    let { pingIPAddress, pingIPAddressStateOnly, name, pingFrequency } = config;
+  pingCallback (active) {
+    const { config, state, serviceManager } = this;
 
-    if (!pingFrequency) pingFrequency = 1;
+    if (config.pingIPAddressStateOnly) {
+      state.outletInUse = active ? 1 : 0;
+      serviceManager.refreshCharacteristicUI(Characteristic.OutletInUse)
+
+      return
+    }
     
-    setInterval(() => {
-      ping.sys.probe(pingIPAddress, (active) => {
-        if (debug) log(`${name} ping "${pingIPAddress}": ${active ? 'active' : 'inactive'}`);
-
-        if (pingIPAddressStateOnly) {
-          state.outletInUse = active ? 1 : 0;
-          this.switchService.getCharacteristic(Characteristic.OutletInUse).getValue();
-
-          return
-        }
-
-        if (active) {
-          this.switchService.setCharacteristic(Characteristic.OutletInUse, 1);
-        } else {
-          this.switchService.setCharacteristic(Characteristic.OutletInUse, 0);
-        }
-      })
-    }, pingFrequency * 1000);
+    const value = active ? 1 : 0
+    serviceManager.setCharacteristic(Characteristic.OutletInUse, value);
   }
 
   setOutletInUse (value, callback) {
-    callback(null, callback)
+    this.state.outletInUse = value
+  
+    callback(null, value)
   }
 
   async setSwitchState (hexData) {
@@ -45,34 +36,37 @@ class OutletAccessory extends SwitchAccessory {
     this.checkAutoOn();
   }
 
-  getServices () {
-    const services = super.getInformationServices();
-
-    const { data, name } = this;
+  setupServiceManager () {
+    const { data, name, config, serviceManagerType } = this;
     const { on, off } = data || { };
+    
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
 
-    const service = new Service.Outlet(name);
-    this.addNameService(service);
+    this.serviceManager.addToggleCharacteristic({
+      name: 'switchState',
+      type: Characteristic.On,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        onData: on,
+        offData: off,
+        setValuePromise: this.setSwitchState.bind(this)
+      }
+    })
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.On,
-      propertyName: 'switchState',
-      onData: on,
-      offData: off,
-      setValuePromise: this.setSwitchState.bind(this)
-    });
+    this.serviceManager.addSetCharacteristic({
+      name: 'outletInUse',
+      type: Characteristic.OutletInUse,
+      method: this.setOutletInUse.bind(this)
+    })
 
-    service.getCharacteristic(Characteristic.OutletInUse)
-      .on('set', this.setOutletInUse)
-      .on('get', this.getCharacteristicValue.bind(this, { propertyName: 'outletInUse' }));
-
-    this.switchService = service;
-
-    services.push(service);
-
-    return services;
+    this.serviceManager.addGetCharacteristic({
+      name: 'outletInUse',
+      type: Characteristic.OutletInUse,
+      method: this.getCharacteristicValue.bind(this, { propertyName: 'outletInUse' })
+    })
   }
 }
 
-module.exports = SwitchAccessory;
+module.exports = OutletAccessory;

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { getAccessories } = require('./setup')
+const { getAccessories } = require('./helpers/setup')
 
 
 describe('learnAccessories', () => {

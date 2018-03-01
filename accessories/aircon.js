@@ -1,5 +1,5 @@
 const BroadlinkRMAccessory = require('./accessory');
-const getDevice = require('../helpers/getDevice');
+const { getDevice } = require('../helpers/getDevice');
 const sendData = require('../helpers/sendData');
 
 class AirConAccessory extends BroadlinkRMAccessory {
