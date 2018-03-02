@@ -236,8 +236,8 @@ key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
 `autoLockDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30 | No | Yes
-`lockDuration` | The amount of time in seconds that the accessory will show a status of "Locking" for. | 2 | 1 | No | No
-`unlockDuration` | The amount of time in seconds that the accessory will show a status of "Unlocking" for. | 2 | 1 | No | No
+`lockDuration` | The amount of time in seconds that the accessory will show a status of "Locking" for. | 2 | 1 | No | Yes
+`unlockDuration` | The amount of time in seconds that the accessory will show a status of "Unlocking" for. | 2 | 1 | No | Yes
 `host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No | No
 
 #### "data" key-value object

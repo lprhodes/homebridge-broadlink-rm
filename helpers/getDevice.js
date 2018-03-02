@@ -49,15 +49,20 @@ broadlink.on('deviceReady', (device) => {
   const macAddress = macAddressParts.join(':')
   device.host.macAddress = macAddress
 
+  console.log(`Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
+  addDevice(device)
+
+  startPing(device)
+  
+})
+
+const addDevice = (device) => {
   if (discoveredDevices[device.host.address] || discoveredDevices[device.host.macAddress]) return;
 
-  console.log(`Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
 
   discoveredDevices[device.host.address] = device;
   discoveredDevices[device.host.macAddress] = device;
-
-  startPing(device)
-})
+}
 
 const getDevice = ({ host, log, learnOnly }) => {
   let device;
@@ -103,4 +108,4 @@ const getDevice = ({ host, log, learnOnly }) => {
   return device;
 }
 
-module.exports = { getDevice, discoverDevices };
+module.exports = { getDevice, discoverDevices, addDevice };

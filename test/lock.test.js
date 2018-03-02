@@ -13,7 +13,7 @@ const { Lock } = require('../accessories')
 describe('lockAccessory', () => {
 
   // Locking -> Locked
-  it('locking -> locked', async () => {
+  it('"lockDuration": 0.2, locking -> locked', async () => {
     setup()
 
     const config = {
@@ -41,7 +41,7 @@ describe('lockAccessory', () => {
 
   
   // Locking -> Locked -> Unlocking -> Unlocked
-  it('locking -> locked -> unlocking -> unlocked', async () => {
+  it('"unlockDuration": 0.2, locking -> locked -> unlocking -> unlocked', async () => {
     setup()
 
     const config = {
@@ -85,11 +85,9 @@ describe('lockAccessory', () => {
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.UNSECURED);
   });
 
-
-
   
-  // Locking -> Locked -> Unlocking -> Unlocked -> Auto-locking -> Loccked
-  it('locking -> locked -> unlocking -> unlocked -> auto-locking -> locked', async () => {
+  // Locking -> Locked -> Unlocking -> Unlocked -> Auto-locking -> Locked
+  it('"autoLockDelay" : true, locking -> locked -> unlocking -> unlocked -> auto-locking -> locked', async () => {
     setup()
 
     const config = {
