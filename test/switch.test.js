@@ -5,10 +5,10 @@ const ping = require('./helpers/fakePing')
 const FakeServiceManager = require('./helpers/fakeServiceManager')
 
 const delayForDuration = require('../helpers/delayForDuration')
+const { getDevice } = require('../helpers/getDevice')
 
 const { Switch } = require('../accessories')
 
-// TODO: Check actual sending of a hex code
 // TODO: Check cancellation of timeouts
 
 describe('switchAccessory', () => {
@@ -18,13 +18,26 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
-        persistState: false
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
+      persistState: false
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
     expect(switchAccessory.state.switchState).to.equal(1);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('ON');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -33,9 +46,14 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: false
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
 
     // Turn On Switch
@@ -45,6 +63,14 @@ describe('switchAccessory', () => {
     // Turn Off Switch
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
     expect(switchAccessory.state.switchState).to.equal(0);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('OFF');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
   });
 
 
@@ -53,6 +79,10 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: false,
       enableAutoOff: true,
       onDuration: 1
@@ -80,6 +110,10 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: false,
       enableAutoOn: true,
       offDuration: 1
@@ -110,6 +144,10 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       name: 'Unit Test Switch',
       persistState: true
     }
@@ -138,6 +176,10 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       name: 'Unit Test Switch',
       persistState: false
     }
@@ -160,6 +202,10 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       pingIPAddress: '192.168.1.1',
       persistState: false,
       isUnitTest: true
@@ -200,6 +246,10 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       pingIPAddress: '192.168.1.1',
       persistState: false,
       pingIPAddressStateOnly: true,      
@@ -223,6 +273,10 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       pingIPAddress: '192.168.1.1',
       persistState: false,
       pingIPAddressStateOnly: false,      
@@ -248,18 +302,26 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: true,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
+
     let switchAccessory
 
     // Turn On Switch
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     expect(switchAccessory.state.switchState).to.equal(1);
+
+    device.resetSentHexCodes()
 
     // Should be on still with a new instance
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
@@ -268,6 +330,14 @@ describe('switchAccessory', () => {
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
     expect(switchAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
+
+    // Check ON hex code was sent
+    const hasSentOnCode = device.hasSentCode('ON');
+    expect(hasSentOnCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -276,11 +346,17 @@ describe('switchAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: true,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
+
+    const device = getDevice({ host: 'TestDevice', log })
     
     let switchAccessory
 
@@ -293,8 +369,18 @@ describe('switchAccessory', () => {
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
     expect(switchAccessory.state.switchState).to.equal(1);
 
+    device.resetSentHexCodes()
+
     // We should find that setCharacteristic has not been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
     expect(switchAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(false);
+
+    // Check ON hex code was not sent
+    const hasSentOnCode = device.hasSentCode('ON');
+    expect(hasSentOnCode).to.equal(false);
+
+    // Check that no code was sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(0);
   });
 })

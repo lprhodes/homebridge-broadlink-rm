@@ -1,13 +1,16 @@
 const sendData = require('../helpers/sendData');
-const BroadlinkRMAccessory = require('./accessory');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
 
-class FanAccessory extends BroadlinkRMAccessory {
+const SwitchAccessory = require('./switch');
+
+class FanAccessory extends SwitchAccessory {
 
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
 
     const allHexKeys = Object.keys(data || {});
+
+    this.reset();
 
     // Create an array of speeds specified in the data config
     const foundSpeeds = [];
@@ -30,6 +33,8 @@ class FanAccessory extends BroadlinkRMAccessory {
     hexData = data[`fanSpeed${closest}`];
 
     sendData({ host, hexData, log, name, debug });
+
+    this.checkAutoOnOff();
   }
 
   setupServiceManager () {
@@ -52,6 +57,7 @@ class FanAccessory extends BroadlinkRMAccessory {
       props: {
         onData: on,
         offData: off,
+        setValuePromise: this.setSwitchState.bind(this)
       }
     });
 

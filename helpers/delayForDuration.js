@@ -1,24 +1,30 @@
+const { TIMEOUT_CANCELLATION } = require('./errors')
+
 function delayForDuration(duration) {
-  let timerID, endTimer
+  let timerID, endTimer, timer
 
   const promiseFunc = function (resolve, reject) {
     endTimer = reject
 
     timerID = setTimeout(() => {
-      resolve()
+      resolve('Timeout Complete')
     }, duration * 1000)
   }
 
   class Timer extends Promise {
 
     cancel () {
-      endTimer()
       clearTimeout(timerID)
-      this.isCanceled = true
+      this.isCancelled = true
+
+      endTimer(new Error(TIMEOUT_CANCELLATION))
     }
   }
 
-    return new Timer(promiseFunc)
+  timer = new Timer(promiseFunc)
+  timer.isCancelled = false
+
+  return timer
 }
 
 module.exports = delayForDuration;

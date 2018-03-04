@@ -2,9 +2,11 @@ const { expect } = require('chai');
 
 const { log, setup } = require('./helpers/setup')
 const ping = require('./helpers/fakePing')
-const FakeServiceManager = require('./helpers/fakeServiceManager')
 
 const delayForDuration = require('../helpers/delayForDuration')
+const FakeServiceManager = require('./helpers/fakeServiceManager')
+
+const { getDevice } = require('../helpers/getDevice')
 
 const { Outlet } = require('../accessories')
 
@@ -17,13 +19,26 @@ describe('outletAccessory', () => {
     setup()
 
     const config = {
+        data: {
+          on: 'ON',
+          off: 'OFF'
+        },
         persistState: false
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
     expect(outletAccessory.state.switchState).to.equal(1);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('ON');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -32,11 +47,16 @@ describe('outletAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: false
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-
+    
     // Turn On Outlet
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     expect(outletAccessory.state.switchState).to.equal(1);
@@ -44,6 +64,14 @@ describe('outletAccessory', () => {
     // Turn Off Outlet
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
     expect(outletAccessory.state.switchState).to.equal(0);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('OFF');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
   });
 
 
@@ -52,13 +80,17 @@ describe('outletAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF',
+      },
       persistState: false,
       enableAutoOff: true,
       onDuration: 1
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-
 
     // Turn On Outlet
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
@@ -71,6 +103,18 @@ describe('outletAccessory', () => {
     await delayForDuration(0.7)
     // Expecting off after 1.1s total
     expect(outletAccessory.state.switchState).to.equal(0);
+
+    // Check ON hex code was sent
+    const hasSentOnCode = device.hasSentCode('ON');
+    expect(hasSentOnCode).to.equal(true);
+
+    // Check OFF hex code was sent
+    const hasSentOffCode = device.hasSentCode('OFF');
+    expect(hasSentOffCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
   }).timeout(4000);
 
 
@@ -79,11 +123,16 @@ describe('outletAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF',
+      },
       persistState: false,
       enableAutoOn: true,
       offDuration: 1
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
 
     // Turn On Outlet
@@ -101,6 +150,18 @@ describe('outletAccessory', () => {
     await delayForDuration(0.7)
     // Expecting on after 1.1s total
     expect(outletAccessory.state.switchState).to.equal(1);
+
+    // Check ON hex code was sent
+    const hasSentOnCode = device.hasSentCode('ON');
+    expect(hasSentOnCode).to.equal(true);
+
+    // Check OFF hex code was sent
+    const hasSentOffCode = device.hasSentCode('OFF');
+    expect(hasSentOffCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(3);
   }).timeout(4000);
 
 
@@ -247,11 +308,17 @@ describe('outletAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: true,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
+
+    const device = getDevice({ host: 'TestDevice', log })
     
     let outletAccessory
 
@@ -259,6 +326,8 @@ describe('outletAccessory', () => {
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     expect(outletAccessory.state.switchState).to.equal(1);
+
+    device.resetSentHexCodes();
 
     // Should be on still with a new instance
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
@@ -267,33 +336,13 @@ describe('outletAccessory', () => {
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
     expect(outletAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
-  });
 
+    // Check ON hex code was sent
+    const hasSentOnCode = device.hasSentCode('ON');
+    expect(hasSentOnCode).to.equal(true);
 
-  // Ensure the hex is not resent after reload
-  it('"resendHexAfterReload": false, "persistState": true', async () => {
-    setup()
-
-    const config = {
-      persistState: true,
-      resendHexAfterReload: false,
-      resendDataAfterReloadDelay: 0.1,
-      isUnitTest: true
-    }
-    
-    let outletAccessory
-
-    // Turn On Outlet
-    outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(outletAccessory.state.switchState).to.equal(1);
-
-    // Should be on still with a new instance
-    outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    expect(outletAccessory.state.switchState).to.equal(1);
-
-    // We should find that setCharacteristic has not been called after a duration of resendHexAfterReloadDelay
-    await delayForDuration(0.3)
-    expect(outletAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(false);
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 })

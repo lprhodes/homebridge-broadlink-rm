@@ -100,7 +100,7 @@ Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex 
 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
 `enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
 `enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No | Yes
@@ -171,7 +171,7 @@ If you don't specify every fan speed then the accessory will choose the hex code
 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
 `showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | No | Yes
 `showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | No | Yes
 
@@ -192,16 +192,16 @@ Turn the light off and the `off` hex code is sent.
 
 If you don't specify every brightness then the accessory will choose the hex code of the brightness closest to the one requested. e.g. If you only specify brightness values of 10%, 50% and 100% then ask "Set light to 40%" then the hex code for 50% will be used.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
 `defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | No
-`useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | No
-`enableAutoOff` | Turn the light off automatically when `onDuration` has been reached. | true | false | No
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No
-`enableAutoOn` | Turn the light on automatically when `offDuration` has been reached | false | true | No
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No
-`onDelay` | The time in seconds between when the on code and the requested brightness code are sent. | 1 | 0.1 | No
+`useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | No | No
+`onDelay` | The time in seconds between when the on code and the requested brightness code are sent. | 1 | 0.1 | No | No
+`enableAutoOff` | Turn the light off automatically when `onDuration` has been reached. | true | false | No | Yes
+`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
+`enableAutoOn` | Turn the light on automatically when `offDuration` has been reached | false | true | No | Yes
+`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
 
 #### "data" key-value object
 key | description
@@ -234,7 +234,7 @@ Set the switch to unlock and the `unlock` hex code is sent, set it to lock and t
 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
 `autoLockDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30 | No | Yes
 `lockDuration` | The amount of time in seconds that the accessory will show a status of "Locking" for. | 2 | 1 | No | Yes
 `unlockDuration` | The amount of time in seconds that the accessory will show a status of "Unlocking" for. | 2 | 1 | No | Yes

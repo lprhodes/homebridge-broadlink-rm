@@ -12,6 +12,7 @@ describe('disableLogs', () => {
   it('disableLogs true returns empty function', async () => {
     const config = {
       hideScanFrequencyButton: true,
+      disableLogs: true,
       hideLearnButton: true,
       accessories: [
         {
@@ -26,7 +27,6 @@ describe('disableLogs', () => {
 
     const logFunctionAsString = accessories[0].log.toString();
     const isEmptyFunction = logFunctionAsString === '() => {}';
-
     
     expect(isEmptyFunction).to.equal(true);
   });

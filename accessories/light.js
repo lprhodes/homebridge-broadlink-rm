@@ -1,198 +1,94 @@
+const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const sendData = require('../helpers/sendData');
-const BroadlinkRMAccessory = require('./accessory');
+const delayForDuration = require('../helpers/delayForDuration');
 
-class LightAccessory extends BroadlinkRMAccessory {
+const SwitchAccessory = require('./switch');
 
-  async setLightState (hexData, previousValue) {
-    const { config, data, host, log, name, state, debug } = this;
+class LightAccessory extends SwitchAccessory {
+
+  async setSwitchState (hexData, previousValue) {
+    const { config, data, host, log, name, state, debug, serviceManager } = this;
     let { defaultBrightness, useLastKnownBrightness } = config;
 
+    this.reset();
+
+    // Defaults
     if (!defaultBrightness) defaultBrightness = 100;
 
-    if (state.lightState) {
-      this.resetAutoOffTimeout();
+    sendData({ host, hexData, log, name, debug });
 
-      if (!previousValue) {
-        if (useLastKnownBrightness && state.brightness > 0) {
-          log(`${name} setLightState: (use last known brightness)`);
-
-          setTimeout(() => {
-            this.lightService.setCharacteristic(Characteristic.Brightness, state.brightness);
-          }, 200); // Add delay to prevent race conditions within Homekit
-        } else {
-          log(`${name} setLightState: (use default brightness)`);
-
-          setTimeout(() => {
-            this.lightService.setCharacteristic(Characteristic.Brightness, defaultBrightness);
-          }, 200); // Add delay to prevent race conditions within Homekit
-        }
-      }
-    } else {
-      this.resetAutoOffTimeout();
-
-      sendData({ host, hexData, log, name, debug });
+    if (state.switchState === true) {
+      const brightness = (useLastKnownBrightness && state.brightness > 0) ? state.brightness : defaultBrightness;
+      log(`${name} setSwitchState: (brightness: ${brightness})`);
+            
+      serviceManager.service.setCharacteristic(Characteristic.Brightness, defaultBrightness);
     }
+
+    this.checkAutoOnOff();
   }
 
   async setHue () {
-    const { config } = this;
-    let { initialDelay } = config;
-
-    // Defaults
-    if (!initialDelay) initialDelay = 0.6;
-
-    this.stopAutoOffTimeout();
-    if (this.initialDelayHueTimeout) clearTimeout(this.initialDelayHueTimeout);
-
-    this.initialDelayHueTimeout = setTimeout(() => {
-      this.setHueAfterTimeout();
-    }, initialDelay * 1000);
-  }
-
-  async setHueAfterTimeout () {
     const { config, data, host, log, name, state, debug } = this;
     const { off, on } = data;
-    let { onDelay } = config;
 
-    if (!onDelay) onDelay = 0.1;
+    this.reset();
 
-    const foundValues = this.dataKeys('hue')
+    if (on) {
+      log(`${name} setBrightness: (turn on, wait ${onDelay}s)`);
+      sendData({ host, hexData: on, log, name, debug });
+
+      log(`${name} setHue: (wait ${onDelay}s then send data)`);
+      this.onDelayTimeoutPromise = delayForDuration(onDelay);
+      await this.onDelayTimeoutPromise;
+    }
 
     // Find hue closest to the one requested
+    const foundValues = this.dataKeys('hue');
     const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.hue) < Math.abs(prev - state.hue) ? curr : prev);
-    log(`${name} setHue: (closest: hue${closest})`)
-
-    // Get the closest hue's hex data
     const hexData = data[`hue${closest}`];
 
-    log(`${name} setHue: (wait ${onDelay}s then send data)`);
-    setTimeout(() => {
-      if (!state.lightState) return;
-
-      log(`${name} setHue: (sendData)`);
-      sendData({ host, hexData, log, name, debug });
-
-      this.resetAutoOffTimeout();
-    }, onDelay * 1000);
+    log(`${name} setHue: (closest: hue${closest})`);
+    sendData({ host, hexData, log, name, debug });
   }
 
   async setBrightness () {
-    const { config } = this;
-    let { initialDelay } = config;
-
-    // Defaults
-    if (!initialDelay) initialDelay = 0.6;
-
-    this.stopAutoOffTimeout();
-    if (this.initialDelayTimeout) clearTimeout(this.initialDelayTimeout);
-
-    this.initialDelayTimeout = setTimeout(() => {
-      this.setBrightnessAfterTimeout();
-    }, initialDelay * 1000);
-  }
-
-  async setBrightnessAfterTimeout () {
     const { config, data, host, log, name, state, debug } = this;
     const { off, on } = data;
     let { onDelay } = config;
 
+    this.reset();
+
+    // Defaults
     if (!onDelay) onDelay = 0.1;
 
     if (state.brightness > 0) {
-      const foundValues = this.dataKeys('brightness')
-
-      // Find brightness closest to the one requested
-      const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.brightness) < Math.abs(prev - state.brightness) ? curr : prev);
-
-      // Get the closest brightness's hex data
-      const hexData = data[`brightness${closest}`];
-
       if (on) {
         log(`${name} setBrightness: (turn on, wait ${onDelay}s)`);
         sendData({ host, hexData: on, log, name, debug });
 
-        setTimeout(() => {
-          if (!state.lightState) return;
-
-          log(`${name} setBrightness: (closest: ${closest})`);
-          sendData({ host, hexData, log, name, debug });
-
-          this.resetAutoOffTimeout();
-        }, onDelay * 1000);
-      } else {
-        log(`setBrightness: (closest: ${closest})`);
-        sendData({ host, hexData, log, name, debug });
-
-        this.resetAutoOffTimeout();
+        log(`${name} setHue: (wait ${onDelay}s then send data)`);
+        this.onDelayTimeoutPromise = delayForDuration(onDelay);
+        await this.onDelayTimeoutPromise;
       }
+
+      // Find brightness closest to the one requested
+      const foundValues = this.dataKeys('brightness')
+      const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.brightness) < Math.abs(prev - state.brightness) ? curr : prev);
+      const hexData = data[`brightness${closest}`];
+  
+      log(`${name} setBrightness: (closest: ${closest})`);
+      sendData({ host, hexData, log, name, debug });
     } else {
       log(`${name} setBrightness: (off)`);
-
-      this.resetAutoOffTimeout();
       sendData({ host, hexData: off, log, name, debug });
     }
-  }
 
-  stopAutoOffTimeout () {
-    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
-    if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
-  }
-
-  resetAutoOffTimeout () {
-    this.checkAutoOff();
-    this.checkAutoOn();
-  }
-
-  checkAutoOff () {
-    const { config, log, name, state } = this;
-    let { disableAutomaticOff, enableAutoOff, onDuration } = config;
-
-    // Set defaults
-    if (enableAutoOff === undefined && disableAutomaticOff === undefined) {
-      enableAutoOff = false;
-    } else if (disableAutomaticOff !== undefined) {
-      enableAutoOff = !disableAutomaticOff
-    }
-    if (!onDuration) onDuration = 60;
-
-    if (this.autoOffTimeout) clearTimeout(this.autoOffTimeout);
-
-    if (state.lightState && enableAutoOff) {
-      log(`${name} setLightState: (automatically turn off in ${onDuration} seconds)`);
-
-      this.autoOffTimeout = setTimeout(() => {
-        this.lightService.setCharacteristic(Characteristic.On, 0);
-      }, onDuration * 1000);
-    }
-  }
-
-  checkAutoOn () {
-    const { config, log, name, state } = this;
-    let { disableAutomaticOn, enableAutoOn, offDuration } = config;
-
-    // Set defaults
-    if (enableAutoOn === undefined && disableAutomaticOn === undefined) {
-      enableAutoOn = false;
-    } else if (disableAutomaticOn !== undefined) {
-      enableAutoOn = !disableAutomaticOn
-    }
-
-    if (!offDuration) offDuration = 60;
-
-    if (this.autoOnTimeout) clearTimeout(this.autoOnTimeout);
-
-    if (!state.lightState && enableAutoOn) {
-      log(`${name} setLightState: (automatically turn on in ${offDuration} seconds)`);
-
-      this.autoOnTimeout = setTimeout(() => {
-        this.lightService.setCharacteristic(Characteristic.On, 1);
-      }, offDuration * 1000);
-    }
+    this.checkAutoOnOff();
   }
 
   dataKeys (filter) {
     const { data } = this;
-    const allHexKeys = Object.keys(data);
+    const allHexKeys = Object.keys(data || {});
 
     if (!filter) return allHexKeys;
 
@@ -204,59 +100,68 @@ class LightAccessory extends BroadlinkRMAccessory {
 
       if (parts.length !== 2) return;
 
-      foundValues.push(parts[1])
+      foundValues.push(parts[1]);
     })
 
     return foundValues
   }
 
-  getServices () {
-    const services = super.getInformationServices();
-    const { data, name } = this;
-    const { on, off, swingToggle } = data;
+  setupServiceManager () {
+    const { data, name, config, serviceManagerType } = this;
+    const { on, off } = data || { };
+    
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Lightbulb, this.log);
 
-    const service = new Service.Lightbulb(name);
-    this.addNameService(service);
+    this.serviceManager.addToggleCharacteristic({
+      name: 'switchState',
+      type: Characteristic.On,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        onData: on,
+        offData: off,
+        setValuePromise: this.setSwitchState.bind(this)
+      }
+    });
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.Brightness,
-      propertyName: 'brightness',
-      setValuePromise: this.setBrightness.bind(this),
-      ignorePreviousValue: true
+    this.serviceManager.addToggleCharacteristic({
+      name: 'brightness',
+      type: Characteristic.Brightness,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        setValuePromise: this.setBrightness.bind(this),
+        ignorePreviousValue: true // TODO: Check what this does and test it
+      }
     });
 
     if (this.dataKeys('hue').length > 0) {
-      this.createToggleCharacteristic({
-        service,
-        characteristicType: Characteristic.Hue,
-        propertyName: 'hue',
-        setValuePromise: this.setHue.bind(this),
-        ignorePreviousValue: true
+      this.serviceManager.addToggleCharacteristic({
+        name: 'hue',
+        type: Characteristic.Hue,
+        getMethod: this.getCharacteristicValue,
+        setMethod: this.setCharacteristicValue,
+        bind: this,
+        props: {
+          setValuePromise: this.setHue.bind(this),
+          ignorePreviousValue: true // TODO: Check what this does and test it
+        }
       });
 
-      this.createToggleCharacteristic({
-        service,
-        characteristicType: Characteristic.Saturation,
-        propertyName: 'Saturation',
-        ignorePreviousValue: true
+      this.serviceManager.addToggleCharacteristic({
+        name: 'saturation',
+        type: Characteristic.Saturation,
+        getMethod: this.getCharacteristicValue,
+        setMethod: this.setCharacteristicValue,
+        bind: this,
+        props: {
+          setValuePromise: this.setHue.bind(this),
+          ignorePreviousValue: true // TODO: Check what this does and test it
+        }
       });
     }
-
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.On,
-      propertyName: 'lightState',
-      onData: on,
-      offData: off,
-      setValuePromise: this.setLightState.bind(this)
-    });
-
-    this.lightService = service;
-
-    services.push(service);
-
-    return services;
   }
 }
 

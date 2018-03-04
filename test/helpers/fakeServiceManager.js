@@ -63,9 +63,9 @@ class FakeCharacteristic {
 
   set (value) {
     this.log('Set Fake Value Received')
-    
+
     return this.setMethod(value, (err, value) => {
-      if (err) throw error
+      if (err) return this.log(err.message)
 
       this.log('Fake Set Callback Received: ', value)
     })

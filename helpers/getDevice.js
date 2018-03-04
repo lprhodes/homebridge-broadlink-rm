@@ -53,12 +53,10 @@ broadlink.on('deviceReady', (device) => {
   addDevice(device)
 
   startPing(device)
-  
 })
 
 const addDevice = (device) => {
-  if (discoveredDevices[device.host.address] || discoveredDevices[device.host.macAddress]) return;
-
+  if (!device.isUnitTestDevice && (discoveredDevices[device.host.address] || discoveredDevices[device.host.macAddress])) return;
 
   discoveredDevices[device.host.address] = device;
   discoveredDevices[device.host.macAddress] = device;

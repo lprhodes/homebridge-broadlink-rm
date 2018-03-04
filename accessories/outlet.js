@@ -32,8 +32,7 @@ class OutletAccessory extends SwitchAccessory {
 
     if (hexData) sendData({ host, hexData, log, name, debug });
 
-    this.checkAutoOff();
-    this.checkAutoOn();
+    this.checkAutoOnOff();
   }
 
   setupServiceManager () {
@@ -53,19 +52,19 @@ class OutletAccessory extends SwitchAccessory {
         offData: off,
         setValuePromise: this.setSwitchState.bind(this)
       }
-    })
+    });
 
     this.serviceManager.addSetCharacteristic({
       name: 'outletInUse',
       type: Characteristic.OutletInUse,
       method: this.setOutletInUse.bind(this)
-    })
+    });
 
     this.serviceManager.addGetCharacteristic({
       name: 'outletInUse',
       type: Characteristic.OutletInUse,
       method: this.getCharacteristicValue.bind(this, { propertyName: 'outletInUse' })
-    })
+    });
   }
 }
 

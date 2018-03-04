@@ -1,6 +1,6 @@
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const sendData = require('../helpers/sendData');
-const delayForDuration = require('../helpers/delayForDuration')
+const delayForDuration = require('../helpers/delayForDuration');
 const ping = require('../helpers/ping')
 const BroadlinkRMAccessory = require('./accessory');
 
@@ -10,6 +10,30 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     super(log, config, serviceManagerType);
 
     if (!config.isUnitTest) this.checkPing(ping)
+  }
+
+  reset () {
+    // Clear Timeouts
+    if (this.delayTimeoutPromise) {
+      this.delayTimeoutPromise.cancel();
+      this.delayTimeoutPromise = null;
+    }
+
+    if (this.autoOffTimeoutPromise) {
+      this.autoOffTimeoutPromise.cancel();
+      this.autoOffTimeoutPromise = null;
+    }
+
+    if (this.autoOffTimeoutPromise) {
+      this.autoOffTimeoutPromise.cancel();
+      this.autoOffTimeoutPromise = null;
+    }
+  }
+
+  checkAutoOnOff () {
+    this.reset();
+    this.checkAutoOn();
+    this.checkAutoOff();
   }
   
   checkPing (ping) {
@@ -44,8 +68,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     if (hexData) sendData({ host, hexData, log, name, debug });
 
-    this.checkAutoOff();
-    this.checkAutoOn();
+    this.checkAutoOnOff();
   }
 
   async checkAutoOff () {
@@ -60,16 +83,12 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     }
     if (!onDuration) onDuration = 60;
 
-    // Clear Timeouts
-    if (this.autoOffTimeoutPromise) {
-      this.autoOffTimeoutPromise.cancel();
-      this.autoOffTimeoutPromise = null;
-    }
-
     if (state.switchState && enableAutoOff) {
       log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
 
-      this.autoOffTimeoutPromise = await delayForDuration(onDuration);
+      this.autoOffTimeoutPromise = delayForDuration(onDuration);
+      await this.autoOffTimeoutPromise;
+
       serviceManager.setCharacteristic(Characteristic.On, 0);
     }
   }
@@ -96,7 +115,9 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     if (!state.switchState && enableAutoOn) {
       log(`${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`);
 
-      this.autoOnTimeoutPromise = await delayForDuration(offDuration)
+      this.autoOnTimeoutPromise = delayForDuration(offDuration);
+      await this.autoOnTimeoutPromise;
+
       serviceManager.setCharacteristic(Characteristic.On, 1);
     }
   }
@@ -118,7 +139,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
         offData: off,
         setValuePromise: this.setSwitchState.bind(this)
       }
-    })
+    });
   }
 }
 

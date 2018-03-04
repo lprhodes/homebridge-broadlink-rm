@@ -3,12 +3,11 @@ const { expect } = require('chai');
 const { log, setup } = require('./helpers/setup')
 const ping = require('./helpers/fakePing')
 const FakeServiceManager = require('./helpers/fakeServiceManager')
+const { getDevice } = require('../helpers/getDevice')
 
 const delayForDuration = require('../helpers/delayForDuration')
 
 const { Lock } = require('../accessories')
-
-// TODO: Check actual sending of a hex code
 
 describe('lockAccessory', () => {
 
@@ -57,6 +56,17 @@ describe('lockAccessory', () => {
     const lockAccessory = new Lock(null, config, 'FakeServiceManager')
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
 
+    const device = getDevice({ host: 'TestDevice', log })
+    let sentHexCodeCount
+
+    // Check hex code was sent
+    const hasSentLockCode = device.hasSentCode('LOCK_HEX')
+    expect(hasSentLockCode).to.equal(true);
+
+    // Check that only one code has been sent
+    sentHexCodeCount = device.getSentHexCodeCount()
+    expect(sentHexCodeCount).to.equal(1);
+    
     // Locking
     expect(lockAccessory.state.lockCurrentState).to.equal(undefined);
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
@@ -73,6 +83,14 @@ describe('lockAccessory', () => {
 
     // Unlocking
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.UNSECURED)
+    
+    // Check hex sent
+    const hasSentUnlockCode = getDevice({ host: 'TestDevice', log }).hasSentCode('UNLOCK_HEX')
+    expect(hasSentUnlockCode).to.equal(true);
+
+    // Check that only one code has been sent
+    sentHexCodeCount = device.getSentHexCodeCount()
+    expect(sentHexCodeCount).to.equal(2);
     
     expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.UNSECURED);
@@ -167,7 +185,8 @@ describe('lockAccessory', () => {
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
 
     // Delay to allow for `lockDuration`
-    await delayForDuration(0.3)
+    await delayForDuration(0.2)
+    expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
     expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
 
     // Should still be locked when loading within a new instance
@@ -188,6 +207,7 @@ describe('lockAccessory', () => {
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.UNSECURED);
     expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.UNSECURED);
   });
+
 
   it('"persistState": false', async () => {
     setup()
@@ -235,6 +255,8 @@ describe('lockAccessory', () => {
       },
       isUnitTest: true
     }
+
+    const device = getDevice({ host: 'TestDevice', log })
     
     let lockAccessory
 
@@ -246,6 +268,8 @@ describe('lockAccessory', () => {
     // Delay to allow for `lockDuration`
     await delayForDuration(0.3)
     expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
+
+    device.resetSentHexCodes();
     
     // Should be locked with a new instance
     lockAccessory = new Lock(null, config, 'FakeServiceManager')
@@ -255,6 +279,14 @@ describe('lockAccessory', () => {
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)    
     expect(lockAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
+    
+    // Check ON hex code was sent
+    const hasSentOnCode = device.hasSentCode('LOCK_HEX');
+    expect(hasSentOnCode).to.equal(true);
+
+    // Check that the code was sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -274,6 +306,8 @@ describe('lockAccessory', () => {
       },
       isUnitTest: true
     }
+
+    const device = getDevice({ host: 'TestDevice', log })
     
     let lockAccessory
 
@@ -285,6 +319,8 @@ describe('lockAccessory', () => {
     // Delay to allow for `lockDuration`
     await delayForDuration(0.3)
     expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
+
+    device.resetSentHexCodes();
     
     // Should be locked with a new instance
     lockAccessory = new Lock(null, config, 'FakeServiceManager')
@@ -294,5 +330,93 @@ describe('lockAccessory', () => {
     // We should find that setCharacteristic has not been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
     expect(lockAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(false);
+
+    // Check ON hex code was not sent
+    const hasSentOnCode = device.hasSentCode('LOCK_HEX');
+    expect(hasSentOnCode).to.equal(false);
+
+    // Check that no code was sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(0);
+  });
+
+
+  // Ensure correctReloadedState is working correctly
+  it('correctReloadedState for interupted unlock - "persistState": true', async () => {
+    setup()
+  
+    const config = {
+      data: {
+        lock: 'LOCK_HEX',
+        unlock: 'UNLOCK_HEX'
+      },
+      persistState: true,
+      resendHexAfterReload: false,
+      isUnitTest: true
+    }
+  
+    const device = getDevice({ host: 'TestDevice', log })
+    
+    let lockAccessory
+  
+    // Lock
+    lockAccessory = new Lock(null, config, 'FakeServiceManager')
+    lockAccessory.serviceManager.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED)
+    lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.UNSECURED)
+    expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.UNSECURED);
+    
+    // Cancel all timers
+    lockAccessory.reset();
+  
+    expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.UNSECURED);
+    expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
+    
+    // Should be locked with a new instance
+    lockAccessory = new Lock(null, config, 'FakeServiceManager')
+    expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
+    expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
+
+    // Cancel all timers
+    lockAccessory.reset();
+  });
+
+
+  // Ensure correctReloadedState is working correctly
+  it('correctReloadedState for interupted lock - "persistState": true', async () => {
+    setup()
+  
+    const config = {
+      data: {
+        lock: 'LOCK_HEX',
+        unlock: 'UNLOCK_HEX'
+      },
+      persistState: true,
+      resendHexAfterReload: false,
+      isUnitTest: true
+    }
+  
+    const device = getDevice({ host: 'TestDevice', log })
+    
+    let lockAccessory
+  
+    // Lock
+    lockAccessory = new Lock(null, config, 'FakeServiceManager')
+    lockAccessory.serviceManager.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED)
+    lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
+    expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
+    
+    // Cancel all timers
+    lockAccessory.reset();
+  
+    expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
+    expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.UNSECURED);
+    
+    // Should be locked with a new instance
+    lockAccessory = new Lock(null, config, 'FakeServiceManager')
+    expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.UNSECURED);
+    expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.UNSECURED);
+
+    // Cancel all timers
+    lockAccessory.reset();
   });
 })

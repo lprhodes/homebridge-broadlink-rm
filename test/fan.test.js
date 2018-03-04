@@ -5,10 +5,10 @@ const ping = require('./helpers/fakePing')
 const FakeServiceManager = require('./helpers/fakeServiceManager')
 
 const delayForDuration = require('../helpers/delayForDuration')
+const { getDevice } = require('../helpers/getDevice')
 
 const { Fan } = require('../accessories')
 
-// TODO: Check actual sending of a hex code
 // TODO: Check the closest hex is chosen for fan speed
 
 describe('fanAccessory', () => {
@@ -18,13 +18,26 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: false
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
     expect(fanAccessory.state.switchState).to.equal(1);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('ON');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -33,9 +46,14 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: false
     }
     
+    const device = getDevice({ host: 'TestDevice', log })
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
     // Turn On Fan
@@ -45,6 +63,14 @@ describe('fanAccessory', () => {
     // Turn Off Fan
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
     expect(fanAccessory.state.switchState).to.equal(0);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('OFF');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
   });
 
 
@@ -221,11 +247,17 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: true,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
+    
+    const device = getDevice({ host: 'TestDevice', log })
     
     let fanAccessory
 
@@ -233,6 +265,8 @@ describe('fanAccessory', () => {
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     expect(fanAccessory.state.switchState).to.equal(1);
+
+    device.resetSentHexCodes()
 
     // Should be on still with a new instance
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
@@ -241,6 +275,14 @@ describe('fanAccessory', () => {
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
     expect(fanAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
+
+    // Check ON hex code was sent
+    const hasSentOnCode = device.hasSentCode('ON');
+    expect(hasSentOnCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -249,11 +291,17 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data: {
+        on: 'ON',
+        off: 'OFF'
+      },
       persistState: true,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
+
+    const device = getDevice({ host: 'TestDevice', log })
     
     let fanAccessory
 
@@ -262,6 +310,8 @@ describe('fanAccessory', () => {
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     expect(fanAccessory.state.switchState).to.equal(1);
 
+    device.resetSentHexCodes()
+
     // Should be on still with a new instance
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
     expect(fanAccessory.state.switchState).to.equal(1);
@@ -269,5 +319,13 @@ describe('fanAccessory', () => {
     // We should find that setCharacteristic has not been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
     expect(fanAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(false);
+
+    // Check ON hex code was not sent
+    const hasSentOnCode = device.hasSentCode('ON');
+    expect(hasSentOnCode).to.equal(false);
+
+    // Check that no code was sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(0);
   });
 })
