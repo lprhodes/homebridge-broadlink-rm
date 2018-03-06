@@ -1,14 +1,12 @@
+const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
 
 class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config) {
-    super(log, config);
+  reset () {
 
-    // Override any user defaults
-    // config.resendHexAfterReload = true;
   }
 
   async setTargetPosition (hexData, previousValue) {
@@ -16,20 +14,21 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     const { stop } = data;
     let { initialDelay } = config;
 
+    // Defaults
     if (!initialDelay) initialDelay = 1;
 
     if (state.targetPosition === previousValue) return;
+
+    this.reset()
 
     if (stop && state.operationID ) {
       log(`${name} setTargetPosition: cancel last operation`);
       this.stop(true);
     }
 
-    if (this.initialDelayTimeout) clearTimeout(this.initialDelayTimeout);
+    this.initialDelayPromise = delayForDuration(initialDelay);
 
-    this.initialDelayTimeout = setTimeout(() => {
-      this.performSetTargetPosition(hexData, previousValue);
-    }, initialDelay * 1000);
+    this.performSetTargetPosition(hexData, previousValue);
   }
 
   async performSetTargetPosition (hexData, previousValue) {
@@ -203,43 +202,6 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       propertyName: 'targetPosition',
       setValuePromise: this.setTargetPosition.bind(this)
     });
-
-    // this.createToggleCharacteristic({
-    //   service,
-    //   characteristicType: Characteristic.CurrentHorizontalTiltAngle,
-    //   propertyName: 'currentHorizontalTiltAngle',
-    // });
-    //
-    // this.createToggleCharacteristic({
-    //   service,
-    //   characteristicType: Characteristic.CurrentVerticalTiltAngle,
-    //   propertyName: 'currentVerticalTiltAngle',
-    // });
-    //
-    // this.createToggleCharacteristic({
-    //   service,
-    //   characteristicType: Characteristic.TargetHorizontalTiltAngle,
-    //   propertyName: 'targetHorizontalTiltAngle',
-    // });
-    //
-    // this.createToggleCharacteristic({
-    //   service,
-    //   characteristicType: Characteristic.TargetVerticalTiltAngle,
-    //   propertyName: 'targetVerticalTiltAngle',
-    // });
-    //
-    // this.createToggleCharacteristic({
-    //   service,
-    //   characteristicType: Characteristic.HoldPosition,
-    //   propertyName: 'holdPosition',
-    // });
-    //
-    // this.createToggleCharacteristic({
-    //   service,
-    //   characteristicType: Characteristic.ObstructionDetected,
-    //   propertyName: 'obstructionDetected',
-    //   defaultValue: false
-    // });
 
     this.windowCoveringService = service;
 

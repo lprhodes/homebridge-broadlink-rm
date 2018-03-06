@@ -120,7 +120,7 @@ Turn the switch on and the switch will send each hex code in the provided array.
 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | Yes | No
+`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | Yes | Yes
 `interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | No
 `enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
@@ -132,15 +132,21 @@ Turn the switch on and the switch will repeatedly send the hex code until it rea
 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | Yes | No
+`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | Yes | Yes
 `sendCount` | The number of times the hex code should be sent. | 5 | 1 | No | No
-`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | No | No
-`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | No | No
-`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | No
+`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | No | Yes
+`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | No | Yes
+`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | Yes
 `enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
 `enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
 `offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
+
+#### "data" key-value object
+key | description
+--- | -----------
+`on` | A hex code string to be sent when the switch is changed to the on position.
+`off` | A hex code string to be sent when the switch is changed to the off position.
 
 ### outlet
 Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
@@ -172,8 +178,8 @@ If you don't specify every fan speed then the accessory will choose the hex code
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
-`showSwingMode` | Determines whether we should hide the swing mode UI or not. | false | true | No | Yes
-`showRotationDirection` | Determines whether we should show the rotation direction UI or not. | false | true | No | Yes
+`hideSwingMode` | Determines whether we should hide the swing mode UI or not. | true | false | No | Yes
+`hideRotationDirection` | Determines whether we should hide the rotation direction UI or not. | true | false | No | Yes
 
 #### "data" key-value object
 key | description
@@ -214,11 +220,13 @@ key | description
 ### garage-door-opener
 Set the switch to open and the `open` hex code is sent, set it to close and the `close` hex code is sent.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`openCloseDuration` | The amount of time in seconds that the accessory will show as "Opening" or "Closing" | 10 | 8 | No
-`autoCloseDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Closing" state. | 10 | 30 | No
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
+`openCloseDuration` | The amount of time in seconds that the accessory will show as "Opening" and "Closing" | 10 | 8 | No | Yes
+`openDuration` | The amount of time in seconds that the accessory will show as "Opening" | 10 | 8 | No | Yes
+`closeDuration` | The amount of time in seconds that the accessory will show as "Closing" | 10 | 8 | No | Yes
+`autoCloseDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Closing" state. | 10 | 30 | Yes | Yes
 `host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No
 
 #### "data" key-value object

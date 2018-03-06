@@ -8,12 +8,11 @@ class FanAccessory extends SwitchAccessory {
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
 
-    const allHexKeys = Object.keys(data || {});
-
     this.reset();
 
     // Create an array of speeds specified in the data config
     const foundSpeeds = [];
+    const allHexKeys = Object.keys(data || {});
 
     allHexKeys.forEach((key) => {
       const parts = key.split('fanSpeed');
@@ -39,12 +38,12 @@ class FanAccessory extends SwitchAccessory {
 
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
-    let { showSwingMode, showRotationDirection } = config;
+    let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection } = config;
     const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
 
     // Defaults
-    if (showSwingMode !== false) showSwingMode = true
-    if (showRotationDirection !== false) showRotationDirection = true
+    if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
+    if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Fanv2, this.log);
 

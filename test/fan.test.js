@@ -11,6 +11,19 @@ const { Fan } = require('../accessories')
 
 // TODO: Check the closest hex is chosen for fan speed
 
+const data = {
+  on: 'ON',
+  off: 'OFF',
+  clockwise: 'CLOCKWISE',
+  counterClockwise: 'COUNTERCLOCKWISE',
+  swingToggle: 'SWINGTOGGLE',
+  fanSpeed5: 'FANSPEED5',
+  fanSpeed10: 'FANSPEED10',
+  fanSpeed20: 'FANSPEED20',
+  fanSpeed30: 'FANSPEED30',
+  fanSpeed40: 'FANSPEED40',
+}
+
 describe('fanAccessory', () => {
 
   // Fan Turn On
@@ -18,10 +31,7 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: false
     }
     
@@ -46,10 +56,7 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: false
     }
     
@@ -75,17 +82,80 @@ describe('fanAccessory', () => {
 
 
   // Fan Speed
-  it('fan seeed set to 20', async () => {
+  it('fan speed set to 20', async () => {
     setup()
 
     const config = {
-      persistState: false
+      persistState: false,
+      data
     }
+    
+    const device = getDevice({ host: 'TestDevice', log })
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 20)
     
     expect(fanAccessory.state.fanSpeed).to.equal(20);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('FANSPEED20');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
+  });
+
+
+  // Fan Speed Closed
+  it('fan speed set to 32 (closest 30)', async () => {
+    setup()
+
+    const config = {
+      data,
+      persistState: false
+    }
+    
+    const device = getDevice({ host: 'TestDevice', log })
+    
+    const fanAccessory = new Fan(null, config, 'FakeServiceManager')
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 32)
+    
+    expect(fanAccessory.state.fanSpeed).to.equal(32);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('FANSPEED30');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
+  });
+
+
+  // Fan Speed Closed
+  it('fan speed set to 36 (closest 40)', async () => {
+    setup()
+
+    const config = {
+      data,
+      persistState: false
+    }
+    
+    const device = getDevice({ host: 'TestDevice', log })
+    
+    const fanAccessory = new Fan(null, config, 'FakeServiceManager')
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 36)
+    
+    expect(fanAccessory.state.fanSpeed).to.equal(36);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('FANSPEED40');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -94,13 +164,24 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data,
       persistState: false
     }
+    
+    const device = getDevice({ host: 'TestDevice', log })
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.SwingMode, 1)
     
     expect(fanAccessory.state.swingMode).to.equal(1);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('SWINGTOGGLE');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -109,8 +190,11 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data,
       persistState: false
     }
+    
+    const device = getDevice({ host: 'TestDevice', log })
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
@@ -121,37 +205,64 @@ describe('fanAccessory', () => {
     // Turn Off Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.SwingMode, 0)
     expect(fanAccessory.state.swingMode).to.equal(0);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('SWINGTOGGLE');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
   });
 
 
   // Hide Swing Mode
-  it('"showSwingMode": false', async () => {
+  it('"hideSwingMode": true', async () => {
     setup()
 
     const config = {
+      data,
       persistState: false,
-      showSwingMode: false,
+      hideSwingMode: true,
     }
     
-    const fanAccessory = new Fan(null, config, 'FakeServiceManager')
+    const device = getDevice({ host: 'TestDevice', log });
+    
+    const fanAccessory = new Fan(null, config, 'FakeServiceManager');
 
     // Attempt To Turn On Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.SwingMode, 1)
     expect(fanAccessory.state.swingMode).to.equal(undefined);
+
+    // Check that no code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(0);
   });
+
 
   // Fan Turn Swing Mode On
   it('rotation direction clockwise', async () => {
-    setup()
+    setup();
 
     const config = {
-        persistState: false
-    }
+      data,
+      persistState: false
+    };
     
-    const fanAccessory = new Fan(null, config, 'FakeServiceManager')
-    fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 1)
+    const device = getDevice({ host: 'TestDevice', log });
+    
+    const fanAccessory = new Fan(null, config, 'FakeServiceManager');
+    fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 1);
     
     expect(fanAccessory.state.rotationDirection).to.equal(1);
+
+    // Check hex code was sent
+    const hasSentCode = device.hasSentCode('CLOCKWISE');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
@@ -160,35 +271,57 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data,
       persistState: false
     }
+    
+    const device = getDevice({ host: 'TestDevice', log });
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
     // Turn On Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 1)
     expect(fanAccessory.state.rotationDirection).to.equal(1);
+
+    // Check hex code was sent
+    let hasSentCode = device.hasSentCode('CLOCKWISE');
+    expect(hasSentCode).to.equal(true);
     
     // Turn Off Swing Mode
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 0)
     expect(fanAccessory.state.rotationDirection).to.equal(0);
+
+    // Check hex code was sent
+    hasSentCode = device.hasSentCode('COUNTERCLOCKWISE');
+    expect(hasSentCode).to.equal(true);
+
+    // Check that only one code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
   });
 
 
   // Hide Rotation Direction
-  it('"showRotationDirection": false', async () => {
+  it('"hideRotationDirection": true', async () => {
     setup()
 
     const config = {
+      data,
       persistState: false,
-      showRotationDirection: false,
+      hideRotationDirection: true,
     }
+    
+    const device = getDevice({ host: 'TestDevice', log });
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
     // Attempt To Set Rotation Direction To Clockwise
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 1)
     expect(fanAccessory.state.rotationDirection).to.equal(undefined);
+
+    // Check that no code has been sent
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(0);
   });
 
 
@@ -198,6 +331,7 @@ describe('fanAccessory', () => {
 
     const config = {
       name: 'Unit Test Fan',
+      data,
       persistState: true
     }
     
@@ -225,6 +359,7 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
+      data,
       name: 'Unit Test Fan',
       persistState: false
     }
@@ -247,10 +382,7 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: true,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
@@ -266,13 +398,16 @@ describe('fanAccessory', () => {
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     expect(fanAccessory.state.switchState).to.equal(1);
 
+    // Wait for resendDataAfterReloadDelay
+    await delayForDuration(0.3)
+
     device.resetSentHexCodes()
 
     // Should be on still with a new instance
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
     expect(fanAccessory.state.switchState).to.equal(1);
 
-    // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
+    // We should find that setCharacteristic has been called after a duration of resendDataAfterReloadDelay
     await delayForDuration(0.3)
     expect(fanAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
 
@@ -291,10 +426,7 @@ describe('fanAccessory', () => {
     setup()
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: true,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
@@ -309,6 +441,9 @@ describe('fanAccessory', () => {
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     expect(fanAccessory.state.switchState).to.equal(1);
+
+    // Wait for resendDataAfterReloadDelay
+    await delayForDuration(0.3)
 
     device.resetSentHexCodes()
 

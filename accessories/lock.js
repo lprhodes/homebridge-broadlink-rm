@@ -21,6 +21,7 @@ class LockAccessory extends BroadlinkRMAccessory {
       this.unlockingTimeoutPromise.cancel();
       this.unlockingTimeoutPromise = null;
     }
+
     if (this.autoLockTimeoutPromise) {
       this.autoLockTimeoutPromise.cancel();
       this.autoLockTimeoutPromise = null
@@ -80,7 +81,6 @@ class LockAccessory extends BroadlinkRMAccessory {
     this.autoLockTimeoutPromise = delayForDuration(autoLockDelay);
     await this.autoLockTimeoutPromise;
 
-    //
     serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
     this.lock()
   }

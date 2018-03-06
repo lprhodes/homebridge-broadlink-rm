@@ -1,11 +1,13 @@
+const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration')
 const SwitchAccessory = require('./switch');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
 class SwitchMultiAccessory extends SwitchAccessory {
 
-  constructor (log, config = {}) {
-    super(log, config)
+  constructor (log, config = {}, serviceManagerType) {    
+    super(log, config, serviceManagerType);
 
     const { data } = this
 
@@ -14,49 +16,65 @@ class SwitchMultiAccessory extends SwitchAccessory {
 
   checkStateWithPing () { }
 
-  async setSwitchState (hexData) {
-    if (hexData) this.performSend(hexData);
+  reset () {
+    super.reset();
+
+    // Clear Timeouts
+    if (this.intervalTimeoutPromise) {
+      this.intervalTimeoutPromise.cancel();
+      this.intervalTimeoutPromise = null;
+    }
   }
 
-  async performSend (data) {
+  async setSwitchState (hexData) {
+    this.reset();
+
+    if (!hexData) {
+      this.checkAutoOnOff();
+
+      return;
+    }
+
     const { config, host, log, name, state, debug } = this;
     let { interval } = config;
 
+    // Defaults
+    if (!interval) interval = 1
+    
+    await catchDelayCancelError(async () => { 
+      // Itterate through each hex config in the array
+      for (let index = 0; index < hexData.length; index++) {
+        const currentHexData = hexData[index]
 
-    // Itterate through each hex config in the array
-    for (let index = 0; index < data.length; index++) {
-      const hexData = data[index]
+        sendData({ host, hexData: currentHexData, log, name, debug });
 
-      sendData({ host, hexData, log, name, debug });
-
-      if (index < data.length - 1) await delayForDuration(interval);
-    }
-
-    this.checkAutoOff();
-    this.checkAutoOn();
-  }
-
-  getServices () {
-    const services = super.getInformationServices();
-    const { data, name } = this;
-
-    const service = new Service.Switch(name);
-    this.addNameService(service);
-
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.On,
-      propertyName: 'switchState',
-      onData: Array.isArray(data) ? data : data.on,
-      offData: Array.isArray(data) ? undefined : data.off,
-      setValuePromise: this.setSwitchState.bind(this)
+        if (index < currentHexData.length - 1) {
+          this.intervalTimeoutPromise = delayForDuration(interval);
+          await this.intervalTimeoutPromise;
+        }
+      }
     })
 
-    services.push(service);
+    this.checkAutoOnOff();
+  }
 
-    this.switchService = service;
+  setupServiceManager () {
+    const { data, name, config, serviceManagerType } = this;
+    
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
 
-    return services;
+    this.serviceManager.addToggleCharacteristic({
+      name: 'switchState',
+      type: Characteristic.On,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        onData: Array.isArray(data) ? data : data.on,
+        offData: Array.isArray(data) ? undefined : data.off,
+        setValuePromise: this.setSwitchState.bind(this)
+      }
+    });
   }
 }
 
