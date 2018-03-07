@@ -13,10 +13,11 @@ describe('lockAccessory', () => {
 
   // Locking -> Locked
   it('"lockDuration": 0.2, locking -> locked', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: false,
+      host: device.host.address,
       lockDuration: 0.2,
       data: {
         lock: 'LOCK_HEX',
@@ -41,10 +42,11 @@ describe('lockAccessory', () => {
   
   // Locking -> Locked -> Unlocking -> Unlocked
   it('"unlockDuration": 0.2, locking -> locked -> unlocking -> unlocked', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: false,
+      host: device.host.address,
       lockDuration: 0.2,
       unlockDuration: 0.2,
       data: {
@@ -56,7 +58,7 @@ describe('lockAccessory', () => {
     const lockAccessory = new Lock(null, config, 'FakeServiceManager')
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     let sentHexCodeCount
 
     // Check hex code was sent
@@ -85,7 +87,7 @@ describe('lockAccessory', () => {
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.UNSECURED)
     
     // Check hex sent
-    const hasSentUnlockCode = getDevice({ host: 'TestDevice', log }).hasSentCode('UNLOCK_HEX')
+    const hasSentUnlockCode = device.hasSentCode('UNLOCK_HEX')
     expect(hasSentUnlockCode).to.equal(true);
 
     // Check that only one code has been sent
@@ -106,10 +108,11 @@ describe('lockAccessory', () => {
   
   // Locking -> Locked -> Unlocking -> Unlocked -> Auto-locking -> Locked
   it('"autoLockDelay" : true, locking -> locked -> unlocking -> unlocked -> auto-locking -> locked', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: false,
+      host: device.host.address,
       lockDuration: 0.2,
       unlockDuration: 0.2,
       autoLockDelay: 0.2,
@@ -164,10 +167,11 @@ describe('lockAccessory', () => {
 
   // Persist State 
   it('"persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       name: 'Unit Test Lock',
+      host: device.host.address,
       persistState: true,
       lockDuration: 0.2,
       unlockDuration: 0.2,
@@ -210,10 +214,11 @@ describe('lockAccessory', () => {
 
 
   it('"persistState": false', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       name: 'Unit Test Lock',
+      host: device.host.address,
       persistState: false,
       lockDuration: 0.2,
       unlockDuration: 0.2,
@@ -241,10 +246,11 @@ describe('lockAccessory', () => {
 
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: true,
+      host: device.host.address,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       lockDuration: 0.2,
@@ -256,7 +262,7 @@ describe('lockAccessory', () => {
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let lockAccessory
 
@@ -292,10 +298,11 @@ describe('lockAccessory', () => {
 
   // Ensure the hex is not resent after reload
   it('"resendHexAfterReload": false, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: true,
+      host: device.host.address,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
       lockDuration: 0.2,
@@ -307,7 +314,7 @@ describe('lockAccessory', () => {
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let lockAccessory
 
@@ -343,19 +350,20 @@ describe('lockAccessory', () => {
 
   // Ensure correctReloadedState is working correctly
   it('correctReloadedState for interupted unlock - "persistState": true', async () => {
-    setup()
+    const { device } = setup();
   
     const config = {
       data: {
         lock: 'LOCK_HEX',
         unlock: 'UNLOCK_HEX'
       },
+      host: device.host.address,
       persistState: true,
       resendHexAfterReload: false,
       isUnitTest: true
     }
   
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let lockAccessory
   
@@ -383,19 +391,20 @@ describe('lockAccessory', () => {
 
   // Ensure correctReloadedState is working correctly
   it('correctReloadedState for interupted lock - "persistState": true', async () => {
-    setup()
+    const { device } = setup();
   
     const config = {
       data: {
         lock: 'LOCK_HEX',
         unlock: 'UNLOCK_HEX'
       },
+      host: device.host.address,
       persistState: true,
       resendHexAfterReload: false,
       isUnitTest: true
     }
   
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let lockAccessory
   

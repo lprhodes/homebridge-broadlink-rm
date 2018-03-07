@@ -28,14 +28,14 @@ describe('fanAccessory', () => {
 
   // Fan Turn On
   it('turns on', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
@@ -53,14 +53,14 @@ describe('fanAccessory', () => {
 
   // Fan Turn On then Off
   it('turns off', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
     // Turn On Fan
@@ -83,14 +83,13 @@ describe('fanAccessory', () => {
 
   // Fan Speed
   it('fan speed set to 20', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
+      host: device.host.address,
       persistState: false,
       data
     }
-    
-    const device = getDevice({ host: 'TestDevice', log })
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 20)
@@ -109,14 +108,15 @@ describe('fanAccessory', () => {
 
   // Fan Speed Closed
   it('fan speed set to 32 (closest 30)', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 32)
@@ -135,14 +135,15 @@ describe('fanAccessory', () => {
 
   // Fan Speed Closed
   it('fan speed set to 36 (closest 40)', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 36)
@@ -161,14 +162,15 @@ describe('fanAccessory', () => {
 
   // Fan Turn Swing Mode On
   it('swing mode on', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.SwingMode, 1)
@@ -187,14 +189,15 @@ describe('fanAccessory', () => {
 
   // Fan Turn Swing Mode On then Off
   it('swing mode off', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
@@ -218,15 +221,16 @@ describe('fanAccessory', () => {
 
   // Hide Swing Mode
   it('"hideSwingMode": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false,
       hideSwingMode: true,
     }
     
-    const device = getDevice({ host: 'TestDevice', log });
+    ;
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager');
 
@@ -242,14 +246,15 @@ describe('fanAccessory', () => {
 
   // Fan Turn Swing Mode On
   it('rotation direction clockwise', async () => {
-    setup();
+    const { device } = setup();;
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     };
     
-    const device = getDevice({ host: 'TestDevice', log });
+    ;
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager');
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 1);
@@ -268,14 +273,15 @@ describe('fanAccessory', () => {
 
   // Set Rotation Direction To Clockwise Then Anti-clockwise
   it('rotation direction anti-clockwise', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log });
+    ;
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
@@ -303,15 +309,16 @@ describe('fanAccessory', () => {
 
   // Hide Rotation Direction
   it('"hideRotationDirection": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false,
       hideRotationDirection: true,
     }
     
-    const device = getDevice({ host: 'TestDevice', log });
+    ;
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
@@ -327,11 +334,12 @@ describe('fanAccessory', () => {
 
   // Persist State 
   it('"persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       name: 'Unit Test Fan',
       data,
+      host: device.host.address,
       persistState: true
     }
     
@@ -356,10 +364,11 @@ describe('fanAccessory', () => {
   });
 
   it('"persistState": false', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       name: 'Unit Test Fan',
       persistState: false
     }
@@ -379,17 +388,18 @@ describe('fanAccessory', () => {
 
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: true,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let fanAccessory
 
@@ -423,17 +433,18 @@ describe('fanAccessory', () => {
 
   // Ensure the hex is not resent after reload
   it('"resendHexAfterReload": false, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: true,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let fanAccessory
 

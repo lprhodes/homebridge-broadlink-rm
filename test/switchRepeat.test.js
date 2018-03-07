@@ -15,20 +15,21 @@ describe('switchRepeatAccessory', () => {
 
   // Switch Turn On
   it('turns on', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
@@ -51,20 +52,21 @@ describe('switchRepeatAccessory', () => {
 
   // Switch Turn On then Off
   it('turns off', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
 
     // Turn On Switch
@@ -95,13 +97,14 @@ describe('switchRepeatAccessory', () => {
 
   // Auto Off
   it('"enableAutoOff": true, "onDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
@@ -137,13 +140,14 @@ describe('switchRepeatAccessory', () => {
 
   // Auto On
   it('"enableAutoOn": true, "offDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
@@ -182,13 +186,14 @@ describe('switchRepeatAccessory', () => {
 
   // Persist State 
   it('"persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
@@ -228,13 +233,14 @@ describe('switchRepeatAccessory', () => {
   });
 
   it('"persistState": false', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
@@ -261,13 +267,14 @@ describe('switchRepeatAccessory', () => {
 
   // IP Address used to for state
   it('"pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       pingIPAddress: '192.168.1.1',
       persistState: false,
       isUnitTest: true
@@ -289,10 +296,11 @@ describe('switchRepeatAccessory', () => {
   });
 
   it('"pingIPAddress": "192.168.1.1", host down', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       pingIPAddress: '192.168.1.1',
+      host: device.host.address,
       persistState: false,
       isUnitTest: true
     }
@@ -315,13 +323,14 @@ describe('switchRepeatAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": true, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       pingIPAddress: '192.168.1.1',
       persistState: false,
       pingIPAddressStateOnly: true,      
@@ -344,13 +353,14 @@ describe('switchRepeatAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": false, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       pingIPAddress: '192.168.1.1',
       persistState: false,
       pingIPAddressStateOnly: false,      
@@ -375,13 +385,14 @@ describe('switchRepeatAccessory', () => {
 
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
@@ -391,7 +402,7 @@ describe('switchRepeatAccessory', () => {
       isUnitTest: true
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
 
     let switchAccessory
 
@@ -433,13 +444,14 @@ describe('switchRepeatAccessory', () => {
 
   // Ensure the hex is not resent after reload
   it('"resendHexAfterReload": false, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       onSendCount: 3,
       offSendCount: 2,
       interval: 0.1,
@@ -449,7 +461,7 @@ describe('switchRepeatAccessory', () => {
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let switchAccessory
 

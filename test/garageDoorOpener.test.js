@@ -20,10 +20,11 @@ describe('doorAccessory', () => {
 
   // Closing -> Closed
   it('"closeDuration": 0.2, closing -> closed', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: false,
+      host: device.host.address,
       closeDuration: 0.2,
       data
     }
@@ -45,10 +46,11 @@ describe('doorAccessory', () => {
   
   // Closing -> Closed -> Opening -> Opened
   it('"openDuration": 0.2, closing -> closed -> opening -> opened', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: false,
+      host: device.host.address,
       closeDuration: 0.2,
       openDuration: 0.2,
       data
@@ -57,7 +59,7 @@ describe('doorAccessory', () => {
     const doorAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
     doorAccessory.serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.CLOSED)
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     let sentHexCodeCount
 
     // Check hex code was sent
@@ -86,7 +88,7 @@ describe('doorAccessory', () => {
     doorAccessory.serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.OPEN)
     
     // Check hex sent
-    const hasSentOpenCode = getDevice({ host: 'TestDevice', log }).hasSentCode('OPEN_HEX')
+    const hasSentOpenCode = device.hasSentCode('OPEN_HEX')
     expect(hasSentOpenCode).to.equal(true);
 
     // Check that only one code has been sent
@@ -107,10 +109,11 @@ describe('doorAccessory', () => {
   
   // Closing -> Closed -> Opening -> Opened -> Auto-closing -> Closed
   it('"autoCloseDelay" : true, closing -> closed -> opening -> opened -> auto-closing -> closed', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: false,
+      host: device.host.address,
       closeDuration: 0.2,
       openDuration: 0.2,
       autoCloseDelay: 0.2,
@@ -162,10 +165,11 @@ describe('doorAccessory', () => {
 
   // Persist State 
   it('"persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       name: 'Unit Test Door',
+      host: device.host.address,
       persistState: true,
       closeDuration: 0.2,
       openDuration: 0.2,
@@ -205,10 +209,11 @@ describe('doorAccessory', () => {
 
 
   it('"persistState": false', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       name: 'Unit Test Door',
+      host: device.host.address,
       persistState: false,
       closeDuration: 0.2,
       openDuration: 0.2,
@@ -233,10 +238,11 @@ describe('doorAccessory', () => {
 
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: true,
+      host: device.host.address,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       closeDuration: 0.2,
@@ -245,14 +251,15 @@ describe('doorAccessory', () => {
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
-    
     let doorAccessory
 
     // Close
     doorAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
     doorAccessory.serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.CLOSED)
     expect(doorAccessory.state.doorTargetState).to.equal(Characteristic.TargetDoorState.CLOSED);
+
+    // Wait for resendDataAfterReloadDelay
+    await delayForDuration(0.3)
 
     // Delay to allow for `closeDuration`
     await delayForDuration(0.3)
@@ -266,7 +273,7 @@ describe('doorAccessory', () => {
     expect(doorAccessory.state.doorCurrentState).to.equal(Characteristic.CurrentDoorState.CLOSED);
 
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
-    await delayForDuration(0.3)    
+    await delayForDuration(0.3);
     expect(doorAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
     
     // Check ON hex code was sent
@@ -275,17 +282,17 @@ describe('doorAccessory', () => {
 
     // Check that the code was sent
     const sentHexCodeCount = device.getSentHexCodeCount();
-
-    expect(sentHexCodeCount).to.equal(2); // One for the door state and one for the lock state
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
   // Ensure the hex is not resent after reload
   it('"resendHexAfterReload": false, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       persistState: true,
+      host: device.host.address,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
       closeDuration: 0.2,
@@ -294,7 +301,7 @@ describe('doorAccessory', () => {
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let doorAccessory
 
@@ -302,6 +309,9 @@ describe('doorAccessory', () => {
     doorAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
     doorAccessory.serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.CLOSED)
     expect(doorAccessory.state.doorTargetState).to.equal(Characteristic.TargetDoorState.CLOSED);
+
+    // Wait for resendDataAfterReloadDelay
+    await delayForDuration(0.3)
 
     // Delay to allow for `closeDuration`
     await delayForDuration(0.3)
@@ -330,16 +340,17 @@ describe('doorAccessory', () => {
 
   // Ensure correctReloadedState is working correctly
   it('correctReloadedState for interupted open - "persistState": true', async () => {
-    setup()
+    const { device } = setup();
   
     const config = {
       data,
+      host: device.host.address,
       persistState: true,
       resendHexAfterReload: false,
       isUnitTest: true
     }
   
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let doorAccessory
   
@@ -375,14 +386,15 @@ describe('doorAccessory', () => {
 
   // Lock
   it('lock', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     const lockAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
@@ -403,15 +415,14 @@ describe('doorAccessory', () => {
   
   // Unlock
   it('unlock', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data,
+      host: device.host.address,
       persistState: false
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
-    
     const lockAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
 
     // Lock
@@ -438,7 +449,7 @@ describe('doorAccessory', () => {
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.UNSECURED)
     
     // Check hex sent
-    const hasSentUnlockCode = getDevice({ host: 'TestDevice', log }).hasSentCode('UNLOCK_HEX')
+    const hasSentUnlockCode = device.hasSentCode('UNLOCK_HEX')
     expect(hasSentUnlockCode).to.equal(true);
 
     // Check that only one code has been sent

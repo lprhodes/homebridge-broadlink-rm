@@ -2,7 +2,7 @@ const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
-const catchDelayCancelError = require('../helpers/catchDelayCancelError')
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
 class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
 

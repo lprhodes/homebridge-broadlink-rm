@@ -9,23 +9,26 @@ const { getDevice } = require('../helpers/getDevice')
 
 const { Switch } = require('../accessories')
 
+const data = {
+  on: 'ON',
+  off: 'OFF'
+}
+
 // TODO: Check cancellation of timeouts
 
 describe('switchAccessory', () => {
 
   // Switch Turn On
   it('turns on', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
-      persistState: false
+      data,
+      persistState: false,
+      host: device.host.address
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
@@ -43,17 +46,14 @@ describe('switchAccessory', () => {
 
   // Switch Turn On then Off
   it('turns off', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
-      persistState: false
+      data,
+      persistState: false,
+      host: device.host.address
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
 
     // Turn On Switch
@@ -65,8 +65,8 @@ describe('switchAccessory', () => {
     expect(switchAccessory.state.switchState).to.equal(0);
 
     // Check hex code was sent
-    const hasSentCode = device.hasSentCode('OFF');
-    expect(hasSentCode).to.equal(true);
+    const hasSentCodes = device.hasSentCodes([ 'ON', 'OFF' ]);
+    expect(hasSentCodes).to.equal(true);
 
     // Check that only one code has been sent
     const sentHexCodeCount = device.getSentHexCodeCount();
@@ -76,14 +76,12 @@ describe('switchAccessory', () => {
 
   // Auto Off
   it('"enableAutoOff": true, "onDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: false,
+      host: device.host.address,
       enableAutoOff: true,
       onDuration: 1
     }
@@ -107,14 +105,12 @@ describe('switchAccessory', () => {
 
   // Auto On
   it('"enableAutoOn": true, "offDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: false,
+      host: device.host.address,
       enableAutoOn: true,
       offDuration: 1
     }
@@ -141,13 +137,11 @@ describe('switchAccessory', () => {
 
   // Persist State 
   it('"persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
+      host: device.host.address,
       name: 'Unit Test Switch',
       persistState: true
     }
@@ -173,15 +167,13 @@ describe('switchAccessory', () => {
   });
 
   it('"persistState": false', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
-      name: 'Unit Test Switch',
-      persistState: false
+      data,
+      persistState: false,
+      host: device.host.address,
+      name: 'Unit Test Switch'
     }
     
     let switchAccessory
@@ -199,15 +191,13 @@ describe('switchAccessory', () => {
 
   // IP Address used to for state
   it('"pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
-      pingIPAddress: '192.168.1.1',
+      data,
       persistState: false,
+      host: device.host.address,
+      pingIPAddress: '192.168.1.1',
       isUnitTest: true
     }
     
@@ -222,11 +212,13 @@ describe('switchAccessory', () => {
   });
 
   it('"pingIPAddress": "192.168.1.1", host down', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      pingIPAddress: '192.168.1.1',
+      data,
       persistState: false,
+      host: device.host.address,
+      pingIPAddress: '192.168.1.1',
       isUnitTest: true
     }
     
@@ -243,15 +235,13 @@ describe('switchAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": true, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
-      pingIPAddress: '192.168.1.1',
+      data,
       persistState: false,
+      host: device.host.address,
+      pingIPAddress: '192.168.1.1',
       pingIPAddressStateOnly: true,      
       isUnitTest: true
     }
@@ -270,15 +260,13 @@ describe('switchAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": false, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
-      pingIPAddress: '192.168.1.1',
+      data,
       persistState: false,
+      host: device.host.address,
+      pingIPAddress: '192.168.1.1',
       pingIPAddressStateOnly: false,      
       isUnitTest: true
     }
@@ -299,21 +287,17 @@ describe('switchAccessory', () => {
 
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: true,
+      host: device.host.address,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
-
     let switchAccessory
 
     // Turn On Switch
@@ -343,21 +327,17 @@ describe('switchAccessory', () => {
 
   // Ensure the hex is not resent after reload
   it('"resendHexAfterReload": false, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
-      data: {
-        on: 'ON',
-        off: 'OFF'
-      },
+      data,
       persistState: true,
+      host: device.host.address,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
-    
     let switchAccessory
 
     // Turn On Switch

@@ -16,17 +16,18 @@ describe('outletAccessory', () => {
 
   // Outlet Turn On
   it('turns on', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
         data: {
           on: 'ON',
           off: 'OFF'
         },
+        host: device.host.address,
         persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
     outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
@@ -44,17 +45,18 @@ describe('outletAccessory', () => {
 
   // Outlet Turn On then Off
   it('turns off', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF'
       },
+      host: device.host.address,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
     
     // Turn On Outlet
@@ -77,19 +79,20 @@ describe('outletAccessory', () => {
 
   // Auto Off
   it('"enableAutoOff": true, "onDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF',
       },
+      host: device.host.address,
       persistState: false,
       enableAutoOff: true,
       onDuration: 1
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
 
     // Turn On Outlet
@@ -120,19 +123,20 @@ describe('outletAccessory', () => {
 
   // Auto On
   it('"enableAutoOn": true, "offDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: 'ON',
         off: 'OFF',
       },
+      host: device.host.address,
       persistState: false,
       enableAutoOn: true,
       offDuration: 1
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
 
     // Turn On Outlet
@@ -167,10 +171,11 @@ describe('outletAccessory', () => {
 
   // Persist State 
   it('"persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       name: 'Unit Test Outlet',
+      host: device.host.address,
       persistState: true
     }
     
@@ -195,7 +200,7 @@ describe('outletAccessory', () => {
   });
 
   it('"persistState": false', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       name: 'Unit Test Outlet',
@@ -217,10 +222,11 @@ describe('outletAccessory', () => {
 
   // IP Address used to for state
   it('"pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       pingIPAddress: '192.168.1.1',
+      host: device.host.address,
       persistState: false,
       isUnitTest: true
     }
@@ -236,7 +242,7 @@ describe('outletAccessory', () => {
   });
 
   it('"pingIPAddress": "192.168.1.1", host down', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       pingIPAddress: '192.168.1.1',
@@ -257,11 +263,12 @@ describe('outletAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": true, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       pingIPAddress: '192.168.1.1',
       persistState: false,
+      host: device.host.address,
       pingIPAddressStateOnly: true,      
       isUnitTest: true
     }
@@ -280,11 +287,12 @@ describe('outletAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": false, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       pingIPAddress: '192.168.1.1',
       persistState: false,
+      host: device.host.address,
       pingIPAddressStateOnly: false,      
       isUnitTest: true
     }
@@ -305,7 +313,7 @@ describe('outletAccessory', () => {
 
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
@@ -314,11 +322,12 @@ describe('outletAccessory', () => {
       },
       persistState: true,
       resendHexAfterReload: true,
+      host: device.host.address,
       resendDataAfterReloadDelay: 0.1,
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
+    
     
     let outletAccessory
 

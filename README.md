@@ -200,10 +200,10 @@ If you don't specify every brightness then the accessory will choose the hex cod
 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | No
-`defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | No
-`useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | No | No
-`onDelay` | The time in seconds between when the on code and the requested brightness code are sent. | 1 | 0.1 | No | No
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
+`defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | Yes
+`useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | No | Yes
+`onDelay` | If the `on` hex data is specified in the `data` value, this will determine the seconds between when the on code and the requested brightness code are sent. | 1 | 0.1 | No | Yes
 `enableAutoOff` | Turn the light off automatically when `onDuration` has been reached. | true | false | No | Yes
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
 `enableAutoOn` | Turn the light on automatically when `offDuration` has been reached | false | true | No | Yes
@@ -215,7 +215,7 @@ key | description
 `off` | A hex code string to be sent when the switch is changed to the off position.
 `brightnessX` | A hex code string where X is any brightness you wish to support e.g. "brightness100".
 `hueX` | A hex code string where X is any hue you wish to support between 0 and 359 e.g. "hue42".
-`on` | You only need t add this if you need to send an `on` code before the `brightnessX` code is sent
+`on` | If set, this hex code shall be sent before brightness or hue is set using `onDelay` to create a delay between sends.
 
 ### garage-door-opener
 Set the switch to open and the `open` hex code is sent, set it to close and the `close` hex code is sent.
@@ -255,17 +255,18 @@ key | description
 `lock` | A hex code string to be sent when the switch is set to lock.
 
 ### window-covering
-The window-covering accessory designed to be used by IR_RF controlled blinds_shades/shutters.
+The window-covering accessory designed to be used by IR/RF controlled blinds-shades/shutters.
 
-The accessory will calculate how many times the open and close hex code needs to be sent based on the existing % and requested %. In order to do this a `percentageChangePerSend` needs to be set. e.g. If it takes 10 sends of the code to open the covering then the value of `percentageChangePerSend` should be 10. If it takes 20 then it should be 5.
+The accessory will determine how long the window-covering should continue opening/closing for based on the previous position and target position along with the `totalDurationOpen` and `totalDurationClose` values.
 
-If you simply want to open or close the blinds with a single hex code then you could set `percentageChangePerSend` to 100 which will just sent the command once.
+The `window-covering` will first send the `open`/`close` hex code, wait for the calculated amount of time as explained above, then send the `stop` hex code. Concurrently, the % shown in the Home app will be updated at intervals.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-totalDurationOpen | The amount of time in seconds it takes to open the window-covering completely. | 45 | - | Yes
-`totalDurationClose` | The amount of time in seconds it takes to close the window-covering completely. It will work these values out based on the total. | 45 | - | Yes
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
+`totalDurationOpen` | The amount of time in seconds it takes to open the window-covering completely. | 30 | 45 | Yes | Yes
+`totalDurationClose` | The amount of time in seconds it takes to close the window-covering completely. The value shall be used to determine what percentage to show in the Home app as well as when to send the `stop` code. | 30 | 45 | Yes | Yes
+`initialDelay` | This allows multiple `window-covering` accessories to be updated at the same time without RF/IR interference from one-another by adding an offset to each `window-covering` accessory | 1 | 0.1 | No | Yes
 `sendStopAt0` | Determines where the stop command is sent when the blind position reaches 0% | true | false | No
 `sendStopAt100` | Determines where the stop command is sent when the blind position reaches 100% | true | false | No
 

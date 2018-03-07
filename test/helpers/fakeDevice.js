@@ -1,9 +1,13 @@
+const uuid = require('uuid')
+
 class FakeDevice {
 
   constructor () {
+    const identifier = uuid.v4()
+
     this.host = {
-      address: 'TestDevice',
-      macAddress: 'te:st:de:vi:ce'
+      address: identifier,
+      macAddress: identifier
     }
 
     this.isUnitTestDevice = true

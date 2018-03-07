@@ -15,18 +15,19 @@ describe('switchMultiAccessory', () => {
 
   // Switch Turn On
   it('turns on', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const switchAccessory = new SwitchMulti(log, config, 'FakeServiceManager')
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
     
@@ -51,18 +52,19 @@ describe('switchMultiAccessory', () => {
 
   // Switch Turn On then Off
   it('turns off', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       persistState: false
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
     const switchAccessory = new SwitchMulti(log, config, 'FakeServiceManager')
 
     // Turn On Switch
@@ -95,13 +97,14 @@ describe('switchMultiAccessory', () => {
 
   // Auto Off
   it('"enableAutoOff": true, "onDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       persistState: false,
       enableAutoOff: true,
@@ -130,13 +133,14 @@ describe('switchMultiAccessory', () => {
 
   // Auto On
   it('"enableAutoOn": true, "offDuration": 1', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       persistState: false,
       enableAutoOn: true,
@@ -169,13 +173,14 @@ describe('switchMultiAccessory', () => {
 
   // Persist State 
   it('"persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       name: 'Unit Test Switch',
       persistState: true
@@ -204,13 +209,14 @@ describe('switchMultiAccessory', () => {
   });
 
   it('"persistState": false', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       name: 'Unit Test Switch',
       persistState: false
@@ -232,13 +238,14 @@ describe('switchMultiAccessory', () => {
 
   // IP Address used to for state
   it('"pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       pingIPAddress: '192.168.1.1',
       persistState: false,
@@ -256,13 +263,14 @@ describe('switchMultiAccessory', () => {
   });
 
   it('"pingIPAddress": "192.168.1.1", host down', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       pingIPAddress: '192.168.1.1',
       persistState: false,
@@ -282,13 +290,14 @@ describe('switchMultiAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": true, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       pingIPAddress: '192.168.1.1',
       persistState: false,
@@ -310,13 +319,14 @@ describe('switchMultiAccessory', () => {
   });
 
   it('"pingIPAddressStateOnly": false, "pingIPAddress": "192.168.1.1", host up', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       pingIPAddress: '192.168.1.1',
       persistState: false,
@@ -340,13 +350,14 @@ describe('switchMultiAccessory', () => {
 
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       persistState: true,
       resendHexAfterReload: true,
@@ -354,7 +365,7 @@ describe('switchMultiAccessory', () => {
       isUnitTest: true
     }
     
-    const device = getDevice({ host: 'TestDevice', log })
+    
 
     let switchAccessory
 
@@ -391,13 +402,14 @@ describe('switchMultiAccessory', () => {
 
   // Ensure the hex is not resent after reload
   it('"resendHexAfterReload": false, "persistState": true', async () => {
-    setup()
+    const { device } = setup();
 
     const config = {
       data: {
         on: [ 'ON1', 'ON2' ],
         off: [ 'OFF1', 'OFF2' ]
       },
+      host: device.host.address,
       interval: 0.1,
       persistState: true,
       resendHexAfterReload: false,
@@ -405,20 +417,22 @@ describe('switchMultiAccessory', () => {
       isUnitTest: true
     }
 
-    const device = getDevice({ host: 'TestDevice', log })
-    
     let switchAccessory
 
     // Turn On Switch
     switchAccessory = new SwitchMulti(log, config, 'FakeServiceManager')
     switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
+
+    // Wait for multiple codes to be sent
+    await delayForDuration(0.3)
+
+    device.resetSentHexCodes()
+
     expect(switchAccessory.state.switchState).to.equal(1);
 
     // Should be on still with a new instance
     switchAccessory = new SwitchMulti(log, config, 'FakeServiceManager')
     expect(switchAccessory.state.switchState).to.equal(1);
-
-    device.resetSentHexCodes()
 
     // We should find that setCharacteristic has not been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)

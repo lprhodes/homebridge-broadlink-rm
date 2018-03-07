@@ -21,11 +21,11 @@ const setup = (config) => {
   const device = new FakeDevice()
   addDevice(device)
 
-  return platform
+  return { platform, device }
 }
 
 const getAccessories = (config, replacementLog) => {
-  const platform = setup(config)
+  const { platform, device } = setup(config)
 
   const accessoriesPromise = new Promise((resolve, reject) => {
     platform.accessories(resolve);
