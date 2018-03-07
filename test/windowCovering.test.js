@@ -13,8 +13,8 @@ const data = {
   open: 'OPEN',
   close: 'CLOSE',
   stop: 'STOP',
-//   openCompletely: 'OPEN_COMPLETELY',
-//   closeCompletely: 'CLOSE_COMPLETELY',
+  openCompletely: 'OPEN_COMPLETELY',
+  closeCompletely: 'CLOSE_COMPLETELY',
 };
 
 // TODO: Check cancellation of timeouts
@@ -26,6 +26,8 @@ describe('windowCoveringAccessory', () => {
 
     const config = {
       data,
+      totalDurationOpen: 5,
+      totalDurationClose: 5,
       persistState: false,
       host: device.host.address
     }
@@ -33,8 +35,6 @@ describe('windowCoveringAccessory', () => {
     const switchAccessory = new WindowCovering(null, config, 'FakeServiceManager');
     
     expect(switchAccessory.config.initialDelay).to.equal(0.1);
-    expect(switchAccessory.config.totalDurationOpen).to.equal(45);
-    expect(switchAccessory.config.totalDurationClose).to.equal(45);
   })
 
   it ('custom config', async () => {
@@ -52,8 +52,6 @@ describe('windowCoveringAccessory', () => {
     const switchAccessory = new WindowCovering(null, config, 'FakeServiceManager');
     
     expect(switchAccessory.config.initialDelay).to.equal(0.5);
-    expect(switchAccessory.config.totalDurationOpen).to.equal(5);
-    expect(switchAccessory.config.totalDurationClose).to.equal(5);
   })
 
   it ('determineOpenCloseDurationPerPercent', async () => {
@@ -61,6 +59,8 @@ describe('windowCoveringAccessory', () => {
 
     const config = {
       data,
+      totalDurationOpen: 5,
+      totalDurationClose: 5,
       persistState: false,
       host: device.host.address
     };
@@ -93,7 +93,8 @@ describe('windowCoveringAccessory', () => {
 
     const config = {
       data,
-      totalDurationOpen: 5, 
+      totalDurationOpen: 2,
+      totalDurationClose: 1,
       persistState: false,
       host: device.host.address
     }
@@ -133,7 +134,8 @@ describe('windowCoveringAccessory', () => {
 
     const config = {
       data,
-      totalDurationOpen: 5, 
+      totalDurationOpen: 2, 
+      totalDurationClose: 1,
       persistState: false,
       host: device.host.address
     }
@@ -184,7 +186,7 @@ describe('windowCoveringAccessory', () => {
 
     const config = {
       data,
-      totalDurationOpen: 5, 
+      totalDurationOpen: 2, 
       totalDurationClose: 3, 
       persistState: false,
       host: device.host.address
@@ -243,6 +245,7 @@ describe('windowCoveringAccessory', () => {
       data,
       initialDelay: 1,
       totalDurationOpen: 2, 
+      totalDurationClose: 1,
       persistState: false,
       host: device.host.address
     }
@@ -267,5 +270,95 @@ describe('windowCoveringAccessory', () => {
     expect(sentHexCodeCount).to.equal(0);
     
   }).timeout(6000);
+
   
+  // Open blinds to 100%
+  it('0% -> 100%', async () => {
+    const { device } = setup();
+
+    const config = {
+      data,
+      totalDurationOpen: 1,
+      totalDurationClose: 1,
+      persistState: false,
+      host: device.host.address
+    }
+    
+    const switchAccessory = new WindowCovering(null, config, 'FakeServiceManager')
+
+    const durationPerPercent = switchAccessory.determineOpenCloseDurationPerPercent({
+      opening: true,
+      totalDurationOpen: config.totalDurationOpen,
+      totalDurationClose: config.totalDurationClose 
+    });
+
+    // Set Blinds to 100%
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 100)
+
+    // Wait for initialDelay
+    await delayForDuration(switchAccessory.config.initialDelay);
+    expect(switchAccessory.state.currentPosition).to.equal(100);
+
+    // Check hex code was sent
+    const hasSentCodes = device.hasSentCodes([ 'OPEN_COMPLETELY', 'STOP' ]);
+    expect(hasSentCodes).to.equal(true);
+
+    // Check the number of sent codes
+    const sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
+  }).timeout(6000);
+
+
+  // Open blinds to 0%
+  it('0% -> 100% -> 0%', async () => {
+    const { device } = setup();
+
+    const config = {
+      data,
+      totalDurationOpen: 1, 
+      totalDurationClose: 1,
+      persistState: false,
+      host: device.host.address
+    }
+    
+    const switchAccessory = new WindowCovering(null, config, 'FakeServiceManager')
+
+    const durationPerPercent = switchAccessory.determineOpenCloseDurationPerPercent({
+      opening: true,
+      totalDurationOpen: config.totalDurationOpen,
+      totalDurationClose: config.totalDurationClose 
+    });
+
+    // Set Blinds to 100%
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 100)
+
+    // Wait for initialDelay
+    await delayForDuration(switchAccessory.config.initialDelay);
+    expect(switchAccessory.state.currentPosition).to.equal(100);
+
+    // Check hex code was sent
+    let hasSentCodes = device.hasSentCodes([ 'OPEN_COMPLETELY', 'STOP' ]);
+    expect(hasSentCodes).to.equal(true);
+
+    // Check the number of sent codes
+    let sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(2);
+
+    // Set Blinds to 0%
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.TargetPosition, 0)
+
+    // Wait for initialDelay
+    await delayForDuration(switchAccessory.config.initialDelay);
+    expect(switchAccessory.state.currentPosition).to.equal(0);
+
+    // Check hex code was sent
+    hasSentCodes = device.hasSentCodes([ 'OPEN_COMPLETELY', 'STOP', 'CLOSE_COMPLETELY' ]);
+    expect(hasSentCodes).to.equal(true);
+
+    // Check the number of sent codes
+    sentHexCodeCount = device.getSentHexCodeCount();
+    expect(sentHexCodeCount).to.equal(4);
+
+  }).timeout(6000);
+
 })

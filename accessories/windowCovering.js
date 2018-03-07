@@ -9,12 +9,20 @@ const BroadlinkRMAccessory = require('./accessory');
 class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   setDefaults () {
-    const { config } = this;
-    let { initialDelay, percentageChangePerSend, totalDurationOpen, totalDurationClose } = config;
+    const { config, state } = this;
+    const { currentPosition, positionState } = state;
+    const { initialDelay, percentageChangePerSend, totalDurationOpen, totalDurationClose } = config;
 
+    // Check required propertoes
+    assert.isNumber(totalDurationOpen, '`totalDurationOpen` is required and should be numeric.')
+    assert.isNumber(totalDurationClose, '`totalDurationClose` is required and should be numeric.')
+
+    // Set config default values
     if (!initialDelay) config.initialDelay = 0.1;
-    if (!totalDurationOpen) config.totalDurationOpen = 45;
-    if (!totalDurationClose) config.totalDurationClose = 45;
+
+    // Set state default values
+    if (currentPosition === undefined) this.state.currentPosition = 0;
+    if (positionState === undefined) this.state.positionState = Characteristic.PositionState.STOPPED;
   }
 
   reset () {
@@ -49,7 +57,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   async setTargetPositionActual (hexData, previousValue) {
     const { config, host, debug, data, log, name, state, serviceManager } = this;
     const { initialDelay, percentageChangePerSend } = config;
-    const { open, close, stop, openCompletely, closeCompletely, sendStopAt100, sendStopAt0 } = data;
+    const { open, close, stop } = data;
     
     this.clearAllExistingTimers();
 
@@ -61,15 +69,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     this.initialDelayPromise = delayForDuration(initialDelay);
     await this.initialDelayPromise;
 
-    let hasStoppedWindowCovering = false;
-
-    // Stop the window covering if needed
-    if ((state.targetPosition === 0 && sendStopAt0) || (state.targetPosition === 100 && sendStopAt100)) {
-      this.stopWindowCovering();
-    }
-
-    // 
-    if (!state.currentPosition) state.currentPosition = 0;
+    if (this.checkOpenOrCloseCompletely()) return;
 
     log(`${name} setTargetPosition: (currentPosition: ${state.currentPosition})`);
 
@@ -132,34 +132,33 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     // Reset the state and timers
     this.reset();
 
-    if (stop) sendData({ host, hexData: stop, log, name, debug });
+    sendData({ host, hexData: stop, log, name, debug });
 
     serviceManager.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
   }
 
   checkOpenOrCloseCompletely () {
-    const { debug, log, name, state } = this;
+    const { data, debug, host, log, name, serviceManager, state } = this;
+    const { openCompletely, closeCompletely } = data;
 
     // Completely Close
     if (state.targetPosition === 0 && closeCompletely) {
-      serviceManager.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
       serviceManager.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
 
       sendData({ host, hexData: closeCompletely, log, name, debug });
 
-      if (sendStopAt0) this.stopWindowCovering();
+      this.stopWindowCovering();
 
       return true;
     }
 
     // Completely Open
     if (state.targetPosition === 100 && openCompletely) {
-      serviceManager.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
       serviceManager.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
-    
-      if (openCompletely) sendData({ host, hexData: openCompletely, log, name, debug });
 
-      if (sendStopAt100) this.stopWindowCovering();
+      sendData({ host, hexData: openCompletely, log, name, debug });
+
+      this.stopWindowCovering();
 
       return true;
     }
@@ -226,7 +225,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
       props: {
-        defaultValue: Characteristic.PositionState.STOPPED
+
       }
     });
 

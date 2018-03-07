@@ -264,11 +264,9 @@ The `window-covering` will first send the `open`/`close` hex code, wait for the 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
-`totalDurationOpen` | The amount of time in seconds it takes to open the window-covering completely. | 30 | 45 | Yes | Yes
-`totalDurationClose` | The amount of time in seconds it takes to close the window-covering completely. The value shall be used to determine what percentage to show in the Home app as well as when to send the `stop` code. | 30 | 45 | Yes | Yes
+`totalDurationOpen` | The amount of time in seconds it takes to open the window-covering completely. | 30 | - | Yes | Yes
+`totalDurationClose` | The amount of time in seconds it takes to close the window-covering completely. The value shall be used to determine what percentage to show in the Home app as well as when to send the `stop` code. | 30 | - | Yes | Yes
 `initialDelay` | This allows multiple `window-covering` accessories to be updated at the same time without RF/IR interference from one-another by adding an offset to each `window-covering` accessory | 1 | 0.1 | No | Yes
-`sendStopAt0` | Determines where the stop command is sent when the blind position reaches 0% | true | false | No
-`sendStopAt100` | Determines where the stop command is sent when the blind position reaches 100% | true | false | No
 
 #### "data" key-value object
 key | description
