@@ -253,7 +253,7 @@ key | description
 `lock` | A hex code string to be sent when the switch is set to lock.
 
 ### window-covering
-The window-covering accessory designed to be used by IR/RF controlled blinds-shades/shutters.
+The window-covering accessory designed to be used by IR/RF controlled blinds/shades/shutters.
 
 The accessory will determine how long the window-covering should continue opening/closing for based on the previous position and target position along with the `totalDurationOpen` and `totalDurationClose` values.
 

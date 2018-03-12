@@ -95,7 +95,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async openOrCloseActual ({ hexData, previousValue }) {
     let { config, data, host, name, log, state, debug, serviceManager } = this;
-    let { totalDurationOpen, totalDurationClose, sendStopAt0, sendStopAt100 } = config;
+    let { totalDurationOpen, totalDurationClose } = config;
     const { stop } = data;
 
     const newPositionState = state.opening ? Characteristic.PositionState.INCREASING : Characteristic.PositionState.DECREASING;
