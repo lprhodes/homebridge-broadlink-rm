@@ -81,7 +81,7 @@ key | description | example | default | required | unit tested
 `resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | No | Yes
 `disableLogs` | Disables the log output for this accessory. | true | false | No | Yes
 `debug` | Outputs some additional logs, useful for figuring out issues. | true | false | No | Yes
-`host` | As described [above](#multiple-broadlink-rm-devices). | “192.168.1.33” | - | No
+`host` | As described [above](#multiple-broadlink-rm-devices). | "192.168.1.33" | - | No
 
 ## Accessory Types
 
