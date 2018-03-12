@@ -8,11 +8,13 @@ class FakeDevice {
     this.host = {
       address: identifier,
       macAddress: identifier
-    }
+    };
 
-    this.isUnitTestDevice = true
+    this.callbacks = {};
 
-    this.resetSentHexCodes()
+    this.isUnitTestDevice = true;
+
+    this.resetSentHexCodes();
   }
 
   resetSentHexCodes () {
@@ -41,6 +43,20 @@ class FakeDevice {
     if (!hexBufferData) throw new Error('Missing HEX Data')
 
     this.sentHexCodes.push(originalHexString)
+  }
+
+  on (type, callback) {
+    this.callbacks[type] = callback;
+  }
+
+  sendFakeOnCallback (type, value) {
+    const callback = this.callbacks[type];
+
+    if(callback) callback(value);
+  }
+
+  checkTemperature () {
+    
   }
 }
 

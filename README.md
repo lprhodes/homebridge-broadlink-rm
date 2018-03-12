@@ -283,25 +283,29 @@ This allows you to send a hex code for any temperature that you've defined a hex
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
-`minTemperature` | The minimum temperature you can set. | 14 | 0 | No
-`maxTemperature` | The maximum temperature you can set. | 28 | 30 | No
+`minTemperature` | The minimum temperature you can set. | 14 | -15 | No
+`maxTemperature` | The maximum temperature you can set. | 28 | 50 | No
 `temperatureDisplayUnits` | Specify Celsius or Fahrenheit. | F | C | No
 `defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | No
 `defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | No
-`heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether `defaultCoolTemperature` or `defaultHeatTemperature` is used. | 20 | 22
-`replaceAutoMode` | When we turn on the thermostat with Siri it sets the mode as `auto` which isn't  supported at this time so we set the mode to `cool` or `heat` instead depending on the value of this key. | "heat" | "cool" | No
+`heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether `defaultCoolTemperature` or `defaultHeatTemperature` is used when hex data for a particular temperature is missing. | 20 | 22
+`replaceAutoMode` | When we turn on the thermostat with Siri it sets the mode as `auto`, so we set the mode to `cool` or `heat` instead depending on the value of this key. | "heat" | "cool" | No
 `pseudoDeviceTemperature` | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0 | No
 `autoHeatTemperature` | When the temperature is below this value, the heat mode will be enabled. | 18 | - | No
 `autoCoolTemperature` | When the temperature is above this value, the cool mode will enabled. | 27 | - | No
-`autoMinimumDuration` | The minimum amount of time in seconds that an auto mode should be turned on (or after being automatically turned off) for to prevent it from turning on/off too frequently. | 300 | 120 | No
+`minimumAutoOnOffDuration` | The minimum amount of time that the air-conditioner must remain on or off after having been automatically turned on or off. | 300 | 120 | No
 `temperatureAdjustment` | The number of degrees that the reported temperature should be offset by. | 3 | 0 | No
-`sendOnWhenOff` | If the air-con unit state is off then the on code will be sent before sending the temperature code. | true | false | No
+`turnOnWhenOff` | If the air-con unit state is off then an `on` code shall be sent before sending the temperature code. | true | false | No
+`allowResend` | Determines whether the temperature hex code should be resent when requesting the same temperature as the last requested temperature. | true | false | No
+`autoSwitchName`| The name of an switch accessory that can be used to enable/disable the auto on/off functionality. To be used in conjunction with `autoHeatTemperature` and `autoCoolTemperature`. | "Air-Con Auto" | - | No | Yes
+`temperatureUpdateFrequency` | The frequency in seconds for which the temperature shall be requested. | 20 | 10 | No
 
 #### "data" key-value object
 key | description
 --- | -----------
+`on` | An optional hex code to be used in conjunction with the `turnOnWhenOff` configuration.
 `off` | A hex code string to be sent when the air conditioner is asked to be turned off.
-`temperatureX` | A hex code string where X is any temperature you wish to support e.g. `temperature30`.
+`temperatureX` | Where X is any temperature you wish to support e.g. `temperature30`. See below.
 
 #### "temperatureX" key-value object
 key | description
