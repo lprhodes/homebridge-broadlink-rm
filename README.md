@@ -99,7 +99,7 @@ key | description | example | default | required | unit tested
 Turn the switch on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
 
 key | description | example | default | required | unit tested
---- | ----------- | ------- | ------- | -------
+--- | ----------- | ------- | ------- | -------- | -----------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
 `enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
@@ -139,7 +139,7 @@ key | description | example | default | required | unit tested
 `interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | Yes
 `enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
 `onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
-`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No
+`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No | Yes
 `offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
 
 #### "data" key-value object
@@ -153,7 +153,7 @@ Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex 
 
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
 `enableAutoOff` | Turn the outlet off automatically when `onDuration` has been reached. | true | false | No | Yes
 `onDuration` | The amount of time before the outlet automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
 `enableAutoOn` | Turn the outlet on automatically when `offDuration` has been reached | false | true | No | Yes
@@ -280,25 +280,25 @@ key | description
 ### air-conditioner
 This allows you to send a hex code for any temperature that you've defined a hex code for. If you simply want to heat up or cool down a room (and not learn every single temperature code) you can just set hex codes for the lowest and highest temperatures and those will be used whatever temperature you request.
 
-key | description | example | default | required
---- | ----------- | ------- | ------- | -------
-`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes
+key | description | example | default | required | unit tested
+--- | ----------- | ------- | ------- | -------- | -----------
+`data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
 `minTemperature` | The minimum temperature you can set. | 14 | -15 | No
 `maxTemperature` | The maximum temperature you can set. | 28 | 50 | No
 `temperatureDisplayUnits` | Specify Celsius or Fahrenheit. | F | C | No
-`defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | No
-`defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | No
-`heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether `defaultCoolTemperature` or `defaultHeatTemperature` is used when hex data for a particular temperature is missing. | 20 | 22
-`replaceAutoMode` | When we turn on the thermostat with Siri it sets the mode as `auto`, so we set the mode to `cool` or `heat` instead depending on the value of this key. | "heat" | "cool" | No
-`pseudoDeviceTemperature` | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0 | No
-`autoHeatTemperature` | When the temperature is below this value, the heat mode will be enabled. | 18 | - | No
-`autoCoolTemperature` | When the temperature is above this value, the cool mode will enabled. | 27 | - | No
-`minimumAutoOnOffDuration` | The minimum amount of time that the air-conditioner must remain on or off after having been automatically turned on or off. | 300 | 120 | No
-`temperatureAdjustment` | The number of degrees that the reported temperature should be offset by. | 3 | 0 | No
-`turnOnWhenOff` | If the air-con unit state is off then an `on` code shall be sent before sending the temperature code. | true | false | No
-`allowResend` | Determines whether the temperature hex code should be resent when requesting the same temperature as the last requested temperature. | true | false | No
+`defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | No | Yes
+`defaultHeatTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 28 | 30 | No | Yes
+`heatTemperature` | The temperature at which we change the UI to show that we're heating. Also used to determine whether `defaultCoolTemperature` or `defaultHeatTemperature` is used when hex data for a particular temperature is missing. | 20 | 22 | No | Yes
+`replaceAutoMode` | When we turn on the thermostat with Siri it sets the mode as `auto`, so we set the mode to `cool` or `heat` instead depending on the value of this key. | "heat" | "cool" | No | Yes
+`pseudoDeviceTemperature` | Some RM devices don't have a built in thermometer, when set this prevents the device thermometer from being accessed and shows the provided value instead. | 0 | 0 | No | Yes
+`autoHeatTemperature` | When the temperature is below this value, the heat mode will be enabled. | 18 | - | No | Yes
+`autoCoolTemperature` | When the temperature is above this value, the cool mode will enabled. | 27 | - | No | Yes
+`minimumAutoOnOffDuration` | The minimum amount of time that the air-conditioner must remain on or off after having been automatically turned on or off. | 300 | 120 | No | Yes
+`temperatureAdjustment` | The number of degrees that the reported temperature should be offset by. | 3 | 0 | No | Yes
+`turnOnWhenOff` | If the air-con unit state is off then an `on` code shall be sent before sending the temperature code. | true | false | No | Yes
+`allowResend` | Determines whether the temperature hex code should be resent when requesting the same temperature as the last requested temperature. | true | false | No | Yes
 `autoSwitchName`| The name of an switch accessory that can be used to enable/disable the auto on/off functionality. To be used in conjunction with `autoHeatTemperature` and `autoCoolTemperature`. | "Air-Con Auto" | - | No | Yes
-`temperatureUpdateFrequency` | The frequency in seconds for which the temperature shall be requested. | 20 | 10 | No
+`temperatureUpdateFrequency` | The frequency in seconds for which the temperature shall be requested. | 20 | 10 | No | No
 
 #### "data" key-value object
 key | description
