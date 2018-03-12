@@ -42,7 +42,7 @@ Example BroadlinkRM platform in the homebridge configuration:
 Generally the plugin can find where your `config.json` lives as it commonly sits in the `.homebridge` directory of your user account. If you're doing something out of the ordinary however you may need to override this. You can do so by adding a `"homebridgeDirectory”` key/value pair to the platform config.
 
 ## Broadlink RM Device Discovery
-As of version 1.0.0, your Broadlink RM Device is automatically discovered so you no longer need to specify a "host" value.
+As of version 1.0.0, your Broadlink RM Device is automatically discovered so you no longer need to specify a  value.
 
 ## Learning Hex IR and RF codes
 "Learn" and "Scan Frequency" accessories are automatically added to the Home app (so long as you've not added either manually in the config).
@@ -74,14 +74,14 @@ We support the use of Pronto codes; you can put them wherever you would normally
 The following configuration keys are common between each accessory:
 
 key | description | example | default | required | unit tested
---- | ----------- | ------- | ------- | -------
+--- | ----------- | ------- | ------- | -------- | -----------
 `name` | A descriptor for the accessory that will show in HomeKit apps. | "TV" | - | Yes | No
 `type` | The type of accessory. | "switch" | - | Yes | No
 `persistState` | Determines whether the state of accessory persists after homebridge has been restarted. | false | true | No | Yes
 `resendHexAfterReload` | When persistState is true (it is by default) this will resend the hex code for the last known state if homebridge is restarted. | true | false | No | Yes
 `disableLogs` | Disables the log output for this accessory. | true | false | No | Yes
 `debug` | Outputs some additional logs, useful for figuring out issues. | true | false | No | Yes
-`host` | As described [above](#multiple-broadlink-rm-devices). | "192.168.1.33" | - | No
+`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No | No
 
 ## Accessory Types
 
@@ -201,7 +201,7 @@ If you don't specify every brightness then the accessory will choose the hex cod
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
-`defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | Yes
+`defaultBrightness` | The default brightness to be set when you turn the light on. | 70 | 100 | Yes | Yes
 `useLastKnownBrightness` | The last known brightness will be used instead of the defaultBrightness when turning a light back on. | false | true | No | Yes
 `onDelay` | If the `on` hex data is specified in the `data` value, this will determine the seconds between when the on code and the requested brightness code are sent. | 1 | 0.1 | No | Yes
 `enableAutoOff` | Turn the light off automatically when `onDuration` has been reached. | true | false | No | Yes
@@ -227,7 +227,6 @@ key | description | example | default | required | unit tested
 `openDuration` | The amount of time in seconds that the accessory will show as "Opening" | 10 | 8 | No | Yes
 `closeDuration` | The amount of time in seconds that the accessory will show as "Closing" | 10 | 8 | No | Yes
 `autoCloseDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Closing" state. | 10 | 30 | Yes | Yes
-`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No
 
 #### "data" key-value object
 key | description
@@ -246,7 +245,6 @@ key | description | example | default | required | unit tested
 `autoLockDelay` | The amount of time in seconds that the accessory will wait before automatically initiating the "Lock" state. | 10 | 30 | No | Yes
 `lockDuration` | The amount of time in seconds that the accessory will show a status of "Locking" for. | 2 | 1 | No | Yes
 `unlockDuration` | The amount of time in seconds that the accessory will show a status of "Unlocking" for. | 2 | 1 | No | Yes
-`host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No | No
 
 #### "data" key-value object
 key | description
@@ -314,7 +312,7 @@ key | description
 `pseudo-mode` | The mode we set when this hex is sent. i.e. `heat` or `cool`. For graphical purposes only (hence use of the term "pseudo").
 
 ### learn-code
-You do not need to add this accessory type yourself as we add one automatically. However if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the `learn-code` type along with a host so that you can learn from each of them.
+You do not need to add this accessory type yourself as we add one automatically. However if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the `learn-code` type along with a `"host"` value so that you can learn from each of them.
 
 key | description | example | default | required
 --- | ----------- | ------- | ------- | -------
