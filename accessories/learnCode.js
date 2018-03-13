@@ -15,7 +15,7 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
     super(log, config, serviceManagerType);
   }
 
-  toggleLearning (on, callback) {
+  toggleLearning (props, on, callback) {
     const { config, serviceManager } = this;
     const { disableAutomaticOff, scanRF, scanFrequency } = config;
 
@@ -50,10 +50,15 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
 
-    this.serviceManager.addGetCharacteristic({
+    this.serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
-      method: this.toggleLearning,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.toggleLearning.bind(this),
+      bind: this,
+      props: {
+      
+      },
       bind: this
     })
   }
