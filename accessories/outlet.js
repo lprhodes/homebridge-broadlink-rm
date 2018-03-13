@@ -11,13 +11,13 @@ class OutletAccessory extends SwitchAccessory {
     const { config, state, serviceManager } = this;
 
     if (config.pingIPAddressStateOnly) {
-      state.outletInUse = active ? 1 : 0;
+      state.outletInUse = active ? true : false;
       serviceManager.refreshCharacteristicUI(Characteristic.OutletInUse)
 
       return
     }
     
-    const value = active ? 1 : 0
+    const value = active ? true : false;
     serviceManager.setCharacteristic(Characteristic.OutletInUse, value);
   }
 
@@ -39,7 +39,7 @@ class OutletAccessory extends SwitchAccessory {
     const { data, name, config, serviceManagerType } = this;
     const { on, off } = data || { };
     
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Outlet, this.log);
 
     this.serviceManager.addToggleCharacteristic({
       name: 'switchState',

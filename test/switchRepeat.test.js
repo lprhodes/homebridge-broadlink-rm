@@ -31,9 +31,9 @@ describe('switchRepeatAccessory', () => {
     
     
     const switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for 3 codes to be sent
     await delayForDuration(0.4)
@@ -70,15 +70,15 @@ describe('switchRepeatAccessory', () => {
     const switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
 
     // Turn On Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for 3 codes to be sent
     await delayForDuration(0.4)
     
     // Turn Off Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Wait for 2 codes to be sent
     await delayForDuration(0.3)
@@ -117,19 +117,19 @@ describe('switchRepeatAccessory', () => {
 
 
     // Turn On Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
 
     await delayForDuration(0.4)
     // Expecting on after 0.4s total
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
     
     await delayForDuration(0.7)
     // Expecting off after 1.1s total
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
@@ -159,23 +159,23 @@ describe('switchRepeatAccessory', () => {
     const switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
 
     // Turn On Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Turn Off Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
 
     await delayForDuration(0.4)
     // Expecting off after 0.4s total
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
     
     await delayForDuration(0.7)
     // Expecting on after 1.1s total
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
@@ -205,8 +205,8 @@ describe('switchRepeatAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.3)
@@ -215,7 +215,7 @@ describe('switchRepeatAccessory', () => {
 
     // Should still be on when loading within a new instance
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
@@ -223,12 +223,12 @@ describe('switchRepeatAccessory', () => {
     switchAccessory.reset();
     
     // Turn Off Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Should still be off when loading within a new instance
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
     switchAccessory.reset();
   });
 
@@ -252,8 +252,8 @@ describe('switchRepeatAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     switchAccessory.reset();
 
@@ -284,7 +284,7 @@ describe('switchRepeatAccessory', () => {
     const pingInterval = switchAccessory.checkPing(ping.bind({ isActive: true }))
 
     await delayForDuration(0.3)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
@@ -311,7 +311,7 @@ describe('switchRepeatAccessory', () => {
     const pingInterval = switchAccessory.checkPing(ping.bind({ isActive: false }))
 
     await delayForDuration(0.3)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
@@ -344,7 +344,7 @@ describe('switchRepeatAccessory', () => {
 
     await delayForDuration(0.3)
     expect(switchAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(false);
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     switchAccessory.reset();
 
@@ -373,7 +373,7 @@ describe('switchRepeatAccessory', () => {
     const pingInterval = switchAccessory.checkPing(ping.bind({ isActive: true }))
 
     await delayForDuration(0.3)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
     expect(switchAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
 
     switchAccessory.reset();
@@ -408,8 +408,8 @@ describe('switchRepeatAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.3)
@@ -420,7 +420,7 @@ describe('switchRepeatAccessory', () => {
 
     // Should be on still with a new instance
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
@@ -467,8 +467,8 @@ describe('switchRepeatAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Wait for multiple codes to be sent
     await delayForDuration(0.4)
@@ -477,7 +477,7 @@ describe('switchRepeatAccessory', () => {
 
     // Should be on still with a new instance
     switchAccessory = new SwitchRepeat(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     device.resetSentHexCodes()
 

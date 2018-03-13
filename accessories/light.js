@@ -7,6 +7,15 @@ const SwitchAccessory = require('./switch');
 
 class LightAccessory extends SwitchAccessory {
 
+  setDefaults () {
+    super.setDefaults();
+  
+    const { config } = this;
+
+    config.onDelay = config.onDelay || 0.1;
+    config.defaultBrightness = config.defaultBrightness || 100;
+  }
+
   reset () {
     super.reset();
 
@@ -22,15 +31,12 @@ class LightAccessory extends SwitchAccessory {
 
     this.reset();
 
-    // Defaults
-    if (!defaultBrightness) defaultBrightness = 100;
-
-    if (state.switchState === 1) {
+    if (state.switchState) {
       const brightness = (useLastKnownBrightness && state.brightness > 0) ? state.brightness : defaultBrightness;
       if (brightness !== state.brightness || previousValue !== state.switchState) {
         log(`${name} setSwitchState: (brightness: ${brightness})`);
 
-        state.switchState = 0;
+        state.switchState = false;
         serviceManager.setCharacteristic(Characteristic.Brightness, brightness);
       } else {
         if (hexData) sendData({ host, hexData, log, name, debug });
@@ -49,59 +55,59 @@ class LightAccessory extends SwitchAccessory {
   }
 
   async setHue () {
-    const { config, data, host, log, name, state, debug, serviceManager} = this;
-    const { onDelay } = config;
-    const { off, on } = data;
+    await catchDelayCancelError(async () => {
+      const { config, data, host, log, name, state, debug, serviceManager} = this;
+      const { onDelay } = config;
+      const { off, on } = data;
 
-    this.reset();
+      this.reset();
 
-    if (on) {
-      if (state.switchState !== 1) {
-        log(`${name} setHue: (turn on, wait ${onDelay}s)`);
-        sendData({ host, hexData: on, log, name, debug });
+      if (!state.switchState) {
 
-        state.switchState = 1
+        state.switchState = true;
         serviceManager.refreshCharacteristicUI(Characteristic.On);
+
+        if (on) {
+          log(`${name} setHue: (turn on, wait ${onDelay}s)`);
+          sendData({ host, hexData: on, log, name, debug });
+
+          log(`${name} setHue: (wait ${onDelay}s then send data)`);
+          this.onDelayTimeoutPromise = delayForDuration(onDelay);
+          await this.onDelayTimeoutPromise;
+        }
       }
 
-      log(`${name} setHue: (wait ${onDelay}s then send data)`);
-      this.onDelayTimeoutPromise = delayForDuration(onDelay);
-      await this.onDelayTimeoutPromise;
-    }
+      // Find hue closest to the one requested
+      const foundValues = this.dataKeys('hue');
+      const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.hue) < Math.abs(prev - state.hue) ? curr : prev);
+      const hexData = data[`hue${closest}`];
 
-    // Find hue closest to the one requested
-    const foundValues = this.dataKeys('hue');
-    const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.hue) < Math.abs(prev - state.hue) ? curr : prev);
-    const hexData = data[`hue${closest}`];
-
-    log(`${name} setHue: (closest: hue${closest})`);
-    sendData({ host, hexData, log, name, debug });
+      log(`${name} setHue: (closest: hue${closest})`);
+      sendData({ host, hexData, log, name, debug });
+    });
   }
 
   async setBrightness () {
+    await catchDelayCancelError(async () => {
       const { config, data, host, log, name, state, debug, serviceManager } = this;
       const { off, on } = data;
       let { onDelay } = config;
 
       this.reset();
 
-      // Defaults
-      if (!onDelay) onDelay = 0.1;
-
       if (state.brightness > 0) {
-        if (on) {
-          
-          if (state.switchState !== 1) {
+        if (!state.switchState) {
+          state.switchState = true;
+          serviceManager.refreshCharacteristicUI(Characteristic.On);
+    
+          if (on) {
             log(`${name} setBrightness: (turn on, wait ${onDelay}s)`);
             sendData({ host, hexData: on, log, name, debug });
-
-            state.switchState = 1
-            this.serviceManager.refreshCharacteristicUI(Characteristic.On);
+    
+            log(`${name} setHue: (wait ${onDelay}s then send data)`);
+            this.onDelayTimeoutPromise = delayForDuration(onDelay);
+            await this.onDelayTimeoutPromise;
           }
-
-          log(`${name} setBrightness: (wait ${onDelay}s then send data)`);
-          this.onDelayTimeoutPromise = delayForDuration(onDelay);
-          await this.onDelayTimeoutPromise;
         }
 
         // Find brightness closest to the one requested
@@ -117,6 +123,7 @@ class LightAccessory extends SwitchAccessory {
       }
 
       await this.checkAutoOnOff();
+    });
   }
 
   dataKeys (filter) {

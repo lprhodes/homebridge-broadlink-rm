@@ -16,6 +16,14 @@ class SwitchMultiAccessory extends SwitchAccessory {
 
   checkStateWithPing () { }
 
+  setDefaults () {
+    super.setDefaults();
+
+    const { config } = this;
+
+    config.interval = config.interval || 1;
+  }
+
   reset () {
     super.reset();
 
@@ -27,19 +35,14 @@ class SwitchMultiAccessory extends SwitchAccessory {
   }
 
   async setSwitchState (hexData) {
-    this.reset();
+    const { config, host, log, name, state, debug } = this;
+    let { interval } = config;
 
     if (!hexData) {
       this.checkAutoOnOff();
 
       return;
     }
-
-    const { config, host, log, name, state, debug } = this;
-    let { interval } = config;
-
-    // Defaults
-    if (!interval) interval = 1
     
     await catchDelayCancelError(async () => { 
       // Itterate through each hex config in the array

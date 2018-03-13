@@ -29,7 +29,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     this.clearAllExistingTimers();
   }
 
-  clearAllExistingTimers () {
+  async clearAllExistingTimers () {
     // Clear existing timeouts
     if (this.initialDelayPromise) {
       this.initialDelayPromise.cancel();
@@ -49,9 +49,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   // User requested a specific position or asked the window-covering to be open or closed
   async setTargetPosition (hexData, previousValue) {
-    await catchDelayCancelError(async () => {
-      await this.setTargetPositionActual();
-    })
+    await this.setTargetPositionActual();
   }
 
   async setTargetPositionActual (hexData, previousValue) {
@@ -88,9 +86,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async openOrClose ({ hexData, previousValue }) {
-    catchDelayCancelError(async () => {
-      await this.openOrCloseActual({ hexData, previousValue })
-    })
+    await this.openOrCloseActual({ hexData, previousValue })
   }
 
   async openOrCloseActual ({ hexData, previousValue }) {
@@ -181,25 +177,27 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async startUpdatingCurrentPositionAtIntervals () {
-    const { config, serviceManager, state } = this;
-    const { totalDurationOpen, totalDurationClose } = config;
-    
-    const durationPerPercentage = this.determineOpenCloseDurationPerPercent({ opening: state.opening, totalDurationOpen, totalDurationClose })
+    catchDelayCancelError(async () => {
+      const { config, serviceManager, state } = this;
+      const { totalDurationOpen, totalDurationClose } = config;
+      
+      const durationPerPercentage = this.determineOpenCloseDurationPerPercent({ opening: state.opening, totalDurationOpen, totalDurationClose })
 
-    // Wait for a single % to increase/decrease
-    this.updateCurrentPositionPromise = delayForDuration(durationPerPercentage)
-    await this.updateCurrentPositionPromise
+      // Wait for a single % to increase/decrease
+      this.updateCurrentPositionPromise = delayForDuration(durationPerPercentage)
+      await this.updateCurrentPositionPromise
 
-    // Set the new currentPosition
-    let currentValue = state.currentPosition || 0;
+      // Set the new currentPosition
+      let currentValue = state.currentPosition || 0;
 
-    if (state.opening) currentValue++;
-    if (!state.opening) currentValue--;
+      if (state.opening) currentValue++;
+      if (!state.opening) currentValue--;
 
-    serviceManager.setCharacteristic(Characteristic.CurrentPosition, currentValue);
+      serviceManager.setCharacteristic(Characteristic.CurrentPosition, currentValue);
 
-    // Let's go again
-    this.startUpdatingCurrentPositionAtIntervals();
+      // Let's go again
+      this.startUpdatingCurrentPositionAtIntervals();
+    });
   }
 
   setupServiceManager () {

@@ -1,3 +1,5 @@
+const uuid = require('uuid');
+
 const { HomebridgeAccessory } = require('homebridge-platform-helper');
 
 const sendData = require('../helpers/sendData');
@@ -15,7 +17,7 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
 
     this.manufacturer = 'Broadlink';
     this.model = 'RM Mini or Pro';
-    this.serialNumber = this.host;
+    this.serialNumber = uuid.v4();
   }
 
   performSetValueAction ({ host, data, log, name, debug }) {

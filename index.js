@@ -1,5 +1,5 @@
 const BroadlinkRMPlatform = require('./platform')
-const { discoverDevices } = require('./getDevice');
+const { discoverDevices } = require('./helpers/getDevice');
 
 module.exports = (homebridge) => {
   global.Service = homebridge.hap.Service;

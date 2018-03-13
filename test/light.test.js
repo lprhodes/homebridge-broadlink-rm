@@ -38,19 +38,19 @@ describe('lightAccessory', () => {
     }
     
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
     expect(hasSentCode).to.equal(true);
 
     // Wait for onDelay
-    await delayForDuration(0.9)
+    await delayForDuration(0.3)
 
     // Check that defaultBrightness was used (default 100)
     expect(lightAccessory.state.brightness).to.equal(100);
+    expect(lightAccessory.state.switchState).to.equal(true);
     
     // Check hex code was sent
     const hasSentCodes = device.hasSentCodes([ 'ON', 'BRIGHTNESS40' ]);
@@ -75,14 +75,14 @@ describe('lightAccessory', () => {
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
 
     // Turn On Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
-
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
     await delayForDuration(0.3)
+    expect(lightAccessory.state.switchState).to.equal(true);
     
     // Turn Off Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(lightAccessory.state.switchState).to.equal(0);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(lightAccessory.state.switchState).to.equal(false);
 
     // Check hex code was sent
     const hasSentCodes = device.hasSentCodes(['OFF', 'ON', 'BRIGHTNESS40' ]);
@@ -127,8 +127,8 @@ describe('lightAccessory', () => {
     expect(sentHexCodeCount).to.equal(2);
     
     // Turn Off Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(lightAccessory.state.switchState).to.equal(0);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(lightAccessory.state.switchState).to.equal(false);
 
     // Check hex code was sent
     hasSentCodes = device.hasSentCodes(['OFF', 'ON', 'BRIGHTNESS20' ]);
@@ -139,12 +139,13 @@ describe('lightAccessory', () => {
     expect(sentHexCodeCount).to.equal(3);
 
     // Turn On Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Wait for onDelay
     await delayForDuration(0.4)
 
+    expect(lightAccessory.state.switchState).to.equal(true);
     expect(lightAccessory.state.brightness).to.equal(20);
 
     // Check that all required codes have been sent
@@ -185,8 +186,8 @@ describe('lightAccessory', () => {
     expect(sentHexCodeCount).to.equal(2);
     
     // Turn Off Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(lightAccessory.state.switchState).to.equal(0);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(lightAccessory.state.switchState).to.equal(false);
 
     // Check hex code was sent
     hasSentCodes = device.hasSentCodes(['OFF', 'ON', 'BRIGHTNESS20' ]);
@@ -197,8 +198,8 @@ describe('lightAccessory', () => {
     expect(sentHexCodeCount).to.equal(3);
 
     // Turn On Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Wait for onDelay
     await delayForDuration(0.2)
@@ -230,19 +231,19 @@ describe('lightAccessory', () => {
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
 
     // Turn On Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Wait for onDelay
     await delayForDuration(0.4)
 
     // Expecting "on" after 0.4s total
-    expect(lightAccessory.state.switchState).to.equal(1);
+    expect(lightAccessory.state.switchState).to.equal(true);
     
     await delayForDuration(0.9)
 
     // Expecting "off" after 1.3s total
-    expect(lightAccessory.state.switchState).to.equal(0);
+    expect(lightAccessory.state.switchState).to.equal(false);
   }).timeout(4000);
 
 
@@ -261,27 +262,27 @@ describe('lightAccessory', () => {
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
 
     // Turn On Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Wait for onDelay
     await delayForDuration(0.2)
 
     // Turn Off Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(lightAccessory.state.switchState).to.equal(0);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(lightAccessory.state.switchState).to.equal(false);
 
     // Wait for onDelay
     await delayForDuration(0.2)
 
     // Expecting off after 0.4s
     await delayForDuration(0.4)
-    expect(lightAccessory.state.switchState).to.equal(0);
+    expect(lightAccessory.state.switchState).to.equal(false);
     
     await delayForDuration(0.7)
 
     // Expecting on after 1.1s total
-    expect(lightAccessory.state.switchState).to.equal(1);
+    expect(lightAccessory.state.switchState).to.equal(true);
   }).timeout(4000);
 
 
@@ -550,20 +551,20 @@ describe('lightAccessory', () => {
 
     // Turn On Light
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Should still be on when loading within a new instance
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    expect(lightAccessory.state.switchState).to.equal(1);
+    expect(lightAccessory.state.switchState).to.equal(true);
     
     // Turn Off Light
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(lightAccessory.state.switchState).to.equal(0);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(lightAccessory.state.switchState).to.equal(false);
 
     // Should still be off when loading within a new instance
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    expect(lightAccessory.state.switchState).to.equal(0);
+    expect(lightAccessory.state.switchState).to.equal(false);
   });
 
   it('"persistState": false', async () => {
@@ -580,8 +581,8 @@ describe('lightAccessory', () => {
 
     // Turn On Light
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Should be off again with a new instance
     lightAccessory = new Light(null, config, 'FakeServiceManager')
@@ -607,8 +608,8 @@ describe('lightAccessory', () => {
 
     // Turn On Light
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Wait for resendDataAfterReloadDelay and onDelay
     await delayForDuration(0.3)
@@ -621,7 +622,7 @@ describe('lightAccessory', () => {
 
     // Should be on still with a new instance
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    expect(lightAccessory.state.switchState).to.equal(1);
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.2)
@@ -658,8 +659,8 @@ describe('lightAccessory', () => {
 
     // Turn On Light
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(lightAccessory.state.switchState).to.equal(1);
+    lightAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // Wait for resendDataAfterReloadDelay
     await delayForDuration(0.3)
@@ -668,7 +669,7 @@ describe('lightAccessory', () => {
 
     // Should be on still with a new instance
     lightAccessory = new Light(null, config, 'FakeServiceManager')
-    expect(lightAccessory.state.switchState).to.equal(1);
+    expect(lightAccessory.state.switchState).to.equal(true);
 
     // We should find that setCharacteristic has not been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)

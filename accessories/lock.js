@@ -10,6 +10,13 @@ class LockAccessory extends BroadlinkRMAccessory {
     state.lockTargetState = state.lockCurrentState;
   }
 
+  setDefaults () {
+    const { config } = this;
+
+    config.lockDuration = config.lockDuration || config.lockUnlockDuration || 1;
+    config.unlockDuration = config.unlockDuration || config.lockUnlockDuration || 1;
+  }
+
   reset () {
     // Clear existing timeouts
     if (this.lockingTimeoutPromise) {
@@ -49,10 +56,7 @@ class LockAccessory extends BroadlinkRMAccessory {
     const { config, data, host, log, name, state, debug, serviceManager } = this;
     let { lockDuration } = config;
 
-    // Defaults
-    if (!lockDuration) lockDuration = 1;
-
-    log(`${name} setLockCurrentState: locking`);
+    log(`${name} setLockCurrentState: locking for ${lockDuration}s`);
 
     this.lockingTimeoutPromise = delayForDuration(lockDuration);
     await this.lockingTimeoutPromise
@@ -65,24 +69,21 @@ class LockAccessory extends BroadlinkRMAccessory {
     const { config, data, host, log, name, state, debug, serviceManager } = this;
     let { autoLockDelay, unlockDuration } = config;
 
-    // Defaults
-    if (!unlockDuration) unlockDuration = 1;
-
-    log(`${name} setLockCurrentState: unlocking`);
+    log(`${name} setLockCurrentState: unlocking for ${unlockDuration}s`);
     this.unlockingTimeoutPromise = delayForDuration(unlockDuration);
     await this.unlockingTimeoutPromise;
 
     log(`${name} setLockCurrentState: unlocked`);
     serviceManager.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
 
-    if (!autoLockDelay) return;
+    if (autoLockDelay) {
+      log(`${name} automatically locking in ${autoLockDelay}s`);
+      this.autoLockTimeoutPromise = delayForDuration(autoLockDelay);
+      await this.autoLockTimeoutPromise;
 
-    log(`${name} automatically locking in ${autoLockDelay}s`);
-    this.autoLockTimeoutPromise = delayForDuration(autoLockDelay);
-    await this.autoLockTimeoutPromise;
-
-    serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
-    this.lock()
+      serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
+      this.lock()
+    }
   }
 
   setupServiceManager () {

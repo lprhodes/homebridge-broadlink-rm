@@ -93,8 +93,8 @@ class FanAccessory extends SwitchAccessory {
         setMethod: this.setCharacteristicValue,
         bind: this,
         props: {
-          onData: clockwise,
-          offData: counterClockwise
+          onData: counterClockwise,
+          offData: clockwise
         }
       });
     }

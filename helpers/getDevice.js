@@ -78,7 +78,7 @@ const getDevice = ({ host, log, learnOnly }) => {
   } else { // use the first one of no host is provided
     const hosts = Object.keys(discoveredDevices);
     if (hosts.length === 0) {
-      log(`Send data (no devices found)`);
+      // log(`Send data (no devices found)`);
 
       return;
     }

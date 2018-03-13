@@ -1,0 +1,45 @@
+This release is pretty major. It's the first release since deciding to pursue Homebridge development full-time.
+
+I'll be going through the issues raised in the last week shortly and shall be quick to respond to those of you who have any issues with this latest release.
+
+After I've fixed any issues with this release I'll be getting onto support for retrieving temperatures from other sources.
+
+### General
+- I've laid the foundations for a new app for that helps you configure your Homebridge plugins. I'll be starting with this plugin and adding others. Stay updated by signing up to the mailing list. 
+- I intend to keep working full-time on this and other plugins along with helpful Homekit-related apps so if you wish to keep the project alive, please help by contributing via Paypal or on Patron.
+- Lots of fixes
+
+### Code and Tests
+- As the plugin is no longer just a small hobby project, the code has been re-factored so that it's easier to read, test and maintain.
+- There's now 132 unit tests in place to help us confidently make amends without breaking everything.
+- I'll be adding more tests as bugs are fixed in order to deal with any edge-cases. If I've broken something in this release let me know with an issue and I'll get right on it.
+
+### Documentation
+- The README has been updated to be much clearer.
+- Errors have been fixed where necessary.
+- Some previously hidden configuration options have been documented.
+- Some configuration options have been renamed (though I've made them backwards compatible with the existing names).
+
+### Auto-on and Auto-off
+- All `switch*`, `outlet` and `light` accessories now support for `enableAutoOff` and `enableAutoOn`. 
+
+### Ping IP Address
+- All `switch*` and `outlet` accessories now support `pingIPAddress` and associated options.
+
+### showV1Fan
+- This option is now gone so if you're not on iOS 11 and use the `fan` accessory you'll need to use an older version of the plugin. Otherwise only Siri commands will work.
+
+### Garage Door Opener
+- New configuration options for `openDuration` and `closeDuration` are available. These replace `openCloseDuration` when provided.
+- If you open the garage door and then close it before it's fully open the accessory shall now update to "Closing" instead of immediately showing as "Closed".
+
+### Lock
+- New `lockDuration` and `unlockDuration` options are available.
+
+### Window Covering
+- I'm happy to be corrected but I don't believe `sendStopAt0` and `sendStopAt100` serve a purpose any more so I've removed them. Let me know after in an issue if you still need them after this release and for what scenario.
+- `initialDelay` is now documented. Checkout the README for details.
+
+### Air Conditioner
+-  `allowResend` and `autoSwitchName` were previously undocumented. Check them out in the README.
+- `temperatureUpdateFrequency` has been added and allows you to set how frequently the temperature is updated.

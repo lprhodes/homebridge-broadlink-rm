@@ -29,9 +29,9 @@ describe('outletAccessory', () => {
     
     
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     
-    expect(outletAccessory.state.switchState).to.equal(1);
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
@@ -60,12 +60,12 @@ describe('outletAccessory', () => {
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
     
     // Turn On Outlet
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(outletAccessory.state.switchState).to.equal(1);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(outletAccessory.state.switchState).to.equal(true);
     
     // Turn Off Outlet
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(outletAccessory.state.switchState).to.equal(0);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(outletAccessory.state.switchState).to.equal(false);
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('OFF');
@@ -96,16 +96,16 @@ describe('outletAccessory', () => {
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
 
     // Turn On Outlet
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(outletAccessory.state.switchState).to.equal(1);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     await delayForDuration(0.4)
     // Expecting on after 0.4s total
-    expect(outletAccessory.state.switchState).to.equal(1);
+    expect(outletAccessory.state.switchState).to.equal(true);
     
     await delayForDuration(0.7)
     // Expecting off after 1.1s total
-    expect(outletAccessory.state.switchState).to.equal(0);
+    expect(outletAccessory.state.switchState).to.equal(false);
 
     // Check ON hex code was sent
     const hasSentOnCode = device.hasSentCode('ON');
@@ -140,20 +140,20 @@ describe('outletAccessory', () => {
     const outletAccessory = new Outlet(null, config, 'FakeServiceManager')
 
     // Turn On Outlet
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(outletAccessory.state.switchState).to.equal(1);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     // Turn Off Outlet
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(outletAccessory.state.switchState).to.equal(0);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(outletAccessory.state.switchState).to.equal(false);
 
     await delayForDuration(0.4)
     // Expecting off after 0.4s total
-    expect(outletAccessory.state.switchState).to.equal(0);
+    expect(outletAccessory.state.switchState).to.equal(false);
     
     await delayForDuration(0.7)
     // Expecting on after 1.1s total
-    expect(outletAccessory.state.switchState).to.equal(1);
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     // Check ON hex code was sent
     const hasSentOnCode = device.hasSentCode('ON');
@@ -183,20 +183,20 @@ describe('outletAccessory', () => {
 
     // Turn On Outlet
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(outletAccessory.state.switchState).to.equal(1);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     // Should still be on when loading within a new instance
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    expect(outletAccessory.state.switchState).to.equal(1);
+    expect(outletAccessory.state.switchState).to.equal(true);
     
     // Turn Off Outlet
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(outletAccessory.state.switchState).to.equal(0);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(outletAccessory.state.switchState).to.equal(false);
 
     // Should still be off when loading within a new instance
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    expect(outletAccessory.state.switchState).to.equal(0);
+    expect(outletAccessory.state.switchState).to.equal(false);
   });
 
   it('"persistState": false', async () => {
@@ -211,8 +211,8 @@ describe('outletAccessory', () => {
 
     // Turn On Outlet
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(outletAccessory.state.switchState).to.equal(1);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     // Should be off again with a new instance
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
@@ -235,7 +235,7 @@ describe('outletAccessory', () => {
     const pingInterval = outletAccessory.checkPing(ping.bind({ isActive: true }))
 
     await delayForDuration(0.3)
-    expect(outletAccessory.state.outletInUse).to.equal(1);
+    expect(outletAccessory.state.outletInUse).to.equal(true);
 
     // Stop the ping setInterval
     clearInterval(pingInterval)
@@ -256,7 +256,7 @@ describe('outletAccessory', () => {
     const pingInterval = outletAccessory.checkPing(ping.bind({ isActive: false }))
 
     await delayForDuration(0.3)
-    expect(outletAccessory.state.outletInUse).to.equal(0);
+    expect(outletAccessory.state.outletInUse).to.equal(false);
 
     // Stop the ping setInterval
     clearInterval(pingInterval)
@@ -280,7 +280,7 @@ describe('outletAccessory', () => {
 
     await delayForDuration(0.3)
     expect(outletAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(false);
-    expect(outletAccessory.state.outletInUse).to.equal(1);
+    expect(outletAccessory.state.outletInUse).to.equal(true);
 
     // Stop the ping setInterval
     clearInterval(pingInterval)
@@ -303,7 +303,7 @@ describe('outletAccessory', () => {
     const pingInterval = outletAccessory.checkPing(ping.bind({ isActive: true }))
 
     await delayForDuration(0.3)
-    expect(outletAccessory.state.outletInUse).to.equal(1);
+    expect(outletAccessory.state.outletInUse).to.equal(true);
     expect(outletAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
 
     // Stop the ping setInterval
@@ -333,14 +333,14 @@ describe('outletAccessory', () => {
 
     // Turn On Outlet
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(outletAccessory.state.switchState).to.equal(1);
+    outletAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     device.resetSentHexCodes();
 
     // Should be on still with a new instance
     outletAccessory = new Outlet(null, config, 'FakeServiceManager')
-    expect(outletAccessory.state.switchState).to.equal(1);
+    expect(outletAccessory.state.switchState).to.equal(true);
 
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)

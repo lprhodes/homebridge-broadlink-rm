@@ -1,6 +1,7 @@
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const ping = require('../helpers/ping')
 const BroadlinkRMAccessory = require('./accessory');
 
@@ -10,6 +11,26 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     super(log, config, serviceManagerType);
 
     if (!config.isUnitTest) this.checkPing(ping)
+  }
+
+  setDefaults () {
+    const { config } = this;
+    config.pingFrequency = config.pingFrequency || 1;
+
+    config.offDuration = config.offDuration || 60;
+    config.onDuration = config.onDuration || 60;
+
+    if (config.enableAutoOn === undefined && config.disableAutomaticOn === undefined) {
+      config.enableAutoOn = false;
+    } else if (config.disableAutomaticOn !== undefined) {
+      config.enableAutoOn = !config.disableAutomaticOn;
+    }
+
+    if (config.enableAutoOff === undefined && config.disableAutomaticOff === undefined) {
+      config.enableAutoOff = false;
+    } else if (config.disableAutomaticOff !== undefined) {
+      config.enableAutoOff = !config.disableAutomaticOff;
+    }
   }
 
   reset () {
@@ -24,9 +45,9 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       this.autoOffTimeoutPromise = null;
     }
 
-    if (this.autoOffTimeoutPromise) {
-      this.autoOffTimeoutPromise.cancel();
-      this.autoOffTimeoutPromise = null;
+    if (this.autoOnTimeoutPromise) {
+      this.autoOnTimeoutPromise.cancel();
+      this.autoOnTimeoutPromise = null
     }
   }
 
@@ -42,9 +63,6 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     if (!pingIPAddress) return
     
-    // Defaults
-    if (!pingFrequency) pingFrequency = 1;
-    
     // Setup Ping-based State
     ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this))
   }
@@ -53,13 +71,13 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     const { config, state, serviceManager } = this;
 
     if (config.pingIPAddressStateOnly) {
-      state.switchState = active ? 1 : 0;
+      state.switchState = active ? true : false;
       serviceManager.refreshCharacteristicUI(Characteristic.On);
 
       return;
     }
     
-    const value = active ? 1 : 0
+    const value = active ? true : false;
     serviceManager.setCharacteristic(Characteristic.On, value);
   }
 
@@ -72,54 +90,35 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   }
 
   async checkAutoOff () {
-    const { config, log, name, state, serviceManager } = this;
-    let { disableAutomaticOff, enableAutoOff, onDuration } = config;
+    await catchDelayCancelError(async () => {
+      const { config, log, name, state, serviceManager } = this;
+      let { disableAutomaticOff, enableAutoOff, onDuration } = config;
 
-    // Set defaults
-    if (enableAutoOff === undefined && disableAutomaticOff === undefined) {
-      enableAutoOff = false;
-    } else if (disableAutomaticOff !== undefined) {
-      enableAutoOff = !disableAutomaticOff;
-    }
-    if (!onDuration) onDuration = 60;
+      if (state.switchState && enableAutoOff) {
+        log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
 
-    if (state.switchState && enableAutoOff) {
-      log(`${name} setSwitchState: (automatically turn off in ${onDuration} seconds)`);
+        this.autoOffTimeoutPromise = delayForDuration(onDuration);
+        await this.autoOffTimeoutPromise;
 
-      this.autoOffTimeoutPromise = delayForDuration(onDuration);
-      await this.autoOffTimeoutPromise;
-
-      serviceManager.setCharacteristic(Characteristic.On, 0);
-    }
+        serviceManager.setCharacteristic(Characteristic.On, false);
+      }
+    });
   }
 
   async checkAutoOn () {
-    const { config, log, name, state, serviceManager } = this;
-    let { disableAutomaticOn, enableAutoOn, offDuration } = config;
+    await catchDelayCancelError(async () => {
+      const { config, log, name, state, serviceManager } = this;
+      let { disableAutomaticOn, enableAutoOn, offDuration } = config;
 
-    // Set defaults
-    if (enableAutoOn === undefined && disableAutomaticOn === undefined) {
-      enableAutoOn = false;
-    } else if (disableAutomaticOn !== undefined) {
-      enableAutoOn = !disableAutomaticOn;
-    }
+      if (!state.switchState && enableAutoOn) {
+        log(`${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`);
 
-    if (!offDuration) offDuration = 60;
+        this.autoOnTimeoutPromise = delayForDuration(offDuration);
+        await this.autoOnTimeoutPromise;
 
-    // Clear Timeouts
-    if (this.autoOnTimeoutPromise) {
-      this.autoOnTimeoutPromise.cancel();
-      this.autoOnTimeoutPromise = null
-    }
-
-    if (!state.switchState && enableAutoOn) {
-      log(`${name} setSwitchState: (automatically turn on in ${offDuration} seconds)`);
-
-      this.autoOnTimeoutPromise = delayForDuration(offDuration);
-      await this.autoOnTimeoutPromise;
-
-      serviceManager.setCharacteristic(Characteristic.On, 1);
-    }
+        serviceManager.setCharacteristic(Characteristic.On, true);
+      }
+    });
   }
 
   setupServiceManager () {

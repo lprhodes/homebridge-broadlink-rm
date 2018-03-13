@@ -30,9 +30,9 @@ describe('switchAccessory', () => {
     
     
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
@@ -57,12 +57,12 @@ describe('switchAccessory', () => {
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
 
     // Turn On Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
     
     // Turn Off Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Check hex code was sent
     const hasSentCodes = device.hasSentCodes([ 'ON', 'OFF' ]);
@@ -90,16 +90,16 @@ describe('switchAccessory', () => {
 
 
     // Turn On Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     await delayForDuration(0.4)
     // Expecting on after 0.4s total
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
     
     await delayForDuration(0.7)
     // Expecting off after 1.1s total
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
   }).timeout(4000);
 
 
@@ -118,20 +118,20 @@ describe('switchAccessory', () => {
     const switchAccessory = new Switch(null, config, 'FakeServiceManager')
 
     // Turn On Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Turn Off Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     await delayForDuration(0.4)
     // Expecting off after 0.4s total
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
     
     await delayForDuration(0.7)
     // Expecting on after 1.1s total
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
   }).timeout(4000);
 
 
@@ -150,20 +150,20 @@ describe('switchAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Should still be on when loading within a new instance
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
     
     // Turn Off Switch
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 0)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, false)
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Should still be off when loading within a new instance
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
   });
 
   it('"persistState": false', async () => {
@@ -180,8 +180,8 @@ describe('switchAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Should be off again with a new instance
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
@@ -205,7 +205,7 @@ describe('switchAccessory', () => {
     const pingInterval = switchAccessory.checkPing(ping.bind({ isActive: true }))
 
     await delayForDuration(0.3)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Stop the ping setInterval
     clearInterval(pingInterval)
@@ -228,7 +228,7 @@ describe('switchAccessory', () => {
     const pingInterval = switchAccessory.checkPing(ping.bind({ isActive: false }))
 
     await delayForDuration(0.3)
-    expect(switchAccessory.state.switchState).to.equal(0);
+    expect(switchAccessory.state.switchState).to.equal(false);
 
     // Stop the ping setInterval
     clearInterval(pingInterval)
@@ -253,7 +253,7 @@ describe('switchAccessory', () => {
 
     await delayForDuration(0.3)
     expect(switchAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(false);
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Stop the ping setInterval
     clearInterval(pingInterval)
@@ -277,7 +277,7 @@ describe('switchAccessory', () => {
     const pingInterval = switchAccessory.checkPing(ping.bind({ isActive: true }))
 
     await delayForDuration(0.3)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
     expect(switchAccessory.serviceManager.hasRecordedSetCharacteristic).to.equal(true);
 
     // Stop the ping setInterval
@@ -302,14 +302,14 @@ describe('switchAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     device.resetSentHexCodes()
 
     // Should be on still with a new instance
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // We should find that setCharacteristic has been called after a duration of resendHexAfterReloadDelay
     await delayForDuration(0.3)
@@ -342,12 +342,12 @@ describe('switchAccessory', () => {
 
     // Turn On Switch
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, 1)
-    expect(switchAccessory.state.switchState).to.equal(1);
+    switchAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     // Should be on still with a new instance
     switchAccessory = new Switch(null, config, 'FakeServiceManager')
-    expect(switchAccessory.state.switchState).to.equal(1);
+    expect(switchAccessory.state.switchState).to.equal(true);
 
     device.resetSentHexCodes()
 

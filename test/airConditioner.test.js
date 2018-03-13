@@ -139,6 +139,8 @@ describe('airConAccessory', async () => {
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_16' ], count: 1 });
 
+    await delayForDuration(0.3);
+
     // Set air-con mode to "off"
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetHeatingCoolingState, Characteristic.TargetHeatingCoolingState.OFF);
 
@@ -196,12 +198,14 @@ describe('airConAccessory', async () => {
       ...defaultConfig
     };
 
-    const airConAccessory = new AirCon(null, config, 'FakeServiceManager');
+    const airConAccessory = new AirCon(console.log, config, 'FakeServiceManager');
 
     // Set temperature to be above heatTemperature
     airConAccessory.serviceManager.setCharacteristic(Characteristic.TargetTemperature, 26);
 
     await delayForDuration(0.3);
+
+    console.log('codes', device.sentHexCodes)
 
     // Check hex codes were sent
     hexCheck({ device, codes: [ 'TEMPERATURE_26' ], count: 1 });

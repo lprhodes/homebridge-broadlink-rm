@@ -12,6 +12,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   }
 
   reset () {
+   
     // Clear existing timeouts
     if (this.closingTimeoutPromise) {
       this.closingTimeoutPromise.cancel();
@@ -29,10 +30,18 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
     }
   }
 
-  async setDoorTargetState (hexData) {
-    const { host, log, name, debug, state } = this;
+  async setDoorTargetState (hexData, previousValue) {
+    const { host, log, name, debug, state, serviceManager } = this;
 
-    this.reset()
+    this.reset();
+
+    // If you open the garage door and then close it before it's fully open the accessory shall now
+    // update to "Closing" instead of immediately showing as "Closed".
+    
+    // TODO: We could determine how much time has passed while opening and show closing for that amount of time. 
+    if (previousValue !== state.doorTargetState && state.doorCurrentState === state.doorTargetState) {
+      serviceManager.setCharacteristic(Characteristic.CurrentDoorState, !state.doorTargetState);
+    }
     
     // Send pre-determined hex data
     sendData({ host, hexData, log, name, debug });

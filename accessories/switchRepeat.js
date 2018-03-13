@@ -8,6 +8,15 @@ class SwitchRepeatAccessory extends SwitchAccessory {
 
   checkStateWithPing () { }
 
+  setDefaults () {
+    super.setDefaults();
+
+    const { config } = this;
+
+    config.interval = config.interval || 1;
+    config.sendCount = config.sendCount || 1;
+  }
+
   reset () {
     super.reset();
 
@@ -33,10 +42,6 @@ class SwitchRepeatAccessory extends SwitchAccessory {
 
       if (state.switchState && onSendCount) sendCount = onSendCount;
       if (!state.switchState && offSendCount) sendCount = offSendCount;
-
-      // Set defaults
-      interval = interval || 1;
-      sendCount = sendCount || 1;
     
       // Itterate through each hex config in the array
       for (let index = 0; index < sendCount; index++) {
