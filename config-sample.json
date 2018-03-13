@@ -164,11 +164,8 @@
         {
           "name":"Air Conditioner Advanced",
           "type":"air-conditioner",
-          "autoSchedule": [
-            { "days": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ], "startTime": 6, "endTime": 8 },
-            { "days": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ], "startTime": 16, "endTime": 22 },
-            { "days": [ "Saturday", "Sunday" ], "startTime": 6, "endTime": 22 }
-          ],
+          "autoCoolTemperature": 23,
+          "autoHeatTemperature": 14,
           "autoSwitch": "A/C Auto Switch",
           "data":{
             "off":"2600500000012...",

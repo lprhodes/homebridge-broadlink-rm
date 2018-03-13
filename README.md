@@ -300,7 +300,7 @@ key | description | example | default | required | unit tested
 `minimumAutoOnOffDuration` | The minimum amount of time that the air-conditioner must remain on or off after having been automatically turned on or off. | 300 | 120 | No | Yes
 `temperatureAdjustment` | The number of degrees that the reported temperature should be offset by. | 3 | 0 | No | Yes
 `turnOnWhenOff` | If the air-con unit state is off then an `on` code shall be sent before sending the temperature code. | true | false | No | Yes
-`allowResend` | Determines whether the temperature hex code should be resent when requesting the same temperature as the last requested temperature. | true | false | No | Yes
+`preventResendHex` | Determines whether the temperature hex code should be resent when requesting the same temperature as the last requested temperature. | true | false | No | Yes
 `autoSwitchName`| The name of an switch accessory that can be used to enable/disable the auto on/off functionality. To be used in conjunction with `autoHeatTemperature` and `autoCoolTemperature`. | "Air-Con Auto" | - | No | Yes
 `temperatureUpdateFrequency` | The frequency in seconds for which the temperature shall be requested. | 20 | 10 | No | No
 
