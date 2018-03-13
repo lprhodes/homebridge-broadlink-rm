@@ -15,6 +15,7 @@
       "name":"Broadlink RM",
       "hideScanFrequencyButton": false,
       "hideLearnButton": false,
+      "hideWelcomeMessage": false,
       "accessories":[
         {
           "name":"Auto-off Switch",

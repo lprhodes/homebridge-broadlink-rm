@@ -1,4 +1,6 @@
 const { HomebridgePlatform } = require('homebridge-platform-helper');
+
+const npmPackage = require('./package.json');
 const Accessory = require('./accessories');
 
 const classTypes = {
@@ -19,8 +21,32 @@ const classTypes = {
 
 const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
+  showMessage () {
+    const { config } = this;
+
+    if (config && config.hideWelcomeMessage) return;
+
+    setTimeout(() => {
+      console.log(`**************************************************************************************************************`)
+      console.log(`** Welcome to version ${npmPackage.version} of the Homebridge Broadlink RM Plugin!`)
+      console.log(`** Find out what's in the latest release here: https://github.com/lprhodes/homebridge-broadlink-rm/releases`)
+      console.log(`** `)
+      console.log(`** Keep up to date with this plugin along with everything HomeKit and homebridge`)
+      console.log(`** by signing up to our newsletter at http://workswith.io`)
+      console.log(`** `)
+      console.log(`** If you like this plugin then please leave a star on GitHub or better yet; help to support the project`)
+      console.log(`** and show your gratitude by contributing via Paypal (https://paypal.me/lprhodes).`)
+      console.log(`**`)
+      console.log(`** You can disable this message by adding "hideWelcomeMessage": true to the config (see config-sample.json).`)
+      console.log(`**`)
+      console.log(`**************************************************************************************************************`)
+    }, 1500)
+  }
+
   addAccessories (accessories) {
     const { config, log } = this;
+
+    this.showMessage();
 
     if (!config.accessories) config.accessories = []
 
