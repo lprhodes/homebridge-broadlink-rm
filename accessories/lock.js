@@ -1,4 +1,3 @@
-const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
@@ -18,6 +17,8 @@ class LockAccessory extends BroadlinkRMAccessory {
   }
 
   reset () {
+    super.reset();
+
     // Clear existing timeouts
     if (this.lockingTimeoutPromise) {
       this.lockingTimeoutPromise.cancel();
@@ -38,10 +39,10 @@ class LockAccessory extends BroadlinkRMAccessory {
   async setLockTargetState (hexData, currentState) {
     const { host, log, name, debug } = this;
 
-    this.reset()
+    this.reset();
     
     // Send pre-determined hex data
-    sendData({ host, hexData, log, name, debug });
+    await this.performSend(hexData);
 
     catchDelayCancelError(async () => {
       if (currentState === Characteristic.LockTargetState.SECURED) {
@@ -85,6 +86,8 @@ class LockAccessory extends BroadlinkRMAccessory {
       this.lock()
     }
   }
+  
+  // Service Manager Setup
 
   setupServiceManager () {
     const { data, name, serviceManagerType } = this;

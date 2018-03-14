@@ -24,7 +24,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
   showMessage () {
     const { config } = this;
 
-    if (config && config.hideWelcomeMessage) return;
+    if (config && (config.hideWelcomeMessage || config.isUnitTest)) return;
 
     setTimeout(() => {
       console.log(`**************************************************************************************************************`)

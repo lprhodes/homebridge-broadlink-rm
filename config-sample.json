@@ -37,50 +37,73 @@
         },
         {
           "name":"Channel Up",
-          "type":"switch-repeat",
-          "sendCount":1,
-          "data":"2600500000012..."
+          "type":"switch",
+          "data":"CHANNEL_UP_HEX...",
+          "enableAutoOff": true,
+          "onDuration": 1
         },
         {
           "name":"Channel Down",
-          "type":"switch-repeat",
-          "sendCount":1,
-          "data":"2600500000012..."
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 1,
+          "data":"CHANNEL_DOWN_HEX..."
         },
         {
           "name":"Volume Up",
-          "type":"switch-repeat",
-          "sendCount":5,
-          "interval":0.3,
-          "data":"2600500000012..."
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 2.5,
+          "data": [
+            {
+              "data": "VOLUME_UP_HEX...",
+              "sendCount": 5,
+              "interval": 0.3
+            }
+          ]
         },
         {
           "name":"Volume Down",
-          "type":"switch-repeat",
-          "sendCount":5,
-          "interval":0.3,
-          "data":"2600500000012..."
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 2.5,
+          "data": [
+            {
+              "data": "VOLUME_DOWN_HEX...",
+              "sendCount": 5,
+              "interval": 0.3
+            }
+          ]
         },
         {
           "name":"Entertainment",
-          "type":"switch-multi",
-          "interval":0.5,
-          "data": [
-            "2600500000012...",
-            "2600500000012...",
-            "2600500000012..."
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 1.5,
+          "data":[
+            {
+              "data": "HEX_1...",
+              "pause": 0.3
+            },
+            {
+              "data": "HEX_2...",
+              "pause": 0.3
+            },
+            {
+              "data": "HEX_3...",
+              "pause": 0.3
+            }
           ]
         },
         {
           "name":"Entertainment 2",
-          "type":"switch-multi-repeat",
-          "interval":2,
+          "type":"switch",
           "data": [
             {
               "data": "2600500000012...",
               "sendCount": 2,
               "interval": 0.3,
-              "pause": 10
+              "pause": 2
             },
             {
               "data": "2600500000012...",
@@ -91,30 +114,29 @@
         },
         {
           "name":"Entertainment 3",
-          "type":"switch-multi-repeat",
-          "interval":2,
+          "type":"switch",
           "data": {
             "on": [
               {
-                "data": "2600500000012...",
-                "sendCount": 1,
+                "data": "ON_HEX_1...",
                 "pause": 0.3
               },
               {
-                "data": "2600500000012...",
-                "sendCount": 1,
+                "data": "ON_HEX_2...",
+                "sendCount": 2,
+                "interval": 0.1,
                 "pause": 0.3
               }
             ],
             "off": [
               {
-                "data": "2600500000012...",
-                "sendCount": 1,
+                "data": "OFF_HEX_1...",
                 "pause": 0.3
               },
               {
-                "data": "2600500000012...",
-                "sendCount": 1,
+                "data": "OF_HEX_2...",
+                "sendCount": 2,
+                "interval": 0.1,
                 "pause": 0.3
               }
             ]

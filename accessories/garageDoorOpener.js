@@ -1,4 +1,3 @@
-const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
@@ -12,7 +11,8 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   }
 
   reset () {
-   
+    super.reset();
+
     // Clear existing timeouts
     if (this.closingTimeoutPromise) {
       this.closingTimeoutPromise.cancel();
@@ -44,7 +44,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
     }
     
     // Send pre-determined hex data
-    sendData({ host, hexData, log, name, debug });
+    await this.performSend(hexData);
 
     catchDelayCancelError(async () => {
       if (state.doorTargetState === Characteristic.TargetDoorState.OPEN) {
@@ -96,9 +96,9 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   }
 
   async setLockTargetState (hexData) {
-    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { config, log, name, state, serviceManager } = this;
 
-    sendData({ host, hexData, log, name, debug });
+    await this.performSend(hexData);
 
     if (!state.lockTargetState) {
       log(`${name} setCurrentLockState: unlocked`)
@@ -108,6 +108,8 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       serviceManager.setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
     }
   }
+  
+  // Service Manager Setup
 
   setupServiceManager () {
     const { data, name, serviceManagerType } = this;

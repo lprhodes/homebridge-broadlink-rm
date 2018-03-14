@@ -24,6 +24,12 @@ const data = {
   hue40: 'HUE40',
 }
 
+const defaultConfig = {
+  data,
+  isUnitTest: true,
+  persistState: false
+};
+
 describe('lightAccessory', () => {
 
   // Light Turn On
@@ -31,9 +37,8 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      persistState: false,
       onDelay: 0.1
     }
     
@@ -67,9 +72,8 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
-      host: device.host.address,
-      persistState: false
+      ...defaultConfig,
+      host: device.host.address
     }
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
@@ -99,11 +103,10 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       onDelay: 0.1,
       useLastKnownBrightness: true,
-      host: device.host.address,
-      persistState: false
+      host: device.host.address
     }
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
@@ -122,7 +125,7 @@ describe('lightAccessory', () => {
     let hasSentCodes = device.hasSentCodes([ 'ON', 'BRIGHTNESS20' ]);
     expect(hasSentCodes).to.equal(true);
 
-    // Check that only one code has been sent
+    // Check that 2 codes have been sent
     let sentHexCodeCount = device.getSentHexCodeCount();
     expect(sentHexCodeCount).to.equal(2);
     
@@ -134,7 +137,7 @@ describe('lightAccessory', () => {
     hasSentCodes = device.hasSentCodes(['OFF', 'ON', 'BRIGHTNESS20' ]);
     expect(hasSentCodes).to.equal(true);
 
-    // Check that only one code has been sent
+    // Check that 3 codes have been sent
     sentHexCodeCount = device.getSentHexCodeCount();
     expect(sentHexCodeCount).to.equal(3);
 
@@ -159,10 +162,9 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       onDelay: 0.1,
-      host: device.host.address,
-      persistState: false
+      host: device.host.address
     }
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
@@ -221,9 +223,8 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      persistState: false,
       enableAutoOff: true,
       onDuration: 1
     }
@@ -252,9 +253,8 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      persistState: false,
       enableAutoOn: true,
       offDuration: 1
     }
@@ -291,10 +291,9 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      onDelay: 0.1,
-      persistState: false
+      onDelay: 0.1
     }
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
@@ -322,13 +321,10 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      onDelay: 0.1,
-      persistState: false
+      onDelay: 0.1
     }
-    
-    
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 32)
@@ -355,10 +351,9 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      onDelay: 0.1,
-      persistState: false
+      onDelay: 0.1
     }
     
     
@@ -390,10 +385,9 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      onDelay: 0.1,
-      persistState: false
+      onDelay: 0.1
     }
     
     
@@ -423,13 +417,10 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      onDelay: 0.1,
-      persistState: false
+      onDelay: 0.1
     }
-    
-    
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Hue, 32)
@@ -456,13 +447,10 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      onDelay: 0.1,
-      persistState: false
+      onDelay: 0.1
     }
-    
-    
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Hue, 36)
@@ -491,13 +479,10 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      onDelay: 0.5,
-      persistState: false
+      onDelay: 0.5
     }
-    
-    
 
     const lightAccessory = new Light(null, config, 'FakeServiceManager')
     lightAccessory.serviceManager.setCharacteristic(Characteristic.Brightness, 20)
@@ -541,7 +526,7 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
       name: 'Unit Test Light',
       persistState: true
@@ -571,10 +556,9 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      name: 'Unit Test Light',
-      persistState: false
+      name: 'Unit Test Light'
     }
     
     let lightAccessory
@@ -593,18 +577,17 @@ describe('lightAccessory', () => {
   // Ensure the hex is resent after reload
   it('"resendHexAfterReload": true, "persistState": true', async () => {
     const { device } = setup();
-
+    
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
       persistState: true,
       onDelay: 0.1,
       resendHexAfterReload: true,
-      resendDataAfterReloadDelay: 0.1,
-      isUnitTest: true
+      resendDataAfterReloadDelay: 0.1
     }
 
-    let lightAccessory
+    let lightAccessory;
 
     // Turn On Light
     lightAccessory = new Light(null, config, 'FakeServiceManager')
@@ -647,12 +630,11 @@ describe('lightAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
       persistState: true,
       resendHexAfterReload: false,
-      resendDataAfterReloadDelay: 0.1,
-      isUnitTest: true
+      resendDataAfterReloadDelay: 0.1
     }
     
     let lightAccessory

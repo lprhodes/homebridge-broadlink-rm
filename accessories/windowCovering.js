@@ -1,6 +1,5 @@
 const { assert } = require('chai');
 
-const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
@@ -11,7 +10,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   setDefaults () {
     const { config, state } = this;
     const { currentPosition, positionState } = state;
-    const { initialDelay, percentageChangePerSend, totalDurationOpen, totalDurationClose } = config;
+    const { initialDelay, totalDurationOpen, totalDurationClose } = config;
 
     // Check required propertoes
     assert.isNumber(totalDurationOpen, '`totalDurationOpen` is required and should be numeric.')
@@ -26,10 +25,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   reset () {
-    this.clearAllExistingTimers();
-  }
+    super.reset();
 
-  async clearAllExistingTimers () {
     // Clear existing timeouts
     if (this.initialDelayPromise) {
       this.initialDelayPromise.cancel();
@@ -45,17 +42,6 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       this.autoStopPromise.cancel();
       this.autoStopPromise = null;
     }
-
-    // Clear Multi-hex timeouts
-    if (this.intervalTimeoutPromise) {
-      this.intervalTimeoutPromise.cancel();
-      this.intervalTimeoutPromise = null;
-    }
-
-    if (this.pauseTimeoutPromise) {
-      this.pauseTimeoutPromise.cancel();
-      this.pauseTimeoutPromise = null;
-    }
   }
 
   // User requested a specific position or asked the window-covering to be open or closed
@@ -65,10 +51,10 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   async setTargetPositionActual (hexData, previousValue) {
     const { config, host, debug, data, log, name, state, serviceManager } = this;
-    const { initialDelay, percentageChangePerSend } = config;
+    const { initialDelay } = config;
     const { open, close, stop } = data;
     
-    this.clearAllExistingTimers();
+    this.reset();
 
     // Ignore if no change to the targetPosition
     if (state.targetPosition === previousValue) return;
@@ -78,7 +64,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     this.initialDelayPromise = delayForDuration(initialDelay);
     await this.initialDelayPromise;
 
-    if (this.checkOpenOrCloseCompletely()) return;
+    const closeCompletely = await this.checkOpenOrCloseCompletely();
+    if (closeCompletely) return;
 
     log(`${name} setTargetPosition: (currentPosition: ${state.currentPosition})`);
 
@@ -88,8 +75,6 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     state.opening = (difference > 0);
     if (!state.opening) difference = -1 * difference;
 
-    log(`${name} setTargetPosition: (percentageChangePerSend: ${percentageChangePerSend})`);
-    
     hexData = state.opening ? open : close
 
     // Perform the actual open/close asynchronously i.e. without await so that HomeKit status can be updated
@@ -106,7 +91,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
     log(`${name} setTargetPosition: currently ${state.currentPosition}%, moving to ${state.targetPosition}%`);
 
-    this.performSend(hexData);
+    await this.performSend(hexData);
 
     let difference = state.targetPosition - state.currentPosition
     if (!state.opening) difference = -1 * difference;
@@ -122,12 +107,12 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     this.autoStopPromise = delayForDuration(totalTime);
     await this.autoStopPromise;
 
-    this.stopWindowCovering();
+    await this.stopWindowCovering();
 
     serviceManager.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
   }
 
-  stopWindowCovering () {
+  async stopWindowCovering () {
     const { data, host, log, name, state, debug, serviceManager } = this;
     const { stop } = data;
   
@@ -136,12 +121,12 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     // Reset the state and timers
     this.reset();
 
-    sendData({ host, hexData: stop, log, name, debug });
+    await this.performSend(stop);
 
     serviceManager.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
   }
 
-  checkOpenOrCloseCompletely () {
+  async checkOpenOrCloseCompletely () {
     const { data, debug, host, log, name, serviceManager, state } = this;
     const { openCompletely, closeCompletely } = data;
 
@@ -149,7 +134,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     if (state.targetPosition === 0 && closeCompletely) {
       serviceManager.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
 
-      sendData({ host, hexData: closeCompletely, log, name, debug });
+      await this.performSend(closeCompletely);
 
       this.stopWindowCovering();
 
@@ -160,7 +145,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     if (state.targetPosition === 100 && openCompletely) {
       serviceManager.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
 
-      sendData({ host, hexData: openCompletely, log, name, debug });
+      await this.performSend(openCompletely);
 
       this.stopWindowCovering();
 
@@ -206,47 +191,6 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       // Let's go again
       this.startUpdatingCurrentPositionAtIntervals();
     });
-  }
-
-  async performSend (hexData) {
-    const { debug, config, host, log, name } = this;
-
-    if (typeof hexData === 'string') {
-      sendData({ host, hexData, log, name, debug });
-
-      return;
-    }
-
-    await catchDelayCancelError(async () => {
-      // Itterate through each hex config in the array
-      for (let index = 0; index < hexData.length; index++) {
-        const { pause } = hexData[index]
-
-        await this.performRepeatSend(hexData[index]);
-
-        if (pause) {
-          this.pauseTimeoutPromise = delayForDuration(pause);
-          await this.pauseTimeoutPromise;
-        }
-      }
-    });
-  }
-
-  async performRepeatSend (hexConfig) {
-    const { host, log, name, debug } = this;
-    let { data, interval, sendCount } = hexConfig;
-
-    interval = interval || 1;
-
-    // Itterate through each hex config in the array
-    for (let index = 0; index < sendCount; index++) {
-      sendData({ host, hexData: data, log, name, debug });
-
-      if (index < sendCount - 1) {
-        this.intervalTimeoutPromise = delayForDuration(interval);
-        await this.intervalTimeoutPromise;
-      }
-    }
   }
 
   setupServiceManager () {

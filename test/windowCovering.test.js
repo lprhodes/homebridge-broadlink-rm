@@ -114,6 +114,7 @@ describe('windowCoveringAccessory', () => {
 
     // Check value at 50%
     await delayForDuration(50 * durationPerPercent);
+    await delayForDuration(.1);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(50);
 
     // Check hex code was sent
@@ -155,6 +156,7 @@ describe('windowCoveringAccessory', () => {
 
     // Check value at 20%
     await delayForDuration(20 * durationPerPercent);
+    await delayForDuration(.1);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(20);
 
     // Set blinds to 50%
@@ -166,6 +168,7 @@ describe('windowCoveringAccessory', () => {
 
     // Check value at 50%
     await delayForDuration(50 * durationPerPercent);
+    await delayForDuration(.1);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(50);
 
     // Check hex code was sent
@@ -213,6 +216,7 @@ describe('windowCoveringAccessory', () => {
 
     // Check value at 90%
     await delayForDuration(90 * openDurationPerPercent);
+    await delayForDuration(.1);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(90);
 
     // Set blinds to 60%
@@ -224,6 +228,7 @@ describe('windowCoveringAccessory', () => {
 
     // Check value at 60%
     await delayForDuration(30 * closeDurationPerPercent);
+    await delayForDuration(.1);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(60);
 
     // Check hex code was sent
@@ -297,6 +302,8 @@ describe('windowCoveringAccessory', () => {
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(100);
 
+    await delayForDuration(.1);
+
     // Check hex code was sent
     const hasSentCodes = device.hasSentCodes([ 'OPEN_COMPLETELY', 'STOP' ]);
     expect(hasSentCodes).to.equal(true);
@@ -334,6 +341,8 @@ describe('windowCoveringAccessory', () => {
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(100);
 
+    await delayForDuration(.1);
+
     // Check hex code was sent
     let hasSentCodes = device.hasSentCodes([ 'OPEN_COMPLETELY', 'STOP' ]);
     expect(hasSentCodes).to.equal(true);
@@ -348,6 +357,8 @@ describe('windowCoveringAccessory', () => {
     // Wait for initialDelay
     await delayForDuration(windowCoveringAccessory.config.initialDelay);
     expect(windowCoveringAccessory.state.currentPosition).to.equal(0);
+
+    await delayForDuration(.1);
 
     // Check hex code was sent
     hasSentCodes = device.hasSentCodes([ 'OPEN_COMPLETELY', 'STOP', 'CLOSE_COMPLETELY' ]);

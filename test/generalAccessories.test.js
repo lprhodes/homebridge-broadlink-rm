@@ -11,6 +11,7 @@ describe('disableLogs', () => {
 
   it('disableLogs true returns empty function', async () => {
     const config = {
+      isUnitTest: true,
       hideScanFrequencyButton: true,
       disableLogs: true,
       hideLearnButton: true,
@@ -33,6 +34,7 @@ describe('disableLogs', () => {
 
   it('disableLogs false returns useful function', async () => {
     const config = {
+      isUnitTest: true,
       hideScanFrequencyButton: true,
       hideLearnButton: true,
       accessories: [

@@ -2,7 +2,6 @@ const { assert } = require('chai');
 const uuid = require('uuid');
 const fs = require('fs');
 
-const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
@@ -94,6 +93,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   reset () {
+    super.reset();
+    
     this.state.isRunningAutomatically = false;
 
     if (this.shouldIgnoreAutoOnOffPromise) {
@@ -182,7 +183,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (targetHeatingCoolingState === 'off') {
       this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates.off);
-      sendData({ host, hexData: data.off, log, name, debug });
+      await this.performSend(data.off);
 
       return;
     }
@@ -250,7 +251,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
     this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
 
-    sendData({ host, hexData: hexData.data, log, name, debug });
+    await this.performSend(hexData.data);
   }
 
   getTemperatureHexData (temperature) {
@@ -282,15 +283,15 @@ class AirConAccessory extends BroadlinkRMAccessory {
     return { finalTemperature, hexData }
   }
 
-  checkTurnOnWhenOff () {
+  async checkTurnOnWhenOff () {
     const { config, data, debug, host, log, name, state } = this;
     const { on } = data;
     
     if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && config.turnOnWhenOff) {
       log(`${name} sendTemperature (sending "on" hex before sending temperature)`);
 
-      if (on) sendData({ host, hexData: on, log, name, debug });
-
+      if (on) await this.performSend(on);
+  
       return true;
     }
 

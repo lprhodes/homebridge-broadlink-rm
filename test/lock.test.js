@@ -189,7 +189,8 @@ describe('lockAccessory', () => {
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
 
     // Delay to allow for `lockDuration`
-    await delayForDuration(0.2)
+    await delayForDuration(0.3)
+
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
     expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
 

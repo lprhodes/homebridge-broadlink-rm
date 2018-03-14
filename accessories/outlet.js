@@ -1,7 +1,6 @@
 const ping = require('ping');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
 
-const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration')
 const SwitchAccessory = require('./switch');
 
@@ -25,14 +24,6 @@ class OutletAccessory extends SwitchAccessory {
     this.state.outletInUse = value
   
     callback(null, value)
-  }
-
-  async setSwitchState (hexData) {
-    const { data, host, log, name, state, debug } = this;
-
-    if (hexData) sendData({ host, hexData, log, name, debug });
-
-    this.checkAutoOnOff();
   }
 
   setupServiceManager () {

@@ -24,6 +24,12 @@ const data = {
   fanSpeed40: 'FANSPEED40',
 }
 
+const defaultConfig = {
+  data,
+  isUnitTest: true,
+  persistState: false
+};
+
 describe('fanAccessory', () => {
 
   // Fan Turn On
@@ -31,15 +37,16 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      persistState: false
     }
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     
     expect(fanAccessory.state.switchState).to.equal(true);
+
+    await delayForDuration(.2);
 
     // Check hex code was sent
     const hasSentCode = device.hasSentCode('ON');
@@ -56,9 +63,8 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      persistState: false
     }
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
@@ -87,8 +93,7 @@ describe('fanAccessory', () => {
 
     const config = {
       host: device.host.address,
-      persistState: false,
-      data
+      ...defaultConfig,
     }
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
@@ -111,9 +116,8 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
-      host: device.host.address,
-      persistState: false
+      ...defaultConfig,
+      host: device.host.address
     }
     
     
@@ -138,12 +142,9 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
       host: device.host.address,
-      persistState: false
+      ...defaultConfig,
     }
-    
-    
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationSpeed, 36)
@@ -165,9 +166,8 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
       host: device.host.address,
-      persistState: false
+      ...defaultConfig,
     }
     
     
@@ -192,12 +192,9 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
       host: device.host.address,
-      persistState: false
+      ...defaultConfig,
     }
-    
-    
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
@@ -224,13 +221,11 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
       persistState: false,
       hideSwingMode: true,
-    }
-    
-    ;
+    };
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager');
 
@@ -249,12 +244,9 @@ describe('fanAccessory', () => {
     const { device } = setup();;
 
     const config = {
-      data,
       host: device.host.address,
-      persistState: false
+      ...defaultConfig,
     };
-    
-    ;
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager');
     fanAccessory.serviceManager.setCharacteristic(Characteristic.RotationDirection, 0);
@@ -276,9 +268,8 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
       host: device.host.address,
-      persistState: false
+      ...defaultConfig
     }
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
@@ -310,13 +301,10 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
-      persistState: false,
       hideRotationDirection: true,
     }
-    
-    ;
     
     const fanAccessory = new Fan(null, config, 'FakeServiceManager')
 
@@ -335,8 +323,8 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
+      ...defaultConfig,
       name: 'Unit Test Fan',
-      data,
       host: device.host.address,
       persistState: true
     }
@@ -347,6 +335,8 @@ describe('fanAccessory', () => {
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
     fanAccessory.serviceManager.setCharacteristic(Characteristic.On, true)
     expect(fanAccessory.state.switchState).to.equal(true);
+
+    await delayForDuration(.1);
 
     // Should still be on when loading within a new instance
     fanAccessory = new Fan(null, config, 'FakeServiceManager')
@@ -365,10 +355,9 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
       host: device.host.address,
       name: 'Unit Test Fan',
-      persistState: false
+      ...defaultConfig,
     }
     
     let fanAccessory
@@ -389,16 +378,13 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
       persistState: true,
       resendHexAfterReload: true,
-      resendDataAfterReloadDelay: 0.1,
-      isUnitTest: true
+      resendDataAfterReloadDelay: 0.1
     }
-    
-    
-    
+
     let fanAccessory
 
     // Turn On Fan
@@ -434,15 +420,12 @@ describe('fanAccessory', () => {
     const { device } = setup();
 
     const config = {
-      data,
+      ...defaultConfig,
       host: device.host.address,
       persistState: true,
       resendHexAfterReload: false,
-      resendDataAfterReloadDelay: 0.1,
-      isUnitTest: true
+      resendDataAfterReloadDelay: 0.1
     }
-
-    
     
     let fanAccessory
 

@@ -1,9 +1,16 @@
-const sendData = require('../helpers/sendData');
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
 
 const SwitchAccessory = require('./switch');
 
 class FanAccessory extends SwitchAccessory {
+
+  async setSwitchState (hexData, previousValue) {
+    if (!this.state.switchState) {
+      this.lastFanSpeed = undefined;
+    }
+
+    super.setSwitchState(hexData, previousValue);
+  }
 
   async setFanSpeed (hexData) {
     const { data, host, log, state, name, debug} = this;
@@ -40,7 +47,7 @@ class FanAccessory extends SwitchAccessory {
     // Get the closest speed's hex data
     hexData = data[`fanSpeed${closest}`];
 
-    sendData({ host, hexData, log, name, debug });
+    await this.performSend(hexData);
 
     this.checkAutoOnOff();
   }

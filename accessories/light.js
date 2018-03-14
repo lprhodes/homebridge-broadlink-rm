@@ -1,5 +1,4 @@
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
-const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError')
 
@@ -19,6 +18,7 @@ class LightAccessory extends SwitchAccessory {
   reset () {
     super.reset();
 
+    // Clear existing timeouts
     if (this.onDelayTimeoutPromise) {
       this.onDelayTimeoutPromise.cancel();
       this.onDelayTimeoutPromise = undefined
@@ -39,12 +39,14 @@ class LightAccessory extends SwitchAccessory {
         state.switchState = false;
         serviceManager.setCharacteristic(Characteristic.Brightness, brightness);
       } else {
-        if (hexData) sendData({ host, hexData, log, name, debug });
+        if (hexData) await this.performSend(hexData);
 
         this.checkAutoOnOff();
       }
     } else {
-      if (hexData) sendData({ host, hexData, log, name, debug });
+      this.lastBrightness = undefined;
+
+      if (hexData) await this.performSend(hexData);
 
       this.checkAutoOnOff();
     }
@@ -69,7 +71,7 @@ class LightAccessory extends SwitchAccessory {
 
         if (on) {
           log(`${name} setHue: (turn on, wait ${onDelay}s)`);
-          sendData({ host, hexData: on, log, name, debug });
+          await this.performSend(on);
 
           log(`${name} setHue: (wait ${onDelay}s then send data)`);
           this.onDelayTimeoutPromise = delayForDuration(onDelay);
@@ -83,7 +85,7 @@ class LightAccessory extends SwitchAccessory {
       const hexData = data[`hue${closest}`];
 
       log(`${name} setHue: (closest: hue${closest})`);
-      sendData({ host, hexData, log, name, debug });
+      await this.performSend(hexData);
     });
   }
 
@@ -92,6 +94,19 @@ class LightAccessory extends SwitchAccessory {
       const { config, data, host, log, name, state, debug, serviceManager } = this;
       const { off, on } = data;
       let { onDelay } = config;
+
+      if (this.lastBrightness === state.brightness) {
+
+        if (state.brightness > 0) {
+          state.switchState = true;
+        }
+
+        await this.checkAutoOnOff();
+
+        return;
+      }
+
+      this.lastBrightness = state.brightness;
 
       this.reset();
 
@@ -102,7 +117,7 @@ class LightAccessory extends SwitchAccessory {
     
           if (on) {
             log(`${name} setBrightness: (turn on, wait ${onDelay}s)`);
-            sendData({ host, hexData: on, log, name, debug });
+            await this.performSend(on);
     
             log(`${name} setHue: (wait ${onDelay}s then send data)`);
             this.onDelayTimeoutPromise = delayForDuration(onDelay);
@@ -116,10 +131,10 @@ class LightAccessory extends SwitchAccessory {
         const hexData = data[`brightness${closest}`];
     
         log(`${name} setBrightness: (closest: ${closest})`);
-        sendData({ host, hexData, log, name, debug });
+        await this.performSend(hexData);
       } else {
         log(`${name} setBrightness: (off)`);
-        sendData({ host, hexData: off, log, name, debug });
+        await this.performSend(off);
       }
 
       await this.checkAutoOnOff();

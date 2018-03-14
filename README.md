@@ -89,11 +89,177 @@ key | description | example | default | required | unit tested
 `debug` | Outputs some additional logs, useful for figuring out issues. | true | false | No | Yes
 `host` | The IP or MAC address of the Broadlink RM device. | 192.168.1.32 | (auto-discovered) | No | No
 
+## Hex Object Structure
+Any hex value in the config can be either a hex string or a hex object that can be configured to send multiple codes.
+
+### Hex String
+When a simple hex string is used, the hex code will be sent when an accessory is turned on, but not when it is turned off.
+
+```
+{
+  ...
+  "data": "ON_HEX_CODE"
+  ...
+}
+```
+
+Sometimes, specific keys may be required such as `open`, `lock`, or `swingToggle`.
+```
+{
+  ...
+  "data": {
+    "open": "OPEN_HEX_CODE"
+  }
+  ...
+}
+```
+
+
+### On/Off
+In switches you may want to also send an `off` hex code:
+
+```
+{
+  ...
+  "data": {
+    on: "ON_HEX_CODE",
+    off: "OFF_HEX_CODE"
+  }
+  ...
+}
+```
+
+### Repeat
+You may wish for a hex code to be sent multiple times. A delay can be added between each send of the hex code by adding an `"interval"`.
+
+The following will perform the following sequence when turning the accessory on:
+
+Send "ON_HEX_CODE"
+Wait 0.3s
+Send "ON_HEX_CODE"
+Wait 0.3s
+Send "ON_HEX_CODE"
+
+```
+{
+  ...
+  "data": [
+    {
+      "data": "ON_HEX_CODE",
+      "sendCount": 3,
+      "interval": 0.3
+    }
+  ]
+  ...
+}
+```
+
+### Repeat On/Off
+You can also separate the hex object to have separate "on" and "off" outcomes:
+
+The following will perform the following sequence when turning the accessory off:
+
+Send "OFF_HEX_CODE"
+Wait 0.3s
+Send "OFF_HEX_CODE"
+Wait 0.3s
+Send "OFF_HEX_CODE"
+
+```
+{
+  ...
+  "data": {
+    "on": "ON_HEX_CODE",
+    "off": [
+      {
+        "data": "OFF_HEX_CODE",
+        "sendCount": 3,
+        "interval": 0.3
+      }
+    ]
+  }
+  ...
+}
+```
+
+### Multiple Hex Codes
+You may wish for different hex codes to be sent at once. A delay can be added between each hex code by adding an `"pause"` value.
+
+The following will perform the following sequence when turning the accessory on:
+
+Send "ON_HEX_CODE_1"
+Wait 0.3s
+Send "ON_HEX_CODE_2"
+Wait 0.3s
+Send "ON_HEX_CODE_3"
+
+```
+{
+  ...
+  "data": {
+    "on": [
+      {
+        "data": "ON_HEX_CODE_1",
+        "pause": 0.3
+      },
+      {
+        "data": "ON_HEX_CODE_2",
+        "pause": 0.3
+      },
+      {
+        "data": "ON_HEX_CODE_3",
+      }
+    ],
+    "off": "OFF_HEX"
+  }
+  ...
+}
+```
+
+### Multiple Hex Codes With Repeats
+You may wish for different hex codes to be sent at once, with some repeating. A delay can be added between each hex code by adding an `"pause"` value. A delay can be added between each repeats of the same hex code by adding an `"interval"`.
+
+The following will perform the following sequence when turning the accessory on:
+
+Send "ON_HEX_CODE_1"
+Wait 0.1s
+Send "ON_HEX_CODE_1"
+Wait 0.1s
+Send "ON_HEX_CODE_1"
+Wait 0.3s
+Send "ON_HEX_CODE_2"
+Wait 0.3s
+Send "ON_HEX_CODE_3"
+
+```
+{
+  ...
+  "data": {
+    "on": [
+      {
+        "data": "ON_HEX_CODE_1",
+        "sendCount": 3,
+        "interval": 0.1,
+        "pause": 0.3
+      },
+      {
+        "data": "ON_HEX_CODE_2",
+        "pause": 0.3
+      },
+      {
+        "data": "ON_HEX_CODE_3",
+      }
+    ],
+    "off": "OFF_HEX"
+  }
+  ...
+}
+```
+
+
 ## Accessory Types
 
 - [switch](#switch)
-- [switch-multi](#switch-multi)
-- [switch-repeat](#switch-repeat)
 - [fan](#fan)
 - [light](#light)
 - [garage-door-opener](#garage-door-opener)
@@ -118,41 +284,9 @@ key | description | example | default | required | unit tested
 #### "data" key-value object
 key | description
 --- | -----------
-`on` | A hex code string to be sent when the switch is changed to the on position.
-`off` | A hex code string to be sent when the switch is changed to the off position.
+`on` | A hex code string or [object](#hex-object-structure) to be sent when the switch is changed to the on position.
+`off` | A hex code string or [object](#hex-object-structure) to be sent when the switch is changed to the off position.
 
-### switch-multi
-Turn the switch on and the switch will send each hex code in the provided array. You can also set the interval between each send.
-
-key | description | example | default | required | unit tested
---- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as an array of strings. You can also set separate `on` and `off` arrays of codes similar to the `switch` accessory. | [ "26005800000..." ] | - | Yes | Yes
-`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | No
-`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
-`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No | Yes
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
-
-### switch-repeat
-Turn the switch on and the switch will repeatedly send the hex code until it reaches the defined send count. You can also set the interval between each send.
-
-key | description | example | default | required | unit tested
---- | ----------- | ------- | ------- | -------- | -----------
-`data` | Hex data stored as string. You can also set separate `on` and `off` codes similar to the `switch` accessory. | 26005800000... | - | Yes | Yes
-`sendCount` | The number of times the hex code should be sent. | 5 | 1 | No | No
-`onSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned on. | 5 | 1 | No | Yes
-`offSendCount` | If you set separate `on` and `off` codes you can use this to override the `sendCount` when the switch is turned off. | 5 | 1 | No | Yes
-`interval` | The amount of time between each send of a hex code in seconds. | 0.3 | 1 | No | Yes
-`enableAutoOff` | Turn the switch off automatically when `onDuration` has been reached. | true | false | No | Yes
-`onDuration` | The amount of time before the switch automatically turns itself off (used in conjunction with `enableAutoOff`). | 5 | 60 | No | Yes
-`enableAutoOn` | Turn the switch on automatically when `offDuration` has been reached | false | true | No | Yes
-`offDuration` | The amount of time before the switch automatically turns itself on (used in conjunction with `enableAutoOn`). | 5 | 60 | No | Yes
-
-#### "data" key-value object
-key | description
---- | -----------
-`on` | A hex code string to be sent when the switch is changed to the on position.
-`off` | A hex code string to be sent when the switch is changed to the off position.
 
 ### outlet
 Turn the outlet on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
@@ -171,8 +305,8 @@ key | description | example | default | required | unit tested
 #### "data" key-value object
 key | description
 --- | -----------
-`on` | A hex code string to be sent when the plug is changed to the on position.
-`off` | A hex code string to be sent when the plug is changed to the off position.
+`on` | A hex code string or [object](#hex-object-structure) to be sent when the plug is changed to the on position.
+`off` | A hex code string or [object](#hex-object-structure) to be sent when the plug is changed to the off position.
 
 ### fan
 Turn the fan on and the `on` hex code is sent, turn it off and the `off` hex code is sent.
@@ -190,12 +324,12 @@ key | description | example | default | required | unit tested
 #### "data" key-value object
 key | description
 --- | -----------
-`on` | A hex code string to be sent when the switch is changed to the on position.
-`off` | A hex code string to be sent when the switch is changed to the off position.
-`clockwise` | A hex code string to be sent to make the fan go clockwise.
-`counterClockwise` | A hex code string to be sent to make the fan go counter clockwise.
-`swingToggle` | A hex code string used to toggle the swing mode on/off.
-`fanSpeedX` | A hex code string where X is any fan speed you wish to support e.g. "fanSpeed100".
+`on` | A hex code string or [object](#hex-object-structure) to be sent when the switch is changed to the on position.
+`off` | A hex code string or [object](#hex-object-structure) to be sent when the switch is changed to the off position.
+`clockwise` | A hex code string or [object](#hex-object-structure) to be sent to make the fan go clockwise.
+`counterClockwise` | A hex code string or [object](#hex-object-structure) to be sent to make the fan go counter clockwise.
+`swingToggle` | A hex code string or [object](#hex-object-structure) used to toggle the swing mode on/off.
+`fanSpeedX` | A hex code string or [object](#hex-object-structure) where X is any fan speed you wish to support e.g. "fanSpeed100".
 
 ### light
 Turn the light on and the `defaultBrightness` is set unless `useLastKnownBrightness` is set to true in which case the last brightness that was set will be used.
@@ -218,9 +352,9 @@ key | description | example | default | required | unit tested
 #### "data" key-value object
 key | description
 --- | -----------
-`off` | A hex code string to be sent when the switch is changed to the off position.
-`brightnessX` | A hex code string where X is any brightness you wish to support e.g. "brightness100".
-`hueX` | A hex code string where X is any hue you wish to support between 0 and 359 e.g. "hue42".
+`off` | A hex code string or [object](#hex-object-structure) to be sent when the switch is changed to the off position.
+`brightnessX` | A hex code string or [object](#hex-object-structure) where X is any brightness you wish to support e.g. "brightness100".
+`hueX` | A hex code string or [object](#hex-object-structure) where X is any hue you wish to support between 0 and 359 e.g. "hue42".
 `on` | If set, this hex code shall be sent before brightness or hue is set using `onDelay` to create a delay between sends.
 
 ### garage-door-opener
@@ -237,10 +371,10 @@ key | description | example | default | required | unit tested
 #### "data" key-value object
 key | description
 --- | -----------
-`open` | A hex code string to be sent when the switch is changed to the open position.
-`close` | A hex code string to be sent when the switch is changed to the close position.
-`unlock` | A hex code string to be sent when the switch is set to unlock.
-`lock` | A hex code string to be sent when the switch is set to lock.
+`open` | A hex code string or [object](#hex-object-structure) to be sent when the switch is changed to the open position.
+`close` | A hex code string or [object](#hex-object-structure) to be sent when the switch is changed to the close position.
+`unlock` | A hex code string or [object](#hex-object-structure) to be sent when the switch is set to unlock.
+`lock` | A hex code string or [object](#hex-object-structure) to be sent when the switch is set to lock.
 
 ### lock
 Set the switch to unlock and the `unlock` hex code is sent, set it to lock and the `lock` hex code is sent.
@@ -255,8 +389,8 @@ key | description | example | default | required | unit tested
 #### "data" key-value object
 key | description
 --- | -----------
-`unlock` | A hex code string to be sent when the switch is set to unlock.
-`lock` | A hex code string to be sent when the switch is set to lock.
+`unlock` | A hex code string or [object](#hex-object-structure) to be sent when the switch is set to unlock.
+`lock` | A hex code string or [object](#hex-object-structure) to be sent when the switch is set to lock.
 
 ### window-covering
 The window-covering accessory designed to be used by IR/RF controlled blinds/shades/shutters.
@@ -275,9 +409,9 @@ key | description | example | default | required | unit tested
 #### "data" key-value object
 key | description
 --- | -----------
-`open` | A hex code string to be sent when the window-covering is requested to open.
-`close` | A hex code string to be sent when the window-covering is requested to close.
-`stop` | A hex code string to be sent when the window-covering is stopped automatically.
+`open` | A hex code string or [object](#hex-object-structure) to be sent when the window-covering is requested to open.
+`close` | A hex code string or [object](#hex-object-structure) to be sent when the window-covering is requested to close.
+`stop` | A hex code string or [object](#hex-object-structure) to be sent when the window-covering is stopped automatically.
 `openCompletely` | When set, this hex code will be sent when a value of 100% is requested.
 `closeCompletely` | When set, this hex code will be sent when a value of 0% is requested.
 
@@ -309,7 +443,7 @@ key | description | example | default | required | unit tested
 key | description
 --- | -----------
 `on` | An optional hex code to be used in conjunction with the `turnOnWhenOff` configuration.
-`off` | A hex code string to be sent when the air conditioner is asked to be turned off.
+`off` | A hex code string or [object](#hex-object-structure) to be sent when the air conditioner is asked to be turned off.
 `temperatureX` | Where X is any temperature you wish to support e.g. `temperature30`. See below.
 
 #### "temperatureX" key-value object

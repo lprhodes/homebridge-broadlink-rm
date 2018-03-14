@@ -1,5 +1,4 @@
 const { ServiceManagerTypes } = require('../helpers/serviceManager');
-const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const ping = require('../helpers/ping')
@@ -34,6 +33,8 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   }
 
   reset () {
+    super.reset();
+
     // Clear Timeouts
     if (this.delayTimeoutPromise) {
       this.delayTimeoutPromise.cancel();
@@ -84,7 +85,9 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   async setSwitchState (hexData) {
     const { data, host, log, name, debug } = this;
 
-    if (hexData) sendData({ host, hexData, log, name, debug });
+    this.reset();
+
+    if (hexData) await this.performSend(hexData);
 
     this.checkAutoOnOff();
   }
@@ -134,8 +137,8 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       setMethod: this.setCharacteristicValue,
       bind: this,
       props: {
-        onData: on,
-        offData: off,
+        onData: on || data,
+        offData: off || undefined,
         setValuePromise: this.setSwitchState.bind(this)
       }
     });

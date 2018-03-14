@@ -16,6 +16,12 @@ const data = {
   unlock: 'UNLOCK_HEX'
 }
 
+const defaultConfig = {
+  data,
+  isUnitTest: true,
+  persistState: false
+};
+
 describe('doorAccessory', () => {
 
   // Closing -> Closed
@@ -23,10 +29,9 @@ describe('doorAccessory', () => {
     const { device } = setup();
 
     const config = {
-      persistState: false,
+      ...defaultConfig,
       host: device.host.address,
-      closeDuration: 0.2,
-      data
+      closeDuration: 0.2
     }
     
     const doorAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
@@ -49,17 +54,15 @@ describe('doorAccessory', () => {
     const { device } = setup();
 
     const config = {
-      persistState: false,
+      ...defaultConfig,
       host: device.host.address,
       closeDuration: 0.2,
-      openDuration: 0.2,
-      data
+      openDuration: 0.2
     }
     
     const doorAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
     doorAccessory.serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.CLOSED)
 
-    
     let sentHexCodeCount
 
     // Check hex code was sent
@@ -112,12 +115,11 @@ describe('doorAccessory', () => {
     const { device } = setup();
 
     const config = {
-      persistState: false,
+      ...defaultConfig,
       host: device.host.address,
       closeDuration: 0.2,
       openDuration: 0.2,
-      autoCloseDelay: 0.2,
-      data
+      autoCloseDelay: 0.2
     }
     
     const doorAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
@@ -168,12 +170,12 @@ describe('doorAccessory', () => {
     const { device } = setup();
 
     const config = {
+      ...defaultConfig,
       name: 'Unit Test Door',
       host: device.host.address,
       persistState: true,
       closeDuration: 0.2,
-      openDuration: 0.2,
-      data
+      openDuration: 0.2
     }
     
     let doorAccessory
@@ -184,7 +186,7 @@ describe('doorAccessory', () => {
     expect(doorAccessory.state.doorTargetState).to.equal(Characteristic.TargetDoorState.CLOSED);
 
     // Delay to allow for `closeDuration`
-    await delayForDuration(0.2)
+    await delayForDuration(0.3)
     expect(doorAccessory.state.doorTargetState).to.equal(Characteristic.TargetDoorState.CLOSED);
     expect(doorAccessory.state.doorCurrentState).to.equal(Characteristic.CurrentDoorState.CLOSED);
 
@@ -212,12 +214,11 @@ describe('doorAccessory', () => {
     const { device } = setup();
 
     const config = {
+      ...defaultConfig,
       name: 'Unit Test Door',
       host: device.host.address,
-      persistState: false,
       closeDuration: 0.2,
-      openDuration: 0.2,
-      data
+      openDuration: 0.2
     }
     
     let doorAccessory
@@ -241,14 +242,13 @@ describe('doorAccessory', () => {
     const { device } = setup();
 
     const config = {
+      ...defaultConfig,
       persistState: true,
       host: device.host.address,
       resendHexAfterReload: true,
       resendDataAfterReloadDelay: 0.1,
       closeDuration: 0.2,
-      openDuration: 0.2,
-      data,
-      isUnitTest: true
+      openDuration: 0.2
     }
 
     let doorAccessory
@@ -291,14 +291,13 @@ describe('doorAccessory', () => {
     const { device } = setup();
 
     const config = {
+      ...defaultConfig,
       persistState: true,
       host: device.host.address,
       resendHexAfterReload: false,
       resendDataAfterReloadDelay: 0.1,
       closeDuration: 0.2,
-      openDuration: 0.2,
-      data,
-      isUnitTest: true
+      openDuration: 0.2
     }
 
     
@@ -399,6 +398,8 @@ describe('doorAccessory', () => {
     const lockAccessory = new GarageDoorOpener(null, config, 'FakeServiceManager')
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
 
+    await delayForDuration(.1);
+
     // Locked
     expect(lockAccessory.state.lockCurrentState).to.equal(Characteristic.LockCurrentState.SECURED);
     expect(lockAccessory.state.lockTargetState).to.equal(Characteristic.LockTargetState.SECURED);
@@ -428,6 +429,8 @@ describe('doorAccessory', () => {
     // Lock
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
 
+    await delayForDuration(.1);
+
     let sentHexCodeCount
 
     // Check hex code was sent
@@ -447,6 +450,8 @@ describe('doorAccessory', () => {
 
     // Unlock
     lockAccessory.serviceManager.setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.UNSECURED)
+    
+    await delayForDuration(.1);
     
     // Check hex sent
     const hasSentUnlockCode = device.hasSentCode('UNLOCK_HEX')
