@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { ServiceManager } = require('../../helpers/ServiceManager')
+const { ServiceManager } = require('../../helpers/serviceManager')
 
 class FakeServiceManager extends ServiceManager {
 
