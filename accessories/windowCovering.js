@@ -113,7 +113,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async stopWindowCovering () {
-    const { data, host, log, name, state, debug, serviceManager } = this;
+    const { config, data, host, log, name, state, debug, serviceManager } = this;
+    const { sendStopAt0, sendStopAt100 } = config;
     const { stop } = data;
   
     log(`${name} setTargetPosition: (stop window covering)`);
@@ -121,7 +122,9 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     // Reset the state and timers
     this.reset();
 
-    await this.performSend(stop);
+    if (state.targetPosition === 100 && sendStopAt100) await this.performSend(stop);
+    if (state.targetPosition === 0 && sendStopAt0) await this.performSend(stop);
+    if (state.targetPosition !== 0 && state.targetPosition != 100) await this.performSend(stop);
 
     serviceManager.setCharacteristic(Characteristic.PositionState, Characteristic.PositionState.STOPPED);
   }
