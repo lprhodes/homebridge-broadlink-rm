@@ -1,5 +1,5 @@
 const ping = require('ping');
-const { ServiceManagerTypes } = require('../helpers/serviceManager');
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 
 const delayForDuration = require('../helpers/delayForDuration')
 const SwitchAccessory = require('./switch');

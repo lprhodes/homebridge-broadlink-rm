@@ -3,7 +3,7 @@ const uuid = require('uuid');
 const fs = require('fs');
 
 const delayForDuration = require('../helpers/delayForDuration');
-const { ServiceManagerTypes } = require('../helpers/serviceManager');
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const { getDevice } = require('../helpers/getDevice');
 const BroadlinkRMAccessory = require('./accessory');

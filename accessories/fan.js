@@ -1,4 +1,4 @@
-const { ServiceManagerTypes } = require('../helpers/serviceManager');
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 
 const SwitchAccessory = require('./switch');
 

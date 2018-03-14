@@ -1,6 +1,8 @@
 const learnData = require('../helpers/learnData');
 const learnRFData = require('../helpers/learnRFData');
-const { ServiceManager, ServiceManagerTypes } = require('../helpers/serviceManager');
+const ServiceManager = require('../helpers/serviceManager');
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
+
 const BroadlinkRMAccessory = require('./accessory');
 
 class LearnIRAccessory extends BroadlinkRMAccessory {

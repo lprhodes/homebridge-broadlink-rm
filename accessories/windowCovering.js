@@ -1,7 +1,7 @@
 const { assert } = require('chai');
 
 const delayForDuration = require('../helpers/delayForDuration');
-const { ServiceManagerTypes } = require('../helpers/serviceManager');
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const BroadlinkRMAccessory = require('./accessory');
 

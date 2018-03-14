@@ -1,5 +1,4 @@
 const assert = require('assert')
-const FakeServiceManager = require('../test/helpers/fakeServiceManager')
 
 class ServiceManager {
 
@@ -77,12 +76,4 @@ class ServiceManager {
   }
 }
 
-const ServiceManagerTypes = {
-  ServiceManager,
-  FakeServiceManager
-}
-
-module.exports = {
-  ServiceManager,
-  ServiceManagerTypes
-}
+module.exports = ServiceManager
