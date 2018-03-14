@@ -134,11 +134,11 @@ You may wish for a hex code to be sent multiple times. A delay can be added betw
 
 The following will perform the following sequence when turning the accessory on:
 
-Send "ON_HEX_CODE"
-Wait 0.3s
-Send "ON_HEX_CODE"
-Wait 0.3s
-Send "ON_HEX_CODE"
+- Send "ON_HEX_CODE"
+- Wait 0.3s
+- Send "ON_HEX_CODE"
+- Wait 0.3s
+- Send "ON_HEX_CODE"
 
 ```
 {
@@ -159,11 +159,11 @@ You can also separate the hex object to have separate "on" and "off" outcomes:
 
 The following will perform the following sequence when turning the accessory off:
 
-Send "OFF_HEX_CODE"
-Wait 0.3s
-Send "OFF_HEX_CODE"
-Wait 0.3s
-Send "OFF_HEX_CODE"
+- Send "OFF_HEX_CODE"
+- Wait 0.3s
+- Send "OFF_HEX_CODE"
+- Wait 0.3s
+- Send "OFF_HEX_CODE"
 
 ```
 {
@@ -187,11 +187,11 @@ You may wish for different hex codes to be sent at once. A delay can be added be
 
 The following will perform the following sequence when turning the accessory on:
 
-Send "ON_HEX_CODE_1"
-Wait 0.3s
-Send "ON_HEX_CODE_2"
-Wait 0.3s
-Send "ON_HEX_CODE_3"
+- Send "ON_HEX_CODE_1"
+- Wait 0.3s
+- Send "ON_HEX_CODE_2"
+- Wait 0.3s
+- Send "ON_HEX_CODE_3"
 
 ```
 {
@@ -221,15 +221,15 @@ You may wish for different hex codes to be sent at once, with some repeating. A 
 
 The following will perform the following sequence when turning the accessory on:
 
-Send "ON_HEX_CODE_1"
-Wait 0.1s
-Send "ON_HEX_CODE_1"
-Wait 0.1s
-Send "ON_HEX_CODE_1"
-Wait 0.3s
-Send "ON_HEX_CODE_2"
-Wait 0.3s
-Send "ON_HEX_CODE_3"
+- Send "ON_HEX_CODE_1"
+- Wait 0.1s
+- Send "ON_HEX_CODE_1"
+- Wait 0.1s
+- Send "ON_HEX_CODE_1"
+- Wait 0.3s
+- Send "ON_HEX_CODE_2"
+- Wait 0.3s
+- Send "ON_HEX_CODE_3"
 
 ```
 {
