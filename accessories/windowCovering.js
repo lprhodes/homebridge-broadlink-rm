@@ -45,6 +45,17 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       this.autoStopPromise.cancel();
       this.autoStopPromise = null;
     }
+
+    // Clear Multi-hex timeouts
+    if (this.intervalTimeoutPromise) {
+      this.intervalTimeoutPromise.cancel();
+      this.intervalTimeoutPromise = null;
+    }
+
+    if (this.pauseTimeoutPromise) {
+      this.pauseTimeoutPromise.cancel();
+      this.pauseTimeoutPromise = null;
+    }
   }
 
   // User requested a specific position or asked the window-covering to be open or closed
@@ -86,10 +97,6 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
   }
 
   async openOrClose ({ hexData, previousValue }) {
-    await this.openOrCloseActual({ hexData, previousValue })
-  }
-
-  async openOrCloseActual ({ hexData, previousValue }) {
     let { config, data, host, name, log, state, debug, serviceManager } = this;
     let { totalDurationOpen, totalDurationClose } = config;
     const { stop } = data;
@@ -98,7 +105,8 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     serviceManager.setCharacteristic(Characteristic.PositionState, newPositionState);
 
     log(`${name} setTargetPosition: currently ${state.currentPosition}%, moving to ${state.targetPosition}%`);
-    sendData({ host, hexData, log, name, debug });
+
+    this.performSend(hexData);
 
     let difference = state.targetPosition - state.currentPosition
     if (!state.opening) difference = -1 * difference;
@@ -198,6 +206,47 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       // Let's go again
       this.startUpdatingCurrentPositionAtIntervals();
     });
+  }
+
+  async performSend (hexData) {
+    const { debug, config, host, log, name } = this;
+
+    if (typeof hexData === 'string') {
+      sendData({ host, hexData, log, name, debug });
+
+      return;
+    }
+
+    await catchDelayCancelError(async () => {
+      // Itterate through each hex config in the array
+      for (let index = 0; index < hexData.length; index++) {
+        const { pause } = hexData[index]
+
+        await this.performRepeatSend(hexData[index]);
+
+        if (pause) {
+          this.pauseTimeoutPromise = delayForDuration(pause);
+          await this.pauseTimeoutPromise;
+        }
+      }
+    });
+  }
+
+  async performRepeatSend (hexConfig) {
+    const { host, log, name, debug } = this;
+    let { data, interval, sendCount } = hexConfig;
+
+    interval = interval || 1;
+
+    // Itterate through each hex config in the array
+    for (let index = 0; index < sendCount; index++) {
+      sendData({ host, hexData: data, log, name, debug });
+
+      if (index < sendCount - 1) {
+        this.intervalTimeoutPromise = delayForDuration(interval);
+        await this.intervalTimeoutPromise;
+      }
+    }
   }
 
   setupServiceManager () {

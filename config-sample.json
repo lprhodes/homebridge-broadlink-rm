@@ -223,6 +223,27 @@
             "close":"2600500000012...",
             "stop":"2600500000012..."
           }
+        },
+        {
+          "name":"Blind Multi",
+          "type":"window-covering",
+          "totalDurationOpen": 5,
+          "totalDurationClose": 2,
+          "data":{
+            "open":"OPEN_HEX...",
+            "close":[
+              {
+                "data": "CLOSE_HEX_1...",
+                "sendCount": 2,
+                "interval": 0.3,
+                "pause": 0.3
+              },
+              {
+                "data": "CLOSE_HEX_2..."
+              }
+            ],
+            "stop":"STOP_HEX..."
+          }
         }
       ]
     }
