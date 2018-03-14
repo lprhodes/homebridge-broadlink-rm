@@ -242,9 +242,19 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     state.firstTemperatureUpdate = false;
 
-    const mode = hexData['pseudo-mode'];
-    this.log(`${name} sendTemperature (${state.targetTemperature}, ${mode})`);
+    let mode = hexData['pseudo-mode'];
 
+    if (mode) assert.oneOf(mode, [ 'heat', 'cool' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[30m should be either "heat" or "cool"');
+    
+    if (!mode) {
+      if (finalTemperature < heatTemperature) {
+        mode = 'cool';
+      } else {
+        mode = 'heat';
+      }
+    }
+
+    this.log(`${name} sendTemperature (${state.targetTemperature}, ${mode})`);
 
     state.targetHeatingCoolingState = HeatingCoolingStates[mode];
     this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
