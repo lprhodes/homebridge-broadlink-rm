@@ -1,5 +1,6 @@
 const { assert } = require('chai');
 const uuid = require('uuid');
+const fs = require('fs');
 
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
@@ -300,10 +301,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
   
   async monitorTemperature () {
     const { config, host, log, name, state } = this;
-    const { pseudoDeviceTemperature, minTemperature, maxTemperature, temperatureAdjustment } = config;
+    const { temperatureFilePath } = config;
+
+    if (temperatureFilePath) return;
 
     const device = getDevice({ host, log });
 
+    // Try again in a second if we don't have a device yet
     if (!device) {
       await delayForDuration(1);
 
@@ -311,41 +315,45 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       return;
     }
-    
-    const onTemperature = (temperature) => {
-      temperature += temperatureAdjustment
-      
-      state.currentTemperature = temperature;
-
-      log(`${name} onTemperature (${temperature})`);
-
-      if (temperature > maxTemperature) {
-        log(`${name} getCurrentTemperature (reported temperature too high, settings to 0: ${temperature})`);
-
-        temperature = 0
-      }
-
-      if (temperature < minTemperature) {
-        
-        log(`${name} getCurrentTemperature (reported temperature too low, setting to 0: ${temperature})`);
-
-        temperature = 0
-      }
-
-      this.processQueuedTemperatureCallbacks(temperature);
-    }
 
     log(`${name} monitorTemperature`);
 
-    device.on('temperature', onTemperature);
+    device.on('temperature', this.onTemperature.bind(this));
     device.checkTemperature();
 
     this.updateTemperatureUI();
     if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
   }
 
+  onTemperature (temperature) {
+    const { config, host, log, name, state } = this;
+    const { pseudoDeviceTemperature, minTemperature, maxTemperature, temperatureAdjustment } = config;
+
+    temperature += temperatureAdjustment
+    
+    state.currentTemperature = temperature;
+
+    log(`${name} onTemperature (${temperature})`);
+
+    if (temperature > maxTemperature) {
+      log(`${name} getCurrentTemperature (reported temperature too high, settings to 0: ${temperature})`);
+
+      temperature = 0
+    }
+
+    if (temperature < minTemperature) {
+      
+      log(`${name} getCurrentTemperature (reported temperature too low, setting to 0: ${temperature})`);
+
+      temperature = 0
+    }
+
+    this.processQueuedTemperatureCallbacks(temperature);
+  }
+
   addTemperatureCallbackToQueue (callback) {
-    const { host, log, name } = this;
+    const { config, host, log, name } = this;
+    const { temperatureFilePath } = config;
   
     const callbackIdentifier = uuid.v4();
 
@@ -354,6 +362,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Make sure we're only calling one at a time
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
       log(`${name} getCurrentTemperature (waiting for device to return temperature)`);
+
+      return;
+    }
+
+    if (temperatureFilePath) {
+      this.updateTemperatureFromFile();
 
       return;
     }
@@ -367,7 +381,37 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     device.checkTemperature();
-    log(`${name} getCurrentTemperature (requested temperature from device, waiting)`);
+    log(`${name} addTemperatureCallbackToQueue (requested temperature from device, waiting)`);
+  }
+
+  updateTemperatureFromFile () {
+    const { config, debug, host, log, name } = this;
+    const { temperatureFilePath } = config;
+
+    if (debug) log(`${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
+
+    fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
+
+      if (err) {
+         log(`\x1b[31m[ERROR] \x1b[30m${name} updateTemperatureFromFile\n\n${err.message}`);
+         
+         return;
+      }
+
+      if (!temperature || temperature.trim().length === 0) {
+        log(`\x1b[31m[ERROR] \x1b[30m${name} updateTemperatureFromFile (no temperature found)`);
+        
+        return;
+      }
+
+      if (debug) log(`${name} updateTemperatureFromFile (file content: ${temperature.trim()})`);
+
+      temperature = parseFloat(temperature);
+
+      if (debug) log(`${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
+      
+      this.onTemperature(temperature);
+    });
   }
 
   processQueuedTemperatureCallbacks (temperature) {
