@@ -91,10 +91,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
       assert.isAbove(config.pseudoDeviceTemperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[30m (${config.pseudoDeviceTemperature}) must be more than the minTemperature (${config.minTemperature})`)
     }
 
-    // Check some common user errors
-    if (config.allowResend !== undefined) assert.isBoolean(config.allowResend, '\x1b[31m[CONFIG ERROR] \x1b[30mBoolean values should look like this: \x1b[32m"allowResend": true\x1b[30m not this \x1b[31m"allowResend": "true"\x1b[30m')
-    if (config.preventResendHex !== undefined) assert.isBoolean(config.preventResendHex, '\x1b[31m[CONFIG ERROR] Boolean values should look like this: \x1b[32m"preventResendHex": true\x1b[30m not this \x1b[31m"preventResendHex": "true"\x1b[30m')
-    
     // minTemperature can't be more than 10 or HomeKit throws a fit
     assert.isBelow(config.minTemperature, 11, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[30m (${config.minTemperature}) must be <= 10`)
  
