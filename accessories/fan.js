@@ -22,11 +22,20 @@ class FanAccessory extends SwitchAccessory {
       foundSpeeds.push(parts[1])
     })
 
-    if (foundSpeeds.length === 0) return log(`${name} setFanSpeed: No fan speed hex codes provided.`)
+    if (foundSpeeds.length === 0) {
+
+      return log(`${name} setFanSpeed: No fan speed hex codes provided.`)
+    }
 
     // Find speed closest to the one requested
     const closest = foundSpeeds.reduce((prev, curr) => Math.abs(curr - state.fanSpeed) < Math.abs(prev - state.fanSpeed) ? curr : prev);
     log(`${name} setFanSpeed: (closest: ${closest})`);
+
+    if (this.lastFanSpeed === closest) {
+      return;
+    }
+
+    this.lastFanSpeed = closest;
 
     // Get the closest speed's hex data
     hexData = data[`fanSpeed${closest}`];
