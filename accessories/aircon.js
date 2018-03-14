@@ -87,9 +87,19 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     // Check required properties
     if (config.pseudoDeviceTemperature) {
-      assert.isBelow(config.pseudoDeviceTemperature, config.maxTemperature, `The pseudoDeviceTemperature (${config.pseudoDeviceTemperature}) must be less than the maxTemperature (${config.maxTemperature})`)
-      assert.isAbove(config.pseudoDeviceTemperature, config.minTemperature, `The pseudoDeviceTemperature (${config.pseudoDeviceTemperature}) must be more than the minTemperature (${config.minTemperature})`)
+      assert.isBelow(config.pseudoDeviceTemperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[30m (${config.pseudoDeviceTemperature}) must be less than the maxTemperature (${config.maxTemperature})`)
+      assert.isAbove(config.pseudoDeviceTemperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[30m (${config.pseudoDeviceTemperature}) must be more than the minTemperature (${config.minTemperature})`)
     }
+
+    // Check some common user errors
+    if (config.allowResend !== undefined) assert.isBoolean(config.allowResend, '\x1b[31m[CONFIG ERROR] \x1b[30mBoolean values should look like this: \x1b[32m"allowResend": true\x1b[30m not this \x1b[31m"allowResend": "true"\x1b[30m')
+    if (config.preventResendHex !== undefined) assert.isBoolean(config.preventResendHex, '\x1b[31m[CONFIG ERROR] Boolean values should look like this: \x1b[32m"preventResendHex": true\x1b[30m not this \x1b[31m"preventResendHex": "true"\x1b[30m')
+    
+    // minTemperature can't be more than 10 or HomeKit throws a fit
+    assert.isBelow(config.minTemperature, 11, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[30m (${config.minTemperature}) must be <= 10`)
+ 
+    // maxTemperature > minTemperature
+    assert.isBelow(config.minTemperature, config.maxTemperature, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[30m (${config.minTemperature}) must be more than minTemperature (${config.minTemperature})`)
   }
 
   reset () {
@@ -276,15 +286,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
       const defaultTemperature = (temperature >= heatTemperature) ? defaultHeatTemperature : defaultCoolTemperature;
       hexData = data[`temperature${defaultTemperature}`];
 
-      if (!hexData) {
-        const error = Error(`You need to set the defaultHeatTemperature and defaultCoolTemperature or provide a hex code for the given mode/temperature:
-          ({ "temperature${temperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })
-          or at the very least, the default mode/temperature
-          ({ "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "auto/heat/cool" } })`);
-
-          console.log('error', error)
-        throw new Error(`${name} ${error.message}`);
-      }
+      assert(hexData, `\x1b[31m[CONFIG ERROR] \x1b[30m You need to provide a hex code for the following temperature:
+        \x1b[33m{ "temperature${temperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[30m 
+        or provide the default temperature:
+        \x1b[33m { "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[30m`);
+      
 
       this.log(`${name} Update to default temperature (${defaultTemperature})`);
       finalTemperature = defaultTemperature;
