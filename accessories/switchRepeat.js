@@ -61,7 +61,7 @@ class SwitchRepeatAccessory extends SwitchAccessory {
     const { data, log, name, config, serviceManagerType } = this;
 
     setTimeout(() => {
-      log(`\x1b[33m[Warning] \x1b[30m${name}: The "switch-repeat" accessory is now depreciated and shall be removed in the future. Check out the updated "switch" documentation at http://github.com/lprhodes/homebridge-broadlink-rm`);
+      log(`\x1b[33m[Warning] \x1b[30m${name}: The "switch-repeat" accessory is now deprecated and shall be removed in the future. Check out the updated "switch" documentation at http://github.com/lprhodes/homebridge-broadlink-rm`);
     }, 1600)
 
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
