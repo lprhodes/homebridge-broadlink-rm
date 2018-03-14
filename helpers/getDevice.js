@@ -69,9 +69,9 @@ const getDevice = ({ host, log, learnOnly }) => {
     device = discoveredDevices[host];
 
     // Create manual device
-    if (!device && !manualDevices[address]) {
-      const device = { host: { address } };
-      manualDevices[address] = device;
+    if (!device && !manualDevices[host]) {
+      const device = { host: { address: host } };
+      manualDevices[host] = device;
 
       startPing(device)
     }
