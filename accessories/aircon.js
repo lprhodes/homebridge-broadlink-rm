@@ -341,26 +341,16 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   onTemperature (temperature) {
     const { config, host, log, name, state } = this;
-    const { pseudoDeviceTemperature, minTemperature, maxTemperature, temperatureAdjustment } = config;
+    const { minTemperature, maxTemperature, temperatureAdjustment } = config;
 
     temperature += temperatureAdjustment
     
     state.currentTemperature = temperature;
 
     log(`${name} onTemperature (${temperature})`);
-
-    if (temperature > maxTemperature) {
-      log(`${name} getCurrentTemperature (reported temperature too high, settings to 0: ${temperature})`);
-
-      temperature = 0
-    }
-
-    if (temperature < minTemperature) {
-      
-      log(`${name} getCurrentTemperature (reported temperature too low, setting to 0: ${temperature})`);
-
-      temperature = 0
-    }
+    
+    assert.isBelow(temperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[30m (${config.maxTemperature}) must be more than the reported temperature (${temperature})`)
+    assert.isAbove(temperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[30m (${config.maxTemperature}) must be less than the reported temperature (${temperature})`)
 
     this.processQueuedTemperatureCallbacks(temperature);
   }
