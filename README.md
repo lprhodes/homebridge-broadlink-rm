@@ -438,6 +438,8 @@ key | description | example | default | required | unit tested
 `preventResendHex` | Determines whether the temperature hex code should be resent when requesting the same temperature as the last requested temperature. | true | false | No | Yes
 `autoSwitchName`| The name of an switch accessory that can be used to enable/disable the auto on/off functionality. To be used in conjunction with `autoHeatTemperature` and `autoCoolTemperature`. | "Air-Con Auto" | - | No | Yes
 `temperatureUpdateFrequency` | The frequency in seconds for which the temperature shall be requested. | 20 | 10 | No | No
+`sendTemperatureOnlyWhenOff` | When set, this will prevent the air-conditioner from being turned when setting a temperature while the air-conditioner is off. | true | false | No | No
+
 
 #### "data" key-value object
 key | description

@@ -224,7 +224,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   // Thermostat
   async sendTemperature (temperature, previousTemperature) {
     const { HeatingCoolingStates, config, data, host, log, name, state, debug } = this;
-    const { preventResendHex, defaultCoolTemperature, heatTemperature } = config;
+    const { preventResendHex, defaultCoolTemperature, heatTemperature, sendTemperatureOnlyWhenOff } = config;
 
     log(`${name} Potential sendTemperature (${temperature})`);
 
@@ -248,6 +248,16 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     state.firstTemperatureUpdate = false;
 
+    // Send the temperature hex
+    this.log(`${name} sendTemperature (${state.targetTemperature}`);
+    await this.performSend(hexData.data);
+
+
+    // Update the heating/cooling mode based on the temperature.
+    if (state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF && sendTemperatureOnlyWhenOff) {
+      return;
+    }
+
     let mode = hexData['pseudo-mode'];
 
     if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[30m should be one of "heat", "cool" or "auto"');
@@ -262,14 +272,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
     }
 
-    this.log(`${name} sendTemperature (${state.targetTemperature}, ${mode})`);
+    this.log(`${name} sendTemperature (set mode to ${mode}`);
 
     state.targetHeatingCoolingState = HeatingCoolingStates[mode];
     this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
     this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
     this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
-
-    await this.performSend(hexData.data);
   }
 
   getTemperatureHexData (temperature) {
