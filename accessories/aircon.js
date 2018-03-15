@@ -253,9 +253,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[30m should be one of "heat", "cool" or "auto"');
     
     if (!mode) {
-      if (state.targetTemperature < state.temperature) {
+      if (state.targetTemperature < state.currentTemperature) {
         mode = 'cool';
-      } else if (state.targetTemperature > state.temperature) {
+      } else if (state.targetTemperature > state.currentTemperature) {
         mode = 'heat';
       } else {
         mode = 'auto';
