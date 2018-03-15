@@ -450,7 +450,7 @@ key | description
 key | description
 --- | -----------
 `data` | Hex data stored as string.
-`pseudo-mode` (Optional) | The mode we set when this hex is sent. i.e. `heat`, `cool` or `auto`. For graphical purposes only (hence use of the term "pseudo"). Cannot be used in conjunction with `replaceAutoMode`. By default this will use the `heatTemperature` value to determine whether to set the mode as `heat` or `cool`.
+`pseudo-mode` (Optional) | The mode we set when this hex is sent. i.e. `heat`, `cool` or `auto`. For graphical purposes only (hence use of the term "pseudo").  By default this will use the current temperature and the target temperature to determine whether to set the mode as `heat` or `cool`.
 
 ### learn-code
 You do not need to add this accessory type yourself as we add one automatically. However if you have multiple Broadlink RM devices then it may be useful to specify multiple devices with the `learn-code` type along with a `"host"` value so that you can learn from each of them.
