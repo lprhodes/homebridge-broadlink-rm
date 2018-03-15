@@ -432,7 +432,7 @@ key | description | example | default | required | unit tested
 `autoHeatTemperature` | When the temperature is below this value, the heat mode will be enabled. | 18 | - | No | Yes
 `autoCoolTemperature` | When the temperature is above this value, the cool mode will enabled. | 27 | - | No | Yes
 `minimumAutoOnOffDuration` | The minimum amount of time that the air-conditioner must remain on or off after having been automatically turned on or off. | 300 | 120 | No | Yes
-`temperatureFilePath` | A path to a file containing a number that represents the current temperature reported to the accessory.  | "/Users/username/HomeKit/temperature/" | - | No | No
+`temperatureFilePath` | A path to a file containing a number that represents the current temperature reported to the accessory.  | "/Users/ username/ HomeKit/ temperature/" | - | No | No
 `temperatureAdjustment` | The number of degrees that the reported temperature should be offset by. | 3 | 0 | No | Yes
 `turnOnWhenOff` | If the air-con unit state is off then an `on` code shall be sent before sending the temperature code. | true | false | No | Yes
 `preventResendHex` | Determines whether the temperature hex code should be resent when requesting the same temperature as the last requested temperature. | true | false | No | Yes
