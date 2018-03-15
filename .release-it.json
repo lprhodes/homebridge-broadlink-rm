@@ -8,6 +8,6 @@
     "release": true,
     "releaseName": "v%s"
   },
-  "changelogCommand": "echo \"### Features\n\n\n### Fixes\"; git log --pretty=format:\"- %s (%h)\" [REV_RANGE]",
+  "changelogCommand": "echo \"### Features\n\n\n### Bug Fixes\"; git log --pretty=format:\"- %s (%h)\" [REV_RANGE]",
   "non-interactive": true  
 }
