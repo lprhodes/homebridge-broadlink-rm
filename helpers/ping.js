@@ -2,7 +2,7 @@ const ping = require('ping');
 
 const pingIPAddress = (ipAddress, interval, callback) => {
   setInterval(() => {
-    ping.sys.probe(pingIPAddress, (isActive) => {
+    ping.sys.probe(ipAddress, (isActive) => {
       callback(isActive)
     })
   }, interval * 1000);
