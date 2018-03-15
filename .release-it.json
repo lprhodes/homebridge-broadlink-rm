@@ -1,5 +1,5 @@
 {
-  "verbose": true,
+  "verbose": false,
   "src": {
     "tagName": "%s",
     "tagAnnotation": "v%s"
@@ -8,6 +8,6 @@
     "release": true,
     "releaseName": "v%s"
   },
-  "changelogCommand": "echo \"### Features\n\n\n### Fixes\n\"; git log --pretty=format:\"- %s (%h)\" [REV_RANGE]",
+  "changelogCommand": "echo \"### Features\n\n\n### Fixes\"; git log --pretty=format:\"- %s (%h)\" [REV_RANGE]",
   "non-interactive": true  
 }
