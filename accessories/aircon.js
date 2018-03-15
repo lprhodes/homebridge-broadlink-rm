@@ -185,7 +185,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (state.targetHeatingCoolingState === undefined) return;
 
     // Check to see if it's changed
-    if (state.targetHeatingCoolingState === state.currentHeatingCoolingState) return;
+    if (state.targetHeatingCoolingState === state.currentHeatingCoolingState && preventResendHex) return;
 
     if (targetHeatingCoolingState === 'off') {
       this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates.off);
