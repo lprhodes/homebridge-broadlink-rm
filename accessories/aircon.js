@@ -250,7 +250,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     let mode = hexData['pseudo-mode'];
 
-    if (mode) assert.oneOf(mode, [ 'heat', 'cool' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[30m should be either "heat" or "cool"');
+    if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[30m should be one of "heat", "cool" or "auto"');
     
     if (!mode) {
       if (finalTemperature < heatTemperature) {
