@@ -1,0 +1,10 @@
+{
+  "verbose": true,
+  "src": {
+    "tagName": "v%s"
+  },
+  "github": {
+    "release": true
+  },
+  "changelogCommand": "echo \"Coming soon...\n\n### Features\n\n\n### Fixes\n\" >&2"
+}
