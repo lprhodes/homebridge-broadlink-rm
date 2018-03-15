@@ -1,10 +1,12 @@
 {
   "verbose": true,
   "src": {
-    "tagName": "v%s"
+    "tagName": "%s",
+    "tagAnnotation": "v%s"
   },
   "github": {
-    "release": true
+    "release": true,
+    "releaseName": "v%s"
   },
-  "changelogCommand": "echo \"Coming soon...\n\n### Features\n\n\n### Fixes\n\" >&2"
+  "changelogCommand": "echo \"### Features\n\n\n###Fixes\n\"; git log --pretty=format:\"- %s (%h)\" [REV_RANGE]"
 }
