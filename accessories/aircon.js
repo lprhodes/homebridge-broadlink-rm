@@ -353,6 +353,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { config, host, log, name, state } = this;
     const { minTemperature, maxTemperature, temperatureAdjustment } = config;
 
+    // onTemperature is getting called twice. No known cause currently.
+    // This helps prevent the same temperature from being processed twice 
+    if (Object.keys(this.temperatureCallbackQueue).length === 0) return;
+
     temperature += temperatureAdjustment
     
     state.currentTemperature = temperature;
@@ -366,19 +370,21 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   addTemperatureCallbackToQueue (callback) {
-    const { config, host, log, name } = this;
+    const { config, host, log, name, state } = this;
     const { temperatureFilePath } = config;
-  
-    const callbackIdentifier = uuid.v4();
-
-    this.temperatureCallbackQueue[callbackIdentifier] = callback;
     
-    // Make sure we're only calling one at a time
+    // Clear the previous callback
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
-      log(`${name} getCurrentTemperature (waiting for device to return temperature)`);
+      if (state.currentTemperature) {
+        log(`${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
+        
+        this.processQueuedTemperatureCallbacks(state.currentTemperature);
 
-      return;
+      }
     }
+
+    const callbackIdentifier = uuid.v4();
+    this.temperatureCallbackQueue[callbackIdentifier] = callback;
 
     if (temperatureFilePath) {
       this.updateTemperatureFromFile();
@@ -388,8 +394,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     const device = getDevice({ host, log });
 
-    if (!device) {
-      this.processQueuedTemperatureCallbacks(0);
+    if (!device || device.state === 'inactive') {
+      if (device && device.state === 'inactive') {
+        log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
+      }
+
+      this.processQueuedTemperatureCallbacks(state.currentTemperature || 0);
 
       return;
     }
@@ -429,6 +439,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   processQueuedTemperatureCallbacks (temperature) {
+    if (Object.keys(this.temperatureCallbackQueue).length === 0) return;
+
     Object.keys(this.temperatureCallbackQueue).forEach((callbackIdentifier) => {
       const callback = this.temperatureCallbackQueue[callbackIdentifier];
       
