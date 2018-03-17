@@ -22,5 +22,5 @@ You can keep informed about HomeKit, homebridge and homebridge plugins by subscr
 
 Full documentation can be found [here](https://lprhodes.github.io/slate/).
 
-# Thanks
+## Thanks
 Thanks to @tattn (https://github.com/tattn/homebridge-rm-mini3), @PJCzx (https://github.com/PJCzx/homebridge-thermostat) @momodalo (https://github.com/momodalo/broadlinkjs) whose time and effort got me started.
