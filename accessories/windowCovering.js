@@ -24,7 +24,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     if (positionState === undefined) this.state.positionState = Characteristic.PositionState.STOPPED;
   }
 
-  reset () {
+  async reset () {
     super.reset();
 
     // Clear existing timeouts
@@ -46,70 +46,70 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
   // User requested a specific position or asked the window-covering to be open or closed
   async setTargetPosition (hexData, previousValue) {
-    await this.setTargetPositionActual();
-  }
+    await catchDelayCancelError(async () => {
+      const { config, host, debug, data, log, name, state, serviceManager } = this;
+      const { initialDelay } = config;
+      const { open, close, stop } = data;
+      
+      this.reset();
 
-  async setTargetPositionActual (hexData, previousValue) {
-    const { config, host, debug, data, log, name, state, serviceManager } = this;
-    const { initialDelay } = config;
-    const { open, close, stop } = data;
-    
-    this.reset();
+      // Ignore if no change to the targetPosition
+      if (state.targetPosition === previousValue) return;
 
-    // Ignore if no change to the targetPosition
-    if (state.targetPosition === previousValue) return;
+      // `initialDelay` allows multiple `window-covering` accessories to be updated at the same time
+      // without RF interference by adding an offset to each `window-covering` accessory
+      this.initialDelayPromise = delayForDuration(initialDelay);
+      await this.initialDelayPromise;
 
-    // `initialDelay` allows multiple `window-covering` accessories to be updated at the same time
-    // without RF interference by adding an offset to each `window-covering` accessory
-    this.initialDelayPromise = delayForDuration(initialDelay);
-    await this.initialDelayPromise;
+      const closeCompletely = await this.checkOpenOrCloseCompletely();
+      if (closeCompletely) return;
 
-    const closeCompletely = await this.checkOpenOrCloseCompletely();
-    if (closeCompletely) return;
+      log(`${name} setTargetPosition: (currentPosition: ${state.currentPosition})`);
 
-    log(`${name} setTargetPosition: (currentPosition: ${state.currentPosition})`);
+      // Determine if we're opening or closing
+      let difference = state.targetPosition - state.currentPosition;
 
-    // Determine if we're opening or closing
-    let difference = state.targetPosition - state.currentPosition;
+      state.opening = (difference > 0);
+      if (!state.opening) difference = -1 * difference;
 
-    state.opening = (difference > 0);
-    if (!state.opening) difference = -1 * difference;
+      hexData = state.opening ? open : close
 
-    hexData = state.opening ? open : close
-
-    // Perform the actual open/close asynchronously i.e. without await so that HomeKit status can be updated
-    this.openOrClose({ hexData, previousValue });
+      // Perform the actual open/close asynchronously i.e. without await so that HomeKit status can be updated
+      this.openOrClose({ hexData, previousValue });
+    });
   }
 
   async openOrClose ({ hexData, previousValue }) {
-    let { config, data, host, name, log, state, debug, serviceManager } = this;
-    let { totalDurationOpen, totalDurationClose } = config;
-    const { stop } = data;
+    await catchDelayCancelError(async () => {
+      let { config, data, host, name, log, state, debug, serviceManager } = this;
+      let { totalDurationOpen, totalDurationClose } = config;
+      const { stop } = data;
 
-    const newPositionState = state.opening ? Characteristic.PositionState.INCREASING : Characteristic.PositionState.DECREASING;
-    serviceManager.setCharacteristic(Characteristic.PositionState, newPositionState);
+      const newPositionState = state.opening ? Characteristic.PositionState.INCREASING : Characteristic.PositionState.DECREASING;
+      serviceManager.setCharacteristic(Characteristic.PositionState, newPositionState);
 
-    log(`${name} setTargetPosition: currently ${state.currentPosition}%, moving to ${state.targetPosition}%`);
+      log(`${name} setTargetPosition: currently ${state.currentPosition}%, moving to ${state.targetPosition}%`);
 
-    await this.performSend(hexData);
+      await this.performSend(hexData);
 
-    let difference = state.targetPosition - state.currentPosition
-    if (!state.opening) difference = -1 * difference;
+      let difference = state.targetPosition - state.currentPosition
+      if (!state.opening) difference = -1 * difference;
 
-    const fullOpenCloseTime = state.opening ? totalDurationOpen : totalDurationClose;
-    const durationPerPercentage = fullOpenCloseTime / 100;
-    const totalTime = durationPerPercentage * difference;
+      const fullOpenCloseTime = state.opening ? totalDurationOpen : totalDurationClose;
+      const durationPerPercentage = fullOpenCloseTime / 100;
+      const totalTime = durationPerPercentage * difference;
 
-    log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-stop`);
+      log(`${name} setTargetPosition: ${totalTime}s (${fullOpenCloseTime} / 100 * ${difference}) until auto-stop`);
 
-    this.startUpdatingCurrentPositionAtIntervals();
+      this.startUpdatingCurrentPositionAtIntervals();
 
-    this.autoStopPromise = delayForDuration(totalTime);
-    await this.autoStopPromise;
+      this.autoStopPromise = delayForDuration(totalTime);
+      await this.autoStopPromise;
 
-    await this.stopWindowCovering();
+      await this.stopWindowCovering();
 
-    serviceManager.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
+      serviceManager.setCharacteristic(Characteristic.CurrentPosition, state.targetPosition);
+    });
   }
 
   async stopWindowCovering () {
