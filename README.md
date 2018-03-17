@@ -4,9 +4,9 @@ Broadlink RM Mini and Pro plugin for [Homebridge](https://github.com/nfarina/hom
 
 This allows you to control your RM Mini and Pro with HomeKit and Siri.
 
-If you like this plugin then please star this Github repo, or better yet; [buy me a drink](https://paypal.me/lprhodes).
+If you like this plugin then please star this Github repo, or better yet; buy me a drink or contribute using [Paypal](https://paypal.me/lprhodes) or [crypto currency](https://goo.gl/bEn1RW).
 
-You can also go one step further by subscribing to the [Works with Newsletter](http://workswith.io) which will keep you informed about HomeKit, homebridge and homebridge plugins.
+You can also keep informed about HomeKit, homebridge and homebridge plugins by subscribing to the [Works with](http://workswith.io) newsletter.
 
 ## Requirements
 
