@@ -283,6 +283,8 @@ describe('windowCoveringAccessory', () => {
       data,
       totalDurationOpen: 1,
       totalDurationClose: 1,
+      sendStopAt100: true,
+      sendStopAt0: true,
       persistState: false,
       host: device.host.address
     }
@@ -322,6 +324,8 @@ describe('windowCoveringAccessory', () => {
       data,
       totalDurationOpen: 1, 
       totalDurationClose: 1,
+      sendStopAt100: true,
+      sendStopAt0: true,
       persistState: false,
       host: device.host.address
     }
@@ -331,7 +335,7 @@ describe('windowCoveringAccessory', () => {
     const durationPerPercent = windowCoveringAccessory.determineOpenCloseDurationPerPercent({
       opening: true,
       totalDurationOpen: config.totalDurationOpen,
-      totalDurationClose: config.totalDurationClose 
+      totalDurationClose: config.totalDurationClose
     });
 
     // Set Blinds to 100%
