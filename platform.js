@@ -2,6 +2,7 @@ const { HomebridgePlatform } = require('homebridge-platform-helper');
 
 const npmPackage = require('./package.json');
 const Accessory = require('./accessories');
+const checkForUpdates = require('./helpers/checkForUpdates')
 
 const classTypes = {
   'air-conditioner': Accessory.AirCon,
@@ -27,6 +28,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
     if (config && (config.hideWelcomeMessage || config.isUnitTest)) return;
 
     setTimeout(() => {
+      console.log('')
       console.log(`**************************************************************************************************************`)
       console.log(`** Welcome to version ${npmPackage.version} of the Homebridge Broadlink RM Plugin!`)
       console.log(`** Find out what's in the latest release here: https://github.com/lprhodes/homebridge-broadlink-rm/releases`)
@@ -39,6 +41,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
       console.log(`** You can disable this message by adding "hideWelcomeMessage": true to the config (see config-sample.json).`)
       console.log(`**`)
       console.log(`**************************************************************************************************************`)
+      console.log('')
     }, 1500)
   }
 
@@ -46,6 +49,8 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
     const { config, log } = this;
 
     this.showMessage();
+
+    checkForUpdates(log);
 
     if (!config.accessories) config.accessories = []
 
