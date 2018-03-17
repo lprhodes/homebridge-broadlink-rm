@@ -30,13 +30,14 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
     setTimeout(() => {
       console.log('')
       console.log(`**************************************************************************************************************`)
-      console.log(`** Welcome to version ${npmPackage.version} of the Homebridge Broadlink RM Plugin!`)
-      console.log(`** Find out what's in the latest release here: https://github.com/lprhodes/homebridge-broadlink-rm/releases`)
+      console.log(`** Welcome to version \x1b[32m${npmPackage.version}\x1b[0m of the \x1b[34mHomebridge Broadlink RM Plugin\x1b[0m!`)
+      console.log('')
+      console.log(`** Find out what's in the latest release here: \x1b[4mhttps://github.com/lprhodes/homebridge-broadlink-rm/releases\x1b[0m`)
+      console.log(`** `)
+      console.log(`** If you like this plugin then please star it on GitHub or better yet buy me a drink using Paypal \x1b[4mhttps://paypal.me/lprhodes\x1b[0m or crypto \x1b[4mhttps://goo.gl/bEn1RW\x1b[0m.`)
       console.log(`** `)
       console.log(`** Keep up to date with this plugin along with everything HomeKit and homebridge`)
-      console.log(`** by signing up to our newsletter at http://workswith.io`)
-      console.log(`** `)
-      console.log(`** If you like this plugin then please star it on GitHub or better yet; [buy me a drink](https://paypal.me/lprhodes).`)
+      console.log(`** by signing up to my newsletter at \x1b[4mhttp://workswith.io\x1b[0m`)
       console.log(`**`)
       console.log(`** You can disable this message by adding "hideWelcomeMessage": true to the config (see config-sample.json).`)
       console.log(`**`)
@@ -49,8 +50,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
     const { config, log } = this;
 
     this.showMessage();
-
-    checkForUpdates(log);
+    setTimeout(checkForUpdates, 1800);
 
     if (!config.accessories) config.accessories = []
 
