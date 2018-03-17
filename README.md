@@ -421,7 +421,7 @@ This allows you to send a hex code for any temperature that you've defined a hex
 key | description | example | default | required | unit tested
 --- | ----------- | ------- | ------- | -------- | -----------
 `data` | Hex data stored as a key-value JSON object. | See below. | - | Yes | Yes
-`minTemperature` | The minimum temperature you can set. | 14 | -15 | No
+`minTemperature` | The minimum temperature you can set. This should be 10C or less. | 10 | -15 | No
 `maxTemperature` | The maximum temperature you can set. | 28 | 50 | No
 `temperatureDisplayUnits` | Specify Celsius or Fahrenheit. | F | C | No
 `defaultCoolTemperature` | The temperature that will be requested when no hex code exists for the specified temperature. | 14 | 16 | No | Yes
