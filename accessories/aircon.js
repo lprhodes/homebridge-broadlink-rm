@@ -87,15 +87,15 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     // Check required properties
     if (config.pseudoDeviceTemperature) {
-      assert.isBelow(config.pseudoDeviceTemperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[30m (${config.pseudoDeviceTemperature}) must be less than the maxTemperature (${config.maxTemperature})`)
-      assert.isAbove(config.pseudoDeviceTemperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[30m (${config.pseudoDeviceTemperature}) must be more than the minTemperature (${config.minTemperature})`)
+      assert.isBelow(config.pseudoDeviceTemperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[0m (${config.pseudoDeviceTemperature}) must be less than the maxTemperature (${config.maxTemperature})`)
+      assert.isAbove(config.pseudoDeviceTemperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mpseudoDeviceTemperature\x1b[0m (${config.pseudoDeviceTemperature}) must be more than the minTemperature (${config.minTemperature})`)
     }
 
     // minTemperature can't be more than 10 or HomeKit throws a fit
-    assert.isBelow(config.minTemperature, 11, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[30m (${config.minTemperature}) must be <= 10`)
+    assert.isBelow(config.minTemperature, 11, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[0m (${config.minTemperature}) must be <= 10`)
  
     // maxTemperature > minTemperature
-    assert.isBelow(config.minTemperature, config.maxTemperature, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[30m (${config.minTemperature}) must be more than minTemperature (${config.minTemperature})`)
+    assert.isBelow(config.minTemperature, config.maxTemperature, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[0m (${config.minTemperature}) must be more than minTemperature (${config.minTemperature})`)
   }
 
   reset () {
@@ -260,7 +260,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     let mode = hexData['pseudo-mode'];
 
-    if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[30m should be one of "heat", "cool" or "auto"');
+    if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"');
     
     if (!mode) {
       if (state.targetTemperature < state.currentTemperature) {
@@ -292,10 +292,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
       const defaultTemperature = (temperature >= heatTemperature) ? defaultHeatTemperature : defaultCoolTemperature;
       hexData = data[`temperature${defaultTemperature}`];
 
-      assert(hexData, `\x1b[31m[CONFIG ERROR] \x1b[30m You need to provide a hex code for the following temperature:
-        \x1b[33m{ "temperature${temperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[30m 
+      assert(hexData, `\x1b[31m[CONFIG ERROR] \x1b[0m You need to provide a hex code for the following temperature:
+        \x1b[33m{ "temperature${temperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[0m 
         or provide the default temperature:
-        \x1b[33m { "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[30m`);
+        \x1b[33m { "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[0m`);
       
 
       this.log(`${name} Update to default temperature (${defaultTemperature})`);
@@ -363,8 +363,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     log(`${name} onTemperature (${temperature})`);
     
-    assert.isBelow(temperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[30m (${config.maxTemperature}) must be more than the reported temperature (${temperature})`)
-    assert.isAbove(temperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[30m (${config.maxTemperature}) must be less than the reported temperature (${temperature})`)
+    assert.isBelow(temperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[0m (${config.maxTemperature}) must be more than the reported temperature (${temperature})`)
+    assert.isAbove(temperature, config.minTemperature - 1, `\x1b[31m[CONFIG ERROR] \x1b[33mminTemperature\x1b[0m (${config.maxTemperature}) must be less than the reported temperature (${temperature})`)
 
     this.processQueuedTemperatureCallbacks(temperature);
   }
@@ -417,13 +417,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
     fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
 
       if (err) {
-         log(`\x1b[31m[ERROR] \x1b[30m${name} updateTemperatureFromFile\n\n${err.message}`);
+         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
          
          return;
       }
 
       if (!temperature || temperature.trim().length === 0) {
-        log(`\x1b[31m[ERROR] \x1b[30m${name} updateTemperatureFromFile (no temperature found)`);
+        log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile (no temperature found)`);
         
         return;
       }
