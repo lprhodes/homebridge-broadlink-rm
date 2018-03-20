@@ -246,6 +246,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
     }
 
+    if (state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF && sendTemperatureOnlyWhenOff) {
+      return;
+    }
+
     state.firstTemperatureUpdate = false;
 
     // Send the temperature hex
@@ -254,9 +258,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
 
     // Update the heating/cooling mode based on the temperature.
-    if (state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF && sendTemperatureOnlyWhenOff) {
-      return;
-    }
+    
 
     let mode = hexData['pseudo-mode'];
 
