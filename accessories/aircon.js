@@ -412,7 +412,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { config, debug, host, log, name } = this;
     const { temperatureFilePath } = config;
 
-    if (debug) log(`${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
 
     fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
 
@@ -428,11 +428,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
         return;
       }
 
-      if (debug) log(`${name} updateTemperatureFromFile (file content: ${temperature.trim()})`);
+      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (file content: ${temperature.trim()})`);
 
       temperature = parseFloat(temperature);
 
-      if (debug) log(`${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
+      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
       
       this.onTemperature(temperature);
     });
