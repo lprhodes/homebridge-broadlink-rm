@@ -7,5 +7,5 @@ module.exports = (homebridge) => {
 
   homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
 
-  discoverDevices();
+  discoverDevices(0, true);
 }

@@ -27,21 +27,8 @@ const manualDevices = {};
 
 let discovering = false;
 
-const discoverDevices = (count = 0) => {
-  discovering = true;
-
-  if (count >= 5) {
-    discovering = false;
-
-    return;
-  }
-
+const discoverDevices = () => {
   broadlink.discover();
-  count++;
-
-  setTimeout(() => {
-    discoverDevices(count);
-  }, 5 * 1000)
 }
 
 broadlink.on('deviceReady', (device) => {
