@@ -9,12 +9,12 @@ const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 class BroadlinkRMAccessory extends HomebridgeAccessory {
 
   constructor (log, config = {}, serviceManagerType) {
-    if (config.debug) this.debug = true
     if (!config.name) config.name = "Unknown Accessory"
 
     config.resendDataAfterReload = config.resendHexAfterReload;
 
     super(log, config, serviceManagerType);
+    if (config.debug) this.debug = true
 
 
     this.manufacturer = 'Broadlink';
