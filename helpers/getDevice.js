@@ -28,7 +28,11 @@ const manualDevices = {};
 let discovering = false;
 
 const discoverDevices = () => {
-  broadlink.discover();
+  setInterval(() => {
+    broadlink.discover()
+  }, 2000)
+
+  broadlink.discover()
 }
 
 broadlink.on('deviceReady', (device) => {
@@ -36,7 +40,7 @@ broadlink.on('deviceReady', (device) => {
   const macAddress = macAddressParts.join(':')
   device.host.macAddress = macAddress
 
-  console.log(`Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
+  console.log(`\x1b[36m[INFO]\x1b[0m Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
   addDevice(device)
 
   startPing(device)
