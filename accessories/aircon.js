@@ -246,7 +246,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
     }
 
-    if (!state.currentHeatingCoolingState && ignoreTemperatureWhenOff) {
+    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
+      log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true`);
+      
       return;
     }
 
@@ -256,7 +258,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.log(`${name} sendTemperature (${state.targetTemperature}`);
     await this.performSend(hexData.data);
 
-    if (!state.currentHeatingCoolingState && sendTemperatureOnlyWhenOff) {
+    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && sendTemperatureOnlyWhenOff) {
       return;
     }
 
