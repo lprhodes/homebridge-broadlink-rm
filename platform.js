@@ -23,7 +23,13 @@ const classTypes = {
   'window-covering': Accessory.WindowCovering,
 }
 
+let homebridgeRef
+
 const BroadlinkRMPlatform = class extends HomebridgePlatform {
+
+  constructor (log, config = {}) {
+    super(log, config, homebridgeRef);
+  }
 
   addAccessories (accessories) {
     const { config, log } = this;
@@ -119,6 +125,10 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
       log('')
     }, 1500)
   }
+}
+
+BroadlinkRMPlatform.setHomebridge = (homebridge) => {
+  homebridgeRef = homebridge
 }
 
 module.exports = BroadlinkRMPlatform
