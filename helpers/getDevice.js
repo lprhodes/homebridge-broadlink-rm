@@ -7,17 +7,19 @@ const startPing = (device) => {
   device.state = 'unknown';
 
   setInterval(() => {
-    ping.sys.probe(device.host.address, (active) => {
-      if (!active && device.state === 'active') {
-        console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
+    try {
+      ping.sys.probe(device.host.address, (active) => {
+        if (!active && device.state === 'active') {
+          console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
 
-        device.state = 'inactive';
-      } else if (active && device.state !== 'active') {
-        if (device.state === 'inactive') console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
+          device.state = 'inactive';
+        } else if (active && device.state !== 'active') {
+          if (device.state === 'inactive') console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
-        device.state = 'active';
-      }
-    })
+          device.state = 'active';
+        }
+      })
+    } catch (err) {}
   }, pingFrequency);
 }
 

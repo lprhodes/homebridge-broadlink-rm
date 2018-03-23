@@ -1657,9 +1657,9 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-homebridge-platform-helper@1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.0.7.tgz#014f53984a776573faa8cde6e34374e9ee460e63"
+homebridge-platform-helper@1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.0.8.tgz#42aa99d1d7a9e613614115a1855fde48ff320dcf"
   dependencies:
     node-persist "^2.0.10"
     semver "^5.3.0"
