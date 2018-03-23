@@ -20,7 +20,7 @@ module.exports = ({ host, hexData, log, name, debug }) => {
   const device = getDevice({ host, log });
 
   if (!device) {
-    if (!host) return log(`\x1b[31m[ERROR] \x1b[0m${name} sendData (no auto-discovered device found and no "host" option set)`);
+    if (!host) return log(`\x1b[31m[ERROR] \x1b[0m${name} sendData (no device found)`);
 
     return log(`\x1b[31m[ERROR] \x1b[0m${name} sendData (no device found at ${host})`);
   }

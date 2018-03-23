@@ -369,13 +369,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (temperature > config.maxTemperature) {
       temperature = config.maxTemperature
 
-      log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m`)
+      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m`)
     }
 
     if (temperature < config.minTemperature) {
       temperature = config.minTemperature
 
-      log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too low, setting to \x1b[33mminTemperature\x1b[0m`)
+      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too low, setting to \x1b[33mminTemperature\x1b[0m`)
     }
     
     assert.isBelow(temperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[0m (${config.maxTemperature}) must be more than the reported temperature (${temperature})`)

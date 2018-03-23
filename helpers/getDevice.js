@@ -1,6 +1,5 @@
 const ping = require('ping');
-const BroadlinkJS = require('broadlinkjs-rm');
-const broadlink = new BroadlinkJS()
+const broadlink = require('./broadlink')
 
 const pingFrequency = 5000;
 
@@ -25,26 +24,29 @@ const startPing = (device) => {
 const discoveredDevices = {};
 const manualDevices = {};
 
-let discovering = false;
+const discoverDevices = (automatic = true, log, debug) => {
+  broadlink.log = log
+  broadlink.debug = debug
 
-const discoverDevices = () => {
-  setInterval(() => {
+  if (automatic) {
+    setInterval(() => {
+      broadlink.discover()
+    }, 2000)
+
     broadlink.discover()
-  }, 2000)
+  }
 
-  broadlink.discover()
+  broadlink.on('deviceReady', (device) => {
+    const macAddressParts = device.mac.toString('hex').match(/[\s\S]{1,2}/g) || []
+    const macAddress = macAddressParts.join(':')
+    device.host.macAddress = macAddress
+
+    log(`\x1b[35m[INFO]\x1b[0m Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
+    addDevice(device)
+
+    startPing(device)
+  })
 }
-
-broadlink.on('deviceReady', (device) => {
-  const macAddressParts = device.mac.toString('hex').match(/[\s\S]{1,2}/g) || []
-  const macAddress = macAddressParts.join(':')
-  device.host.macAddress = macAddress
-
-  console.log(`\x1b[36m[INFO]\x1b[0m Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
-  addDevice(device)
-
-  startPing(device)
-})
 
 const addDevice = (device) => {
   if (!device.isUnitTestDevice && (discoveredDevices[device.host.address] || discoveredDevices[device.host.macAddress])) return;
