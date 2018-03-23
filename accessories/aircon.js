@@ -263,7 +263,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Update the heating/cooling mode based on the temperature.
     let mode = hexData['pseudo-mode'];
 
-    if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], '\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"');
+    if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`);
     
     if (!mode) {
       if (state.targetTemperature < state.currentTemperature) {

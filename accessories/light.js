@@ -1,3 +1,4 @@
+const { assert } = require('chai');
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');;
 const delayForDuration = require('../helpers/delayForDuration');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError')
@@ -127,6 +128,9 @@ class LightAccessory extends SwitchAccessory {
 
         // Find brightness closest to the one requested
         const foundValues = this.dataKeys('brightness')
+
+        assert(foundValues.length > 0, `\x1b[31m[CONFIG ERROR] \x1b[33mbrightness\x1b[0m keys need to ne set. See the config-sample.json file for an example.`);
+
         const closest = foundValues.reduce((prev, curr) => Math.abs(curr - state.brightness) < Math.abs(prev - state.brightness) ? curr : prev);
         const hexData = data[`brightness${closest}`];
     
