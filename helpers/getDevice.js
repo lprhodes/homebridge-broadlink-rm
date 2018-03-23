@@ -1,5 +1,6 @@
 const ping = require('ping');
 const broadlink = require('./broadlink')
+const delayForDuration = require('./delayForDuration')
 
 const pingFrequency = 5000;
 
@@ -25,17 +26,22 @@ const startPing = (device) => {
 
 const discoveredDevices = {};
 const manualDevices = {};
+let discoverDevicesInterval;
 
-const discoverDevices = (automatic = true, log, debug) => {
+const discoverDevices = (automatic = true, log, debug, deviceDiscoveryTimeout = 60) => {
   broadlink.log = log
   broadlink.debug = debug
 
   if (automatic) {
-    setInterval(() => {
-      broadlink.discover()
-    }, 2000)
+    this.discoverDevicesInterval = setInterval(() => {
+      broadlink.discover();
+    }, 2000);
 
-    broadlink.discover()
+    delayForDuration(deviceDiscoveryTimeout).then(() => {
+      clearInterval(this.discoverDevicesInterval);
+    });
+
+    broadlink.discover();
   }
 
   broadlink.on('deviceReady', (device) => {
