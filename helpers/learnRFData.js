@@ -15,14 +15,14 @@ const stop = (log, device) => {
 
   isClosingClient = true;
 
-  if (currentDevice) currentDevice.cancelRFSweep();
+  if (currentDevice) currentDevice.cancelLearn();
 
   setTimeout(() => {
     closeClient();
     closeClient = null;
     isClosingClient = false;
 
-    if (log) log(`Scan RF (stopped)`);
+    if (log) log(`\x1b[35m[INFO]\x1b[0m Scan RF (stopped)`);
   }, 500)
 }
 
@@ -31,9 +31,12 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
   // Get the Broadlink device
   const device = getDevice({ host, log, learnOnly: true })
-  if (!device) return;
-  if (!device.enterLearning) return log(`Learn Code (IR learning not supported for device at ${host})`);
-  if (!device.enterRFSweep) return log(`Scan RF (RF learning not supported for device at ${host})`);
+  if (!device) { 
+    return log(`\x1b[35m[INFO]\x1b[0m Learn Code (Couldn't learn code, device not found)`);
+  }
+
+  if (!device.enterLearning) return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (IR/RF learning not supported for device at ${host})`);
+  if (!device.enterRFSweep) return log(`\x1b[31m[ERROR]\x1b[0m Scan RF (RF learning not supported for device (${device.type}) at ${host})`);
 
   currentDevice = device
 
@@ -66,8 +69,8 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     if (getDataTimeout) clearTimeout(getDataTimeout);
     getDataTimeout = null;
 
-    log(`Scan RF (found frequency - 1 of 2)`);
-    log(`[Keep holding that button!]`)
+    log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 1 of 2)`);
+    log(`\x1b[35m[ACTION]\x1b[0m Keep holding that button!`)
 
     getDataTimeout2 = setTimeout(() => {
       getData2(device);
@@ -80,8 +83,8 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     if (getDataTimeout2) clearTimeout(getDataTimeout2);
     getDataTimeout = null;
 
-    log(`Scan RF (found frequency - 2 of 2)`)
-    log(`[Press the RF button multiple times with a pause between them]`);
+    log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 2 of 2)`)
+    log(`\x1b[35m[ACTION]\x1b[0m Press the RF button multiple times with a pause between them.`);
 
     getDataTimeout3 = setTimeout(() => {
       getData3(device);
@@ -92,10 +95,10 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     if (!closeClient) return;
 
     const hex = message.toString('hex');
-    log(`Scan RF (complete)`);
-    log(`[Hex Code: ${hex}]`);
+    log(`\x1b[35m[INFO]\x1b[0m Scan RF (complete)`);
+    log(`\x1b[35m[RESULT]\x1b[0m Hex Code: ${hex}`);
 
-    device.cancelRFSweep();
+    device.cancelLearn();
 
     closeClient();
 
@@ -107,8 +110,8 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   device.on('rawData', onRawData3);
 
   device.enterRFSweep();
-  log(`Scan RF (scanning)`);
-  log(`[Hold down the button that sends the RF frequency]`);
+  log(`\x1b[35m[INFO]\x1b[0m Scan RF (scanning)`);
+  log(`\x1b[35m[ACTION]\x1b[0m Hold down the button that sends the RF frequency.`);
 
   if (callback) callback();
 
@@ -120,10 +123,10 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
   // Timeout the client after 20 seconds
   timeout = setTimeout(() => {
-    device.cancelRFSweep()
+    device.cancelLearn()
 
     setTimeout(() => {
-      log('Scan RF (stopped - 20s timeout)');
+      log('\x1b[35m[INFO]\x1b[0m Scan RF (stopped - 20s timeout)');
       closeClient();
 
       turnOffCallback();

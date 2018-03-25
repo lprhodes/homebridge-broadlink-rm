@@ -4,14 +4,14 @@ const delayForDuration = require('./delayForDuration')
 
 const pingFrequency = 5000;
 
-const startPing = (device) => {
+const startPing = (device, log) => {
   device.state = 'unknown';
 
   setInterval(() => {
     try {
       ping.sys.probe(device.host.address, (active) => {
         if (!active && device.state === 'active') {
-          console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
+          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
 
           device.state = 'inactive';
         } else if (active && device.state !== 'active') {
@@ -52,7 +52,7 @@ const discoverDevices = (automatic = true, log, debug, deviceDiscoveryTimeout = 
     log(`\x1b[35m[INFO]\x1b[0m Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
     addDevice(device)
 
-    startPing(device)
+    startPing(device, log)
   })
 }
 
@@ -74,7 +74,7 @@ const getDevice = ({ host, log, learnOnly }) => {
       const device = { host: { address: host } };
       manualDevices[host] = device;
 
-      startPing(device)
+      startPing(device, log)
     }
   } else { // use the first one of no host is provided
     const hosts = Object.keys(discoveredDevices);
