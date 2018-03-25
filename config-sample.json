@@ -165,7 +165,8 @@
             "hue99": "2600500000012...",
             "hue199": "2600500000012...",
             "hue299": "2600500000012...",
-            "hue359": "2600500000012..."
+            "hue359": "2600500000012...",
+            "white": "2600500000012..."
           }
         },
         {
@@ -264,7 +265,10 @@
                 "data": "CLOSE_HEX_2..."
               }
             ],
-            "stop":"STOP_HEX..."
+            "stop":"STOP_HEX...",
+            "third_hex":"THIRD_POSITION_MOTO_PRESET_HEX",
+            "third_position": 5,
+            "third_span": 3
           }
         }
       ]
