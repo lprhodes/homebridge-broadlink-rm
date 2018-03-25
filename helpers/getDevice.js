@@ -49,7 +49,7 @@ const discoverDevices = (automatic = true, log, debug, deviceDiscoveryTimeout = 
     const macAddress = macAddressParts.join(':')
     device.host.macAddress = macAddress
 
-    log(`\x1b[35m[INFO]\x1b[0m Discovered Broadlink RM device at ${device.host.address} (${device.host.macAddress})`)
+    log(`\x1b[35m[INFO]\x1b[0m Discovered ${device.model} (${device.type.toString(16)}) at ${device.host.address} (${device.host.macAddress})`)
     addDevice(device)
 
     startPing(device, log)
