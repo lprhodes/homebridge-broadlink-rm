@@ -70,6 +70,11 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     getDataTimeout = null;
 
     log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 1 of 2)`);
+
+    if (device.type === 0x279d || device.type === 0x27a9) {
+      return device.enterLearning();
+    }
+
     log(`\x1b[35m[ACTION]\x1b[0m Keep holding that button!`)
 
     getDataTimeout2 = setTimeout(() => {
