@@ -569,6 +569,14 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     let temperature = this.mqttValues[identifier];
 
+    try {
+      const temperatureJSON = JSON.parse(temperature);
+
+      if (typeof temperatureJSON === 'object') {
+        temperature = temperatureJSON.temp || temperatureJSON.Temp || temperatureJSON.temperature || temperatureJSON.Temperature
+      }
+    } catch (err) {}
+
     if (temperature === undefined || (typeof temperature === 'string' && temperature.trim().length === 0)) {
       log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt temperature temperature not found)`);
       
