@@ -388,7 +388,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   addTemperatureCallbackToQueue (callback) {
     const { config, host, log, name, state } = this;
-    const { temperatureFilePath } = config;
+    const { mqttURL, temperatureFilePath } = config;
     
     // Clear the previous callback
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
@@ -396,19 +396,30 @@ class AirConAccessory extends BroadlinkRMAccessory {
         log(`${name} addTemperatureCallbackToQueue (clearing previous callback, using existing temperature)`);
         
         this.processQueuedTemperatureCallbacks(state.currentTemperature);
-
       }
     }
 
+    // Add a new callback
     const callbackIdentifier = uuid.v4();
     this.temperatureCallbackQueue[callbackIdentifier] = callback;
 
+    // Read temperature from file
     if (temperatureFilePath) {
       this.updateTemperatureFromFile();
 
       return;
     }
 
+    // Read temperature from mqtt
+    if (mqttURL) {
+      const temperature = this.mqttValueForIdentifier('temperature');
+      this.onTemperature(temperature || 0);
+
+      return;
+    }
+
+    // Read temperature from Broadlink RM device
+    // If the device is no longer available, use previous tempeature 
     const device = getDevice({ host, log });
 
     if (!device || device.state === 'inactive') {
@@ -439,7 +450,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
          return;
       }
 
-      if (!temperature || temperature.trim().length === 0) {
+      if (temperature === undefined || temperature.trim().length === 0) {
         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile (no temperature found)`);
         
         return;
@@ -510,7 +521,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     this.log(`${name} checkTemperatureForAutoOnOff`);
 
-
     if (autoHeatTemperature && temperature < autoHeatTemperature) {
       this.state.isRunningAutomatically = true;
 
@@ -547,6 +557,32 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const temperatureDisplayUnits = (config.units.toLowerCase() === 'f') ? Characteristic.TemperatureDisplayUnits.FAHRENHEIT : Characteristic.TemperatureDisplayUnits.CELSIUS;
     
     callback(temperatureDisplayUnits);
+  }
+  
+  // MQTT
+  onMQTTMessage (identifier, message) {
+    const { debug, log, name } = this;
+
+    super.onMQTTMessage(identifier, message); 
+
+    if (identifier !== 'unknown' && identifier !== 'temperature') return;
+
+    let temperature = this.mqttValues[identifier];
+
+    if (temperature === undefined || (typeof temperature === 'string' && temperature.trim().length === 0)) {
+      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt temperature temperature not found)`);
+      
+      return;
+    }
+
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature.trim()})`);
+
+    temperature = parseFloat(temperature);
+
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${temperature})`);
+    
+    this.mqttValues[identifier] = temperature;
+    this.updateTemperatureUI();
   }
   
   // Service Manager Setup
