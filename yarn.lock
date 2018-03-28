@@ -1725,10 +1725,11 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-homebridge-platform-helper@1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.0.8.tgz#42aa99d1d7a9e613614115a1855fde48ff320dcf"
+homebridge-platform-helper@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.1.0.tgz#ad2d4a93468adf9b0cdb5e4328c055219f5b686f"
   dependencies:
+    mqtt "^2.17.0"
     node-persist "^2.0.10"
     semver "^5.3.0"
     uuid "^3.2.1"

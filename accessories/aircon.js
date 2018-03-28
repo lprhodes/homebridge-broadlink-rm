@@ -563,11 +563,17 @@ class AirConAccessory extends BroadlinkRMAccessory {
   onMQTTMessage (identifier, message) {
     const { debug, log, name } = this;
 
+    if (identifier !== 'unknown' && identifier !== 'temperature') {
+      log(`\x1b[31m[ERROR] \x1b[0m${name} onMQTTMessage (mqtt message received with unexpected identifier: ${identifier}, ${message.toString()})`);
+      
+      return;
+    }
+
     super.onMQTTMessage(identifier, message); 
 
-    if (identifier !== 'unknown' && identifier !== 'temperature') return;
-
     let temperature = this.mqttValues[identifier];
+
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature})`);
 
     try {
       const temperatureJSON = JSON.parse(temperature);
@@ -583,7 +589,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature.trim()})`);
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value 2: ${temperature.trim()})`);
 
     temperature = parseFloat(temperature);
 
