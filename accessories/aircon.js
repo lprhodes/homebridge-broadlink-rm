@@ -1,6 +1,7 @@
 const { assert } = require('chai');
 const uuid = require('uuid');
 const fs = require('fs');
+const findKey = require('find-key');
 
 const delayForDuration = require('../helpers/delayForDuration');
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
@@ -369,15 +370,15 @@ class AirConAccessory extends BroadlinkRMAccessory {
     log(`${name} onTemperature (${temperature})`);
 
     if (temperature > config.maxTemperature) {
+      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m (${maxTemperature}).`)
       temperature = config.maxTemperature
-
-      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m`)
     }
 
     if (temperature < config.minTemperature) {
-      temperature = config.minTemperature
 
-      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too low, setting to \x1b[33mminTemperature\x1b[0m`)
+      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too low, setting to \x1b[33mminTemperature\x1b[0m (${minTemperature}).`)
+      temperature = config.minTemperature
+      
     }
     
     assert.isBelow(temperature, config.maxTemperature + 1, `\x1b[31m[CONFIG ERROR] \x1b[33mmaxTemperature\x1b[0m (${config.maxTemperature}) must be more than the reported temperature (${temperature})`)
@@ -571,7 +572,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     super.onMQTTMessage(identifier, message); 
 
-    let temperature = this.mqttValues[identifier];
+    let temperature = this.mqttValuesTemp[identifier];
 
     if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature})`);
 
@@ -579,7 +580,16 @@ class AirConAccessory extends BroadlinkRMAccessory {
       const temperatureJSON = JSON.parse(temperature);
 
       if (typeof temperatureJSON === 'object') {
-        temperature = temperatureJSON.temp || temperatureJSON.Temp || temperatureJSON.temperature || temperatureJSON.Temperature
+        let values = findKey(temperatureJSON, 'temp');
+        if (values.length === 0) values = findKey(temperatureJSON, 'Temp');
+        if (values.length === 0) values = findKey(temperatureJSON, 'temperature');
+        if (values.length === 0) values = findKey(temperatureJSON, 'Temperature');
+
+        if (values.length > 0) {
+          temperature = values[0];
+        } else {
+          temperature = undefined;
+        }
       }
     } catch (err) {}
 
@@ -598,6 +608,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.mqttValues[identifier] = temperature;
     this.updateTemperatureUI();
   }
+
+
   
   // Service Manager Setup
 
