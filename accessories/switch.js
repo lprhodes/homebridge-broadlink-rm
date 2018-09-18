@@ -9,12 +9,21 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   constructor (log, config = {}, serviceManagerType) {    
     super(log, config, serviceManagerType);
 
+    this.lastCheckState = false;
+
+    this.forceOffAfterSec = config.forceOffAfter;
+    this.remainKeepOffSec = 0;
+
     if (!config.isUnitTest) this.checkPing(ping)
   }
 
   setDefaults () {
     const { config } = this;
     config.pingFrequency = config.pingFrequency || 1;
+
+    config.forceOffAfter = config.forceOffAfter || undefined;
+    config.keepOffDuration = config.keepOffDuration || undefined;
+    config.onlyKeepOffWhenForcedTurnOff = config.onlyKeepOffWhenForcedTurnOff || false;
 
     config.offDuration = config.offDuration || 60;
     config.onDuration = config.onDuration || 60;
@@ -57,29 +66,91 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     this.checkAutoOn();
     this.checkAutoOff();
   }
-  
+
   checkPing (ping) {
     const { config } = this
     let { pingIPAddress, pingFrequency } = config;
 
     if (!pingIPAddress) return
-    
+
     // Setup Ping-based State
     ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this))
+  }
+
+  updateStateTransition(active_state, checkFrequency) {
+    const { config, log, name, serviceManager } = this;
+    let { forceOffAfter, keepOffDuration, onlyKeepOffWhenForceOff } = config;
+
+    log(`${name} Turn OFF after ${this.forceOffAfterSec}. Can ON after ${this.remainKeepOffSec}`);
+
+    if (active_state) {
+      if (!this.lastCheckState) {
+        this.lastCheckState = active_state;
+        log(`${name} State OFF --> ON`);
+
+        if (this.remainKeepOffSec > 0) {
+          log(`${name} ON while keepOffDuration remains. Turned OFF!`);
+          serviceManager.setCharacteristic(Characteristic.On, false);
+          serviceManager.refreshCharacteristicUI(Characteristic.On);
+          // Need to update lastCheckState regardless current lastCheckState
+          this.lastCheckState = false;
+          this.remainKeepOffSec -= checkFrequency;
+        }
+        this.forceOffAfterSec = forceOffAfter;
+      } else {
+        log(`${name} State keeps ON`);
+
+        if (typeof this.forceOffAfterSec !== 'undefined') {
+          if (this.forceOffAfterSec > 0) {
+            this.forceOffAfterSec -= checkFrequency;
+          } else {
+            log(`${name} forceOffAfter expired. Turned OFF!`);
+            serviceManager.setCharacteristic(Characteristic.On, false);
+            serviceManager.refreshCharacteristicUI(Characteristic.On);
+            if (onlyKeepOffWhenForceOff === true) {
+              this.remainKeepOffSec = keepOffDuration;
+            }
+          }
+        }
+      }
+    } else {
+      if (this.lastCheckState) {
+        this.lastCheckState = active_state;
+        log(`${name} State ON --> OFF`);
+        if (this.remainKeepOffSec > 0) {
+          this.remainKeepOffSec -= checkFrequency;
+        } else {
+          if (onlyKeepOffWhenForceOff !== true) {
+            this.remainKeepOffSec = keepOffDuration;
+          }
+        }
+        if (typeof this.forceOffAfterSec !== "undefined") {
+          this.forceOffAfterSec = 0;
+        }
+      } else {
+        log(`${name} State keeps OFF`);
+        if (this.remainKeepOffSec > 0) {
+          this.remainKeepOffSec -= checkFrequency;
+        }
+        if (typeof this.forceOffAfterSec !== "undefined") {
+          this.forceOffAfterSec = 0;
+        }
+      }
+    }
   }
 
   pingCallback (active) {
     const { config, state, serviceManager } = this;
 
     if (config.pingIPAddressStateOnly) {
-      state.switchState = active ? true : false;
+      state.switchState = !!active;
       serviceManager.refreshCharacteristicUI(Characteristic.On);
-
-      return;
+    } else {
+      const value = !!active;
+      serviceManager.setCharacteristic(Characteristic.On, value);
     }
-    
-    const value = active ? true : false;
-    serviceManager.setCharacteristic(Characteristic.On, value);
+
+    this.updateStateTransition(active, config.pingFrequency);
   }
 
   async setSwitchState (hexData) {
