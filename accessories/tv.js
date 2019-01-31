@@ -78,13 +78,13 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     if (config.pingIPAddressStateOnly) {
       state.switchState = active ? true : false;
-      serviceManager.refreshCharacteristicUI(Characteristic.On);
+      serviceManager.refreshCharacteristicUI(Characteristic.Active);
 
       return;
     }
 
     const value = active ? true : false;
-    serviceManager.setCharacteristic(Characteristic.On, value);
+    serviceManager.setCharacteristic(Characteristic.Active, value);
   }
 
   async setSwitchState(hexData) {
@@ -110,7 +110,7 @@ class TVAccessory extends BroadlinkRMAccessory {
         this.autoOffTimeoutPromise = delayForDuration(onDuration);
         await this.autoOffTimeoutPromise;
 
-        serviceManager.setCharacteristic(Characteristic.On, false);
+        serviceManager.setCharacteristic(Characteristic.Active, false);
       }
     });
   }
@@ -128,7 +128,7 @@ class TVAccessory extends BroadlinkRMAccessory {
         this.autoOnTimeoutPromise = delayForDuration(offDuration);
         await this.autoOnTimeoutPromise;
 
-        serviceManager.setCharacteristic(Characteristic.On, true);
+        serviceManager.setCharacteristic(Characteristic.Active, true);
       }
     });
   }
