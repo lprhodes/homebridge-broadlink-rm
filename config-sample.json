@@ -266,6 +266,32 @@
             ],
             "stop":"STOP_HEX..."
           }
+        },
+        {
+          "name":"TV",
+          "type":"tv",
+          "data": {
+            "off": "HEX...",
+            "on": "HEX...",
+            "remote": {
+              "select": "HEX...",
+              "arrowUp": "HEX...",
+              "arrowDown": "HEX...",
+              "arrowLeft": "HEX...",
+              "arrowRight": "HEX...",
+              "back": "HEX...",
+              "exit": "HEX...",
+              "playPause": "HEX...",
+              "info": "HEX..."
+            },
+            "powerMode": {
+              "show": "HEX..."
+            },
+            "volume": {
+              "up": "HEX...",
+              "down": "HEX..."
+            }
+          }
         }
       ]
     }
