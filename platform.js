@@ -21,6 +21,7 @@ const classTypes = {
   'outlet': Accessory.Outlet,
   'light': Accessory.Light,
   'window-covering': Accessory.WindowCovering,
+  'tv': Accessory.TV
 }
 
 let homebridgeRef

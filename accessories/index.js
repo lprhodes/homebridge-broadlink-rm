@@ -10,6 +10,7 @@ const GarageDoorOpener = require('./garageDoorOpener');
 const Lock = require('./lock');
 const Light = require('./light');
 const WindowCovering = require('./windowCovering');
+const TV = require('./tv');
 
 module.exports = {
   AirCon,
@@ -23,5 +24,6 @@ module.exports = {
   GarageDoorOpener,
   Lock,
   Light,
-  WindowCovering
+  WindowCovering,
+  TV
 }
