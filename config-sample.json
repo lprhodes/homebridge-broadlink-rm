@@ -290,7 +290,14 @@
             "volume": {
               "up": "HEX...",
               "down": "HEX..."
-            }
+            },
+            "inputs": [
+              {
+                "name": "INPUT 1",
+                "type": "hdmi",
+                "data": "HEX..."
+              }
+            ]
           }
         }
       ]
