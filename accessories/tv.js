@@ -143,14 +143,14 @@ class TVAccessory extends BroadlinkRMAccessory {
   }
 
   setupServiceManager() {
-    const { data, name, config, serviceManagerType } = this;
+    const { data, name, config, serviceManagerType, log } = this;
     const { on, off } = data || {};
 
     this.serviceManagers = [];
     this.serviceManager = new ServiceManagerTypes[serviceManagerType](
       name,
       Service.Television,
-      this.log
+      log
     );
 
     this.serviceManager.setCharacteristic(Characteristic.ConfiguredName, name);
@@ -177,10 +177,20 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     this.serviceManager
       .getCharacteristic(Characteristic.ActiveIdentifier)
-      .on("set", function(newValue, callback) {
-        console.log("set Active Identifier => setNewValue: " + newValue);
-        // 1 - input one
-        // 2 - input two
+      .on("set", (newValue, callback) => {
+        if (
+          !data ||
+          !data.inputs ||
+          !data.inputs[newValue] ||
+          !data.inputs[newValue].data
+        ) {
+          log(`${name} Input: No input data found. Ignoring request.`);
+          callback(null);
+          return;
+        }
+
+        this.performSend(data.inputs[newValue].data);
+
         callback(null);
       });
 
@@ -258,7 +268,9 @@ class TVAccessory extends BroadlinkRMAccessory {
       .getCharacteristic(Characteristic.PowerModeSelection)
       .on("set", (newValue, callback) => {
         if (!data || !data.powerMode) {
-          log(`${name} PowerModeSelection: No settings data found. Ignoring request.`);
+          log(
+            `${name} PowerModeSelection: No settings data found. Ignoring request.`
+          );
           callback(null);
           return;
         }
@@ -300,7 +312,9 @@ class TVAccessory extends BroadlinkRMAccessory {
       .getCharacteristic(Characteristic.VolumeSelector)
       .on("set", (newValue, callback) => {
         if (!data || !data.volume) {
-          log(`${name} VolumeSelector: No settings data found. Ignoring request.`);
+          log(
+            `${name} VolumeSelector: No settings data found. Ignoring request.`
+          );
           callback(null);
           return;
         }
@@ -329,37 +343,58 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     this.serviceManagers.push(speakerService);
 
-    const inputHDMI1 = new Service.InputSource("hdmi1", "HDMI1");
+    if (data.inputs && data.inputs instanceof Array) {
+      for (let i = 0; i < data.inputs.length; i++) {
+        const input = data.inputs[i];
+        const inputService = new Service.InputSource(`input${i}`, `input${i}`);
 
-    inputHDMI1.setCharacteristic(Characteristic.Identifier, 1);
-    inputHDMI1.setCharacteristic(Characteristic.ConfiguredName, "HDMI 1");
-    inputHDMI1.setCharacteristic(
-      Characteristic.IsConfigured,
-      Characteristic.IsConfigured.CONFIGURED
-    );
-    inputHDMI1.setCharacteristic(
-      Characteristic.InputSourceType,
-      Characteristic.InputSourceType.HDMI
-    );
+        inputService
+          .setCharacteristic(Characteristic.Identifier, i)
+          .setCharacteristic(Characteristic.ConfiguredName, input.name)
+          .setCharacteristic(
+            Characteristic.IsConfigured,
+            Characteristic.IsConfigured.CONFIGURED
+          )
+          .setCharacteristic(
+            Characteristic.InputSourceType,
+            getInputType(input.type)
+          );
 
-    this.serviceManagers.push(inputHDMI1);
-    this.serviceManager.service.addLinkedService(inputHDMI1);
+        this.serviceManagers.push(inputService);
+        this.serviceManager.service.addLinkedService(inputService);
+      }
+    }
+  }
+}
 
-    const inputHDMI2 = new Service.InputSource("hdmi2", "HDMI2");
+function getInputType(type) {
+  if (!type) {
+    return 0;
+  }
 
-    inputHDMI2.setCharacteristic(Characteristic.Identifier, 2);
-    inputHDMI2.setCharacteristic(Characteristic.ConfiguredName, "HDMI 2");
-    inputHDMI2.setCharacteristic(
-      Characteristic.IsConfigured,
-      Characteristic.IsConfigured.CONFIGURED
-    );
-    inputHDMI2.setCharacteristic(
-      Characteristic.InputSourceType,
-      Characteristic.InputSourceType.OTHER
-    );
-
-    this.serviceManagers.push(inputHDMI2);
-    this.serviceManager.service.addLinkedService(inputHDMI2);
+  switch (type.toLowerCase()) {
+    case "other":
+      return 0;
+    case "home_screen":
+      return 1;
+    case "tuner":
+      return 2;
+    case "hdmi":
+      return 3;
+    case "composite_video":
+      return 4;
+    case "s_video":
+      return 5;
+    case "component_video":
+      return 6;
+    case "dvi":
+      return 7;
+    case "airplay":
+      return 8;
+    case "usb":
+      return 9;
+    case "application":
+      return 10;
   }
 }
 
