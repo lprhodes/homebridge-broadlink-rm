@@ -161,7 +161,7 @@ class TVAccessory extends BroadlinkRMAccessory {
     );
 
     this.serviceManager.addToggleCharacteristic({
-      name: "switchTV",
+      name: "switchState",
       type: Characteristic.Active,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
