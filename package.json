@@ -30,7 +30,8 @@
     "github-version-checker": "^1.2.0",
     "homebridge-platform-helper": "1.1.1",
     "ping": "^0.2.2",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "compare-versions": "^3.4.0"
   },
   "devDependencies": {
     "hap-nodejs": "^0.4.41",

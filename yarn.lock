@@ -920,6 +920,11 @@ compare-func@^1.3.1:
     array-ify "^1.0.0"
     dot-prop "^3.0.0"
 
+compare-versions@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.4.0.tgz#e0747df5c9cb7f054d6d3dc3e1dbc444f9e92b26"
+  integrity sha512-tK69D7oNXXqUW3ZNo/z7NXTEz22TCF0pTE+YF9cxvaAM9XnkLo1fV621xCLrRR6aevJlKxExkss0vWqUCUpqdg==
+
 component-emitter@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.2.1.tgz#137918d6d78283f7df7a6b7c5a63e140e69425e6"
@@ -1743,9 +1748,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-homebridge-platform-helper@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.1.0.tgz#ad2d4a93468adf9b0cdb5e4328c055219f5b686f"
+homebridge-platform-helper@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.1.1.tgz#a7304e52ad1f95c32a4b27b0d7ec9a253a15fb91"
+  integrity sha512-Zepvj+lFMjd6rKyhLZ4njf3UbENhbRZ1gdFaPUcfbtEbwskCJ4p4+LW16BSkoPEMsijhLbQXOC43r5ice9+MwA==
   dependencies:
     mqtt "^2.17.0"
     node-persist "^2.0.10"
