@@ -1,8 +1,8 @@
-const ServiceManagerTypes = require("../helpers/serviceManagerTypes");
-const delayForDuration = require("../helpers/delayForDuration");
-const catchDelayCancelError = require("../helpers/catchDelayCancelError");
-const ping = require("../helpers/ping");
-const BroadlinkRMAccessory = require("./accessory");
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
+const delayForDuration = require('../helpers/delayForDuration');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
+const ping = require('../helpers/ping');
+const BroadlinkRMAccessory = require('./accessory');
 
 class TVAccessory extends BroadlinkRMAccessory {
   constructor(log, config = {}, serviceManagerType) {
@@ -161,7 +161,7 @@ class TVAccessory extends BroadlinkRMAccessory {
     );
 
     this.serviceManager.addToggleCharacteristic({
-      name: "switchState",
+      name: 'switchState',
       type: Characteristic.Active,
       getMethod: this.getCharacteristicValue,
       setMethod: this.setCharacteristicValue,
@@ -177,7 +177,8 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     this.serviceManager
       .getCharacteristic(Characteristic.ActiveIdentifier)
-      .on("set", (newValue, callback) => {
+      .on('get', (callback) => callback(null, this.state.input || 0))
+      .on('set', (newValue, callback) => {
         if (
           !data ||
           !data.inputs ||
@@ -189,6 +190,7 @@ class TVAccessory extends BroadlinkRMAccessory {
           return;
         }
 
+        this.state.input = newValue;
         this.performSend(data.inputs[newValue].data);
 
         callback(null);
@@ -196,7 +198,7 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     this.serviceManager
       .getCharacteristic(Characteristic.RemoteKey)
-      .on("set", (newValue, callback) => {
+      .on('set', (newValue, callback) => {
         if (!data || !data.remote) {
           log(`${name} RemoteKey: No remote keys found. Ignoring request.`);
           callback(null);
@@ -258,15 +260,15 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     this.serviceManager
       .getCharacteristic(Characteristic.PictureMode)
-      .on("set", function(newValue, callback) {
+      .on('set', function(newValue, callback) {
         // Not found yet
-        console.log("set PictureMode => setNewValue: " + newValue);
+        console.log('set PictureMode => setNewValue: ' + newValue);
         callback(null);
       });
 
     this.serviceManager
       .getCharacteristic(Characteristic.PowerModeSelection)
-      .on("set", (newValue, callback) => {
+      .on('set', (newValue, callback) => {
         if (!data || !data.powerMode) {
           log(
             `${name} PowerModeSelection: No settings data found. Ignoring request.`
@@ -297,7 +299,7 @@ class TVAccessory extends BroadlinkRMAccessory {
         callback(null);
       });
 
-    const speakerService = new Service.TelevisionSpeaker("Speaker", "Speaker");
+    const speakerService = new Service.TelevisionSpeaker('Speaker', 'Speaker');
 
     speakerService.setCharacteristic(
       Characteristic.Active,
@@ -310,7 +312,7 @@ class TVAccessory extends BroadlinkRMAccessory {
 
     speakerService
       .getCharacteristic(Characteristic.VolumeSelector)
-      .on("set", (newValue, callback) => {
+      .on('set', (newValue, callback) => {
         if (!data || !data.volume) {
           log(
             `${name} VolumeSelector: No settings data found. Ignoring request.`
@@ -373,27 +375,27 @@ function getInputType(type) {
   }
 
   switch (type.toLowerCase()) {
-    case "other":
+    case 'other':
       return 0;
-    case "home_screen":
+    case 'home_screen':
       return 1;
-    case "tuner":
+    case 'tuner':
       return 2;
-    case "hdmi":
+    case 'hdmi':
       return 3;
-    case "composite_video":
+    case 'composite_video':
       return 4;
-    case "s_video":
+    case 's_video':
       return 5;
-    case "component_video":
+    case 'component_video':
       return 6;
-    case "dvi":
+    case 'dvi':
       return 7;
-    case "airplay":
+    case 'airplay':
       return 8;
-    case "usb":
+    case 'usb':
       return 9;
-    case "application":
+    case 'application':
       return 10;
   }
 }
