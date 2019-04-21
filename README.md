@@ -3,13 +3,9 @@
 # About this fork
 This fork adds support for the TV type indroduced in iOS 12.2. I'm only give support for this specific accessory type! If you want to use this fork, use this command:
 
-`npm i -g git+https://github.com/AlexanderBabel/homebridge-broadlink-rm.git`
+`npm i -g homebridge-broadlink-rm-tv`
 
-# Known issues
-
-If you want to use more than one TV accessory you currently need to setup multiple homebridge instances. This will be fixed in the future. Currently it's the simplest workaround.
-
-# Homebridge Broadlink RM [Original]
+# Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
 
 ## Introduction
 Welcome to the Broadlink RM Mini and Broadlink RM Pro plugin for [Homebridge](https://github.com/nfarina/homebridge).
