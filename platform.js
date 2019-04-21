@@ -6,6 +6,7 @@ const Accessory = require('./accessories');
 const checkForUpdates = require('./helpers/checkForUpdates');
 const broadlink = require('./helpers/broadlink');
 const { discoverDevices } = require('./helpers/getDevice');
+const { createAccessory } = require('./helpers/accessoryCreator');
 
 const classTypes = {
   'air-conditioner': Accessory.AirCon,
@@ -57,7 +58,8 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
       }
     }
 
-    // Itterate through the config accessories
+    // Iterate through the config accessories
+    let tvs = [];
     config.accessories.forEach((accessory) => {
       if (!accessory.type) throw new Error(`Each accessory must be configured with a "type". e.g. "switch"`);
 
@@ -65,8 +67,29 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
       const homeKitAccessory = new classTypes[accessory.type](log, accessory);
 
+      if (classTypes[accessory.type] === classTypes.tv) {
+        tvs.push(homeKitAccessory);
+        return;
+      }
+
       accessories.push(homeKitAccessory);
-    })
+    });
+
+    if (tvs.length > 0) {
+      accessories.push(tvs.shift(0, 1));
+      if (tvs.length > 0) {
+        const TV = homebridgeRef.hap.Accessory.Categories.TELEVISION;
+        homebridgeRef.publishExternalAccessories(this, tvs.map(tv => createAccessory(tv, tv.name, TV, homebridgeRef)));
+
+        log('');
+        log(`**************************************************************************************************************`);
+        log(`You added more than TVs in your configuration!`);
+        log(`Due to a HomeKit limitation you need to add any additional TV to the Home app by using the Add Accessory function.`);
+        log(`There you'll find your additional TVs and you can use the same PIN as you using for this HomeBridge instance.`);
+        log(`**************************************************************************************************************`);
+        log('');
+      }
+    } 
   }
 
   discoverBroadlinkDevices () {
