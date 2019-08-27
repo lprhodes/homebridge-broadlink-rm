@@ -460,7 +460,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
          		log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile (no temperature found)\n\n${err.message}`);
 						temperature = parseFloat("0.0");
 					}
-				}		
+				});		
       }
 
       if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (file content: ${temperature.trim()})`);
