@@ -452,10 +452,15 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
 
       if (temperature === undefined || temperature.trim().length === 0) {
-        log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile (no temperature found)`);
+				log(`\x1b[31m[WARNING] \x1b[0m${name} updateTemperatureFromFile (no temperature found) - Retrying`);
         
-	// Occasional errors cause Home to hang "updating" set zero instead of returning 
-	temperature = parseFloat("0.0");
+				// Occasional errors cause Home to hang "updating" retry
+				fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
+					if (err || temperature === undefined || temperature.trim().length === 0) {
+         		log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile (no temperature found)\n\n${err.message}`);
+						temperature = parseFloat("0.0");
+					}
+				}		
       }
 
       if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (file content: ${temperature.trim()})`);
