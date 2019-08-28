@@ -456,7 +456,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         
 				// Occasional errors cause Home to hang "updating" retry
 				fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
-					if (err || temperature === undefined || temperature.trim().length === 0) {
+					if (err || temperature === undefined || temperature.trim().length === 0 || temperature.isNAN() ) {
          		log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile (no temperature found)\n\n${err.message}`);
 						temperature = parseFloat("0.0");
 					}
