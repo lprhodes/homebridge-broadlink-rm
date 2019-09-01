@@ -1,9 +1,11 @@
 # Homebridge Broadlink RM [TV Fork]
 
 # About this fork
-This fork adds support for the TV type indroduced in iOS 12.2. I'm only give support for this specific accessory type! If you want to use this fork, use this command:
+This fork addresses an issue updating the temperature from file. Devices appear as "Not Repsonding" on read errors. This fork will use a temperature of 0 instead of hanging. If you want to use this fork, use this command: 
 
-`npm i -g homebridge-broadlink-rm-tv`
+`npm i -g git+https://github.com/kiwi-cam/homebridge-broadlink-rm-acfile.git`
+
+This fork comes from another fork which adds support for the TV type indroduced in iOS 12.2.
 
 # Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
 
