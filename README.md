@@ -1,4 +1,4 @@
-# Homebridge Broadlink RM [TV Fork]
+# Homebridge Broadlink RM [TV+AC File Fork]
 
 # About this fork
 This fork addresses an issue updating the temperature from file. Devices appear as "Not Repsonding" on read errors. This fork will use a temperature of 0 instead of hanging. If you want to use this fork, use this command: 
