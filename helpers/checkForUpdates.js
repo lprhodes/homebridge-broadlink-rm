@@ -2,7 +2,7 @@ const versionCheck = require('github-version-checker');
 const pkg = require('../package.json'); 
  
 const options = {
-  repo: 'lprhodes/homebridge-broadlink-rm', 
+  repo: 'kiwi-cam/homebridge-broadlinkrm-acfile', 
   currentVersion: pkg.version, 
   includePreReleases: false 
 };
