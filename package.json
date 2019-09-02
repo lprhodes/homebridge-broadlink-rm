@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:kiwi-cam/homebridge-broadlinkrm-acfile.git"
+    "url": "git@github.com:kiwi-cam/homebridge-broadlink-rm-acfile.git"
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.6.0",
