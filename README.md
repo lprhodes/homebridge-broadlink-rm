@@ -3,7 +3,7 @@
 # About this fork
 This fork addresses an issue updating the temperature from file. Devices appear as "Not Repsonding" on read errors. This fork will use a temperature of 0 instead of hanging. If you want to use this fork, use this command: 
 
-`npm i -g git+https://github.com/kiwi-cam/homebridge-broadlink-rm-acfile.git`
+`npm i -g git+https://github.com/kiwi-cam/homebridge-broadlinkrm-acfile.git`
 
 This fork comes from another fork which adds support for the TV type indroduced in iOS 12.2.
 
