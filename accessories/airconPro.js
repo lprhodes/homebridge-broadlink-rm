@@ -1,6 +1,7 @@
 const BroadlinkRMAccessory = require('./accessory');
 const getDevice = require('../helpers/getDevice');
 const sendData = require('../helpers/sendData');
+const fs = require('fs');
 
 class AirConProAccessory extends BroadlinkRMAccessory {
 
@@ -339,7 +340,7 @@ class AirConProAccessory extends BroadlinkRMAccessory {
 
 	getCurrentTemperature (callback) {
     const { config, host, log, name, state } = this;
-    const { pseudoDeviceTemperature, temperatureAdjustment } = config;
+    const { pseudoDeviceTemperature, temperatureAdjustment, temperatureFilePath, mqttURL } = config;
     //log(state.targetTemperature);
     // Some devices don't include a thermometer
     if (pseudoDeviceTemperature !== undefined) {
@@ -352,28 +353,35 @@ class AirConProAccessory extends BroadlinkRMAccessory {
       }
     }
 
-    const device = getDevice({ host, log })
-    if (!device) return callback(null, pseudoDeviceTemperature || 0);
+    // Read temperature from file
+    if (temperatureFilePath) {
+      const temperature = this.updateTemperatureFromFile();
 
-    const callbackIdentifier = Date.now();
-    this.callbackQueue[callbackIdentifier] = callback;
-
-    // Make sure we're only calling one at a time
-    if (Object.keys(this.callbackQueue).length > 1) return;
-
-    let onTemperature;
-
-    onTemperature = (temperature) => {
-      if (temperatureAdjustment) temperature += temperatureAdjustment
-
-      if (temperature > 40) return log(`${name} getCurrentTemperature (reported temperature too high, ignoring: ${temperature})`)
-      if (temperature < -15) return log(`${name} getCurrentTemperature (reported temperature too low, ignoring: ${temperature})`)
       state.currentTemperature = temperature;
+    }else{
+      // Read temperature from Device
+      const device = getDevice({ host, log })
+      if (!device) return callback(null, pseudoDeviceTemperature || 0);
 
-      if (this.removeTemperatureListenerTimer) clearTimeout(this.removeTemperatureListenerTimer)
-      device.removeListener('temperature', onTemperature);
-      this.processQueuedCallbacks();
+      const callbackIdentifier = Date.now();
+      this.callbackQueue[callbackIdentifier] = callback;
 
+      // Make sure we're only calling one at a time
+      if (Object.keys(this.callbackQueue).length > 1) return;
+
+      let onTemperature;
+
+      onTemperature = (temperature) => {
+        if (temperatureAdjustment) temperature += temperatureAdjustment
+
+        if (temperature > 40) return log(`${name} getCurrentTemperature (reported temperature too high, ignoring: ${temperature})`)
+        if (temperature < -15) return log(`${name} getCurrentTemperature (reported temperature too low, ignoring: ${temperature})`)
+        state.currentTemperature = temperature;
+
+        if (this.removeTemperatureListenerTimer) clearTimeout(this.removeTemperatureListenerTimer)
+        device.removeListener('temperature', onTemperature);
+        this.processQueuedCallbacks();
+      }
       log(`${name} getCurrentTemperature (${temperature})`);
  		}
 
@@ -415,7 +423,39 @@ class AirConProAccessory extends BroadlinkRMAccessory {
 
     if (state.targetTemperature === previousValue) return
     this.sendTemperature(state.targetTemperature, previousValue, state.currentHeatingCoolingState);
-	}
+  }
+  
+  updateTemperatureFromFile () {
+    const { config, debug, host, log, name } = this;
+    const { temperatureFilePath } = config;
+  
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
+  
+    fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
+  
+      if (err) {
+         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile\n\n${err.message}`);
+         
+         return;
+      }
+  
+      if (temperature === undefined || temperature.trim().length === 0) {
+    log(`\x1b[31m[WARNING] \x1b[0m${name} updateTemperatureFromFile (no temperature found in: ${temperature.trim()})`);
+        
+    // Occasional errors cause Home to hang "updating" retry
+    temperature = parseFloat("0.0");
+    
+      }
+  
+      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (file content: ${temperature.trim()})`);
+  
+      temperature = parseFloat(temperature);
+  
+      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
+      
+      return temperature;
+    });
+  }
 
   configKeyForCurrentHeatingCoolingState () {
     const { state } = this;
