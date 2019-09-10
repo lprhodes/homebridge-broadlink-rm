@@ -3,8 +3,8 @@
 # About this fork
 
 This fork is built upon [AlexanderBabel's version](https://github.com/AlexanderBabel/homebridge-broadlink-rm) which adds TV support to [lprhodes Broadlink RM Plugin](https://github.com/lprhodes/homebridge-broadlink-rm). This fork also addresses an issue updating the temperature from file. Devices appear as "Not Repsonding" on read errors. This fork will use a temperature of 0 instead of hanging. Now updated to replciate the airconditioner-pro accessory:
-  1. Added configuration item allowAutoMode which, if true, will allow AC to run in Auto mode.
-  2. Added configuration to read hex codes for {mode}{temp} e.g.
+
+  1. Added configuration to read hex codes for {mode}{temp} e.g.
 ```  
 	"data":{
   	"off":"2600500000012...",
