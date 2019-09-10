@@ -236,11 +236,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 	  
 		if(state.currentHeatingCoolingState === 1) {
-			mode = 'heat';
+			let mode = 'heat';
 		} else if(state.currentHeatingCoolingState === 2) {
-			mode = 'cool';
+			let mode = 'cool';
 		} else {
-			mode = 'auto';
+			let mode = 'auto';
 		}
 		
     const { hexData, finalTemperature } = this.getTemperatureHexData(mode, temperature);
