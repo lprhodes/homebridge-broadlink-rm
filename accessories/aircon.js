@@ -235,7 +235,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       await this.turnOnWhenOffDelayPromise
     }
 
-    const { hexData, finalTemperature } = this.getTemperatureHexData(temperature);
+    const { hexData, finalTemperature } = this.getTemperatureHexData(state.currentHeatingCoolingState, temperature);
 
     state.targetTemperature = finalTemperature;
 
@@ -286,12 +286,18 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
   }
 
-  getTemperatureHexData (temperature) {
+  getTemperatureHexData (mode, temperature) {
     const { config, data, name, state, debug } = this;
     const { defaultHeatTemperature, defaultCoolTemperature, heatTemperature } = config;
 
     let finalTemperature = temperature;
-    let hexData = data[`temperature${temperature}`];
+    let hexData = data[`${mode}${temperature}`];
+		
+	  if (!hexData) {
+			// Mode based code not found, try mode-less
+			this.log(`${name} No ${mode} HEX code found for ${temperature}`);
+	  	let hexData = data[`temperature${temperature}`];
+		}
 
     // You may not want to set the hex data for every single mode...
     if (!hexData) {
@@ -303,7 +309,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
         or provide the default temperature:
         \x1b[33m { "temperature${defaultTemperature}": { "data": "HEXCODE", "pseudo-mode" : "heat/cool" } }\x1b[0m`);
       
-
       this.log(`${name} Update to default temperature (${defaultTemperature})`);
       finalTemperature = defaultTemperature;
     }
