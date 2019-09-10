@@ -236,9 +236,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 	 
 		let mode;
-		if(state.currentHeatingCoolingState == 1) {
+		if(state.targetHeatingCoolingState == 1) {
 			mode = 'heat';
-		} else if(state.currentHeatingCoolingState == 2) {
+		} else if(state.targetHeatingCoolingState == 2) {
 			mode = 'cool';
 		} else {
 			mode = 'auto';
