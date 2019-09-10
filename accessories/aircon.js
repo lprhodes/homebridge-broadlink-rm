@@ -288,7 +288,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
     }
 
-    this.log(`${name} sendTemperature (set mode to ${mode}`);
+    this.log(`${name} sendTemperature (set mode to ${mode})`);
 
     state.targetHeatingCoolingState = HeatingCoolingStates[mode];
     this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
