@@ -234,7 +234,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       await this.turnOnWhenOffDelayPromise
     }
 	 
-		const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
+		const mode = this.HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
 	
     const { hexData, finalTemperature } = this.getTemperatureHexData(mode, temperature);
 
