@@ -20,6 +20,7 @@ Now updated to replciate the airconditioner-pro accessory:
     	"data":"2600500000012..."
     }
   }
+ 
 
 # Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
 
