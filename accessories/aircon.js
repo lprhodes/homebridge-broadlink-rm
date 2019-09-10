@@ -78,8 +78,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Note that this is only used when you use Siri or press Auto immediately
     // after launching Homebridge. The rest of the time we'll use your last known
     // temperature
-    config.replaceAutoMode = config.replaceAutoMode || 'cool';
-
+		if (!config.allowAutoMode) {
+			config.replaceAutoMode = config.replaceAutoMode || 'cool';
+		}
+		
     // Set state default values
     // state.targetTemperature = state.targetTemperature || config.minTemperature;
     state.currentHeatingCoolingState = state.currentHeatingCoolingState || Characteristic.CurrentHeatingCoolingState.OFF;
