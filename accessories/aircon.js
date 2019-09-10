@@ -72,15 +72,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // defaultHeatTemperature
     config.heatTemperature = config.heatTemperature || 22;
 
-    // When we turn on the thermostat with Siri it comes thrugh as "auto" which
-    // isn't particularly supported at this time so we convert the mode to cool
-    // or heat
-    // Note that this is only used when you use Siri or press Auto immediately
-    // after launching Homebridge. The rest of the time we'll use your last known
-    // temperature
-		if (!config.allowAutoMode) {
-			config.replaceAutoMode = config.replaceAutoMode || 'cool';
-		}
+
+	// Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
+	if (replaceAutoMode && HeatingCoolingConfigKeys[state.targetHeatingCoolingState] === 'auto') {
+      		log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
+		config.replaceAutoMode = config.replaceAutoMode || 'cool';
+	}
 		
     // Set state default values
     // state.targetTemperature = state.targetTemperature || config.minTemperature;
@@ -237,15 +234,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
       await this.turnOnWhenOffDelayPromise
     }
 	 
-		let mode;
-		if(state.targetHeatingCoolingState == 1) {
-			mode = 'heat';
-		} else if(state.targetHeatingCoolingState == 2) {
-			mode = 'cool';
-		} else {
-			mode = 'auto';
-		}
-		
+		const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
+	
     const { hexData, finalTemperature } = this.getTemperatureHexData(mode, temperature);
 
     state.targetTemperature = finalTemperature;
@@ -274,20 +264,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    // IGNORE - Update the heating/cooling mode based on the temperature.
-    //let mode = hexData['pseudo-mode'];
-    //if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`);
+    // Update the heating/cooling mode based on the pseudo-mode - if pressent.
+		if (hexData['pseudo-mode']){
+    	let mode = hexData['pseudo-mode'];
+    	if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`);
+		}
     
-    if (!mode) {
-      if (state.targetTemperature < state.currentTemperature) {
-        mode = 'cool';
-      } else if (state.targetTemperature > state.currentTemperature) {
-        mode = 'heat';
-      } else {
-        mode = 'auto';
-      }
-    }
-
     this.log(`${name} sendTemperature (set mode to ${mode})`);
 
     state.targetHeatingCoolingState = HeatingCoolingStates[mode];
@@ -307,6 +289,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
 			// Mode based code not found, try mode-less
 			this.log(`${name} No ${mode} HEX code found for ${temperature}`);
 	  	let hexData = data[`temperature${temperature}`];
+		} else {
+			if (hexData['pseudo-mode']) { 
+				this.log(`${name} WARNING: Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
+			}
 		}
 
     // You may not want to set the hex data for every single mode...
