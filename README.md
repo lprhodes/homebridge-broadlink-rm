@@ -7,6 +7,21 @@ This fork addresses an issue updating the temperature from file. Devices appear 
 
 This fork comes from another fork which adds support for the TV type indroduced in iOS 12.2.
 
+Now updated to replciate the airconditioner-pro accessory:
+  1. Added configuration item allowAutoMode which, if true, will allow AC to run in Auto mode.
+  2. Added configuration to read hex codes for {mode}{temp} e.g.
+  
+	"data":{
+  	"off":"2600500000012...",
+    "heat30":{
+    	"data":"2600500000012..."
+    },
+    "cool16":{
+    	"data":"2600500000012..."
+    }
+  }
+ 
+
 # Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
 
 ## Introduction
