@@ -223,7 +223,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   // Thermostat
   async sendTemperature (temperature, previousTemperature) {
-    const { HeatingCoolingStates, config, data, host, log, name, state, debug } = this;
+    const { HeatingCoolingConfigKeys, HeatingCoolingStates, config, data, host, log, name, state, debug } = this;
     const { preventResendHex, defaultCoolTemperature, heatTemperature, ignoreTemperatureWhenOff, sendTemperatureOnlyWhenOff } = config;
 
     log(`${name} Potential sendTemperature (${temperature})`);
@@ -234,7 +234,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       await this.turnOnWhenOffDelayPromise
     }
 	 
-		const mode = this.HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
+		const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
 	
     const { hexData, finalTemperature } = this.getTemperatureHexData(mode, temperature);
 
