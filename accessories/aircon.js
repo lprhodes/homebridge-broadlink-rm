@@ -236,9 +236,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 	 
 		let mode;
-		if(state.currentHeatingCoolingState === 1) {
+		if(state.currentHeatingCoolingState == 1) {
 			mode = 'heat';
-		} else if(state.currentHeatingCoolingState === 2) {
+		} else if(state.currentHeatingCoolingState == 2) {
 			mode = 'cool';
 		} else {
 			mode = 'auto';
@@ -272,27 +272,26 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    // Update the heating/cooling mode based on the temperature.
+    // IGNORE - Update the heating/cooling mode based on the temperature.
     //let mode = hexData['pseudo-mode'];
-
     //if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`);
     
-    //if (!mode) {
-    //  if (state.targetTemperature < state.currentTemperature) {
-    //    mode = 'cool';
-    //  } else if (state.targetTemperature > state.currentTemperature) {
-    //    mode = 'heat';
-    //  } else {
-    //    mode = 'auto';
-    //  }
-    //}
+    if (!mode) {
+      if (state.targetTemperature < state.currentTemperature) {
+        mode = 'cool';
+      } else if (state.targetTemperature > state.currentTemperature) {
+        mode = 'heat';
+      } else {
+        mode = 'auto';
+      }
+    }
 
-    //this.log(`${name} sendTemperature (set mode to ${mode}`);
+    this.log(`${name} sendTemperature (set mode to ${mode}`);
 
-    //state.targetHeatingCoolingState = HeatingCoolingStates[mode];
-    //this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
-    //this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
-    //this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
+    state.targetHeatingCoolingState = HeatingCoolingStates[mode];
+    this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
+    this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
+    this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
   }
 
   getTemperatureHexData (mode, temperature) {
