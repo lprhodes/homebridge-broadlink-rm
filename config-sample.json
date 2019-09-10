@@ -191,12 +191,13 @@
           "autoSwitch": "A/C Auto Switch",
           "data":{
             "off":"2600500000012...",
-            "temperature30":{
-              "pseudo-mode":"heat",
+            "heat30":{
               "data":"2600500000012..."
             },
-            "temperature16":{
-              "pseudo-mode":"cool",
+            "auto22":{
+              "data":"2600500000012..."
+            },
+            "cool16":{
               "data":"2600500000012..."
             }
           }
