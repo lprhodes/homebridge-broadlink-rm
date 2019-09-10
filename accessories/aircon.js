@@ -73,11 +73,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
     config.heatTemperature = config.heatTemperature || 22;
 
 
-	// Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
-	if (replaceAutoMode && HeatingCoolingConfigKeys[state.targetHeatingCoolingState] === 'auto') {
-      		log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
-		config.replaceAutoMode = config.replaceAutoMode || 'cool';
-	}
+		// Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
+		if (config.replaceAutoMode && HeatingCoolingConfigKeys[state.targetHeatingCoolingState] === 'auto') {
+    	log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
+			config.replaceAutoMode = config.replaceAutoMode || 'cool';
+		}
 		
     // Set state default values
     // state.targetTemperature = state.targetTemperature || config.minTemperature;
