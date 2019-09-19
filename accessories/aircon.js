@@ -233,6 +233,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.turnOnWhenOffDelayPromise = delayForDuration(.3);
       await this.turnOnWhenOffDelayPromise
     }
+    
+    // Ignore Temperature if off - and set to ignore
+    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
+      log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true`);
+      
+      return;
+    }
 	 
 		const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
 	
@@ -246,12 +253,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
       if (!state.firstTemperatureUpdate && state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF) {
         if (preventResendHex) return;
       }
-    }
-
-    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
-      log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true`);
-      
-      return;
     }
 
     state.firstTemperatureUpdate = false;
