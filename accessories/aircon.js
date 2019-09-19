@@ -265,7 +265,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     // Update the heating/cooling mode based on the pseudo-mode - if pressent.
-		if (hexData['pseudo-mode']){
+	if (hexData['pseudo-mode']){
     	let mode = hexData['pseudo-mode'];
     	if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`);
 		}
@@ -456,7 +456,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 		    log(`\x1b[31m[WARNING] \x1b[0m${name} updateTemperatureFromFile (no temperature found in: ${temperature.trim()})`);
         
 		    // Occasional errors cause Home to hang "updating" retry
-		    temperature = parseFloat("0.0");
+		    temperature = "0.0";
       }
 
       temperature = parseFloat(temperature);
@@ -473,7 +473,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     Object.keys(this.temperatureCallbackQueue).forEach((callbackIdentifier) => {
       const callback = this.temperatureCallbackQueue[callbackIdentifier];
       
-      callback(null, Math.round(temperature));
+      callback(null, temperature);
       delete this.temperatureCallbackQueue[callbackIdentifier];
     })
 
@@ -681,7 +681,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       .setProps({
         minValue: minTemperature,
         maxValue: maxTemperature,
-        minStep: 1
+        minStep: 0.1
       });
   }
 }
