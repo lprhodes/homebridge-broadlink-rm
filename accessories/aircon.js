@@ -463,7 +463,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
       
       //Currently integer rounding occurs, so 22.9 is reported as 22. Round here to make the rounding accurate
-      this.onTemperaturetemperature);
+      this.onTemperature(temperature);
     });
   }
 
