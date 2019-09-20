@@ -503,7 +503,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       
       //Currently integer rounding occurs, so 22.9 is reported as 22. Round here to make the rounding accurate
       this.onTemperature(temperature);
-    });
+    }
   }
   
   processQueuedTemperatureCallbacks (temperature) {
