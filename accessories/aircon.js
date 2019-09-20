@@ -493,7 +493,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
         while (tEnd<fData.length && fData[tEnd]>='0' && fData[tEnd]<='9') {
             tEnd++;
         }
-        var temperature = fData.substring(tBeg, tEnd);
+        var temperature = parseFloat(fData.substring(tBeg, tEnd))/1000.0;
+      } else{
+        log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\nDevice at ${fName} not found`);
+        return
       }
       
       if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
