@@ -332,9 +332,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
   
   async monitorTemperature () {
     const { config, host, log, name, state } = this;
-    const { temperatureFilePath, pseudoDeviceTemperature } = config;
+    const { temperatureFilePath, pseudoDeviceTemperature, w1DeviceID } = config;
 
     if (temperatureFilePath) return;
+    if (w1DeviceID) return;
     if (pseudoDeviceTemperature !== undefined) return;
 
     const device = getDevice({ host, log });
