@@ -488,11 +488,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
       try{
         var fData = fs.readFileSync(fName, fsOptions).trim();
       } catch (err) {
-        if (err != EINTR){
-          log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\nError reading from ${fName} ${err}`);
-          return
-        }
+        if (debug) log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\nError reading from ${fName} ${err}`);
+        return
       }
+      
       // Extract the numeric part
       var tBeg = fData.indexOf("t=")+2;
       if (tBeg >= 0) {
@@ -500,14 +499,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
         while (tEnd<fData.length && fData[tEnd]>='0' && fData[tEnd]<='9') {
             tEnd++;
         }
-        var temperature = parseFloat(fData.substring(tBeg, tEnd))/1000.0;
+        var temperature = Math.round(parseFloat(fData.substring(tBeg, tEnd))/1000.0);
       } else{
         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\nDevice at ${fName} not found`);
         return
       }
-      
+ 
       if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
-      
       //Currently integer rounding occurs, so 22.9 is reported as 22. Round here to make the rounding accurate
       this.onTemperature(temperature);
     }
