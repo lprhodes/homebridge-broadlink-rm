@@ -1,0 +1,316 @@
+{
+  "bridge":{
+    "name":"Homebridge",
+    "username":"CD:22:3D:E3:CE:30",
+    "port":51826,
+    "pin":"031-45-154"
+  },
+  "description":"Homebridge",
+  "accessories":[
+
+  ],
+  "platforms":[
+    {
+      "platform":"BroadlinkRM",
+      "name":"Broadlink RM",
+      "hideScanFrequencyButton": false,
+      "hideLearnButton": false,
+      "hideWelcomeMessage": false,
+      "accessories":[
+        {
+          "name":"Auto-off Switch",
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 5,
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012..."
+          }
+        },
+        {
+          "name":"TV On/Off",
+          "type":"switch",
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012..."
+          }
+        },
+        {
+          "name":"Channel Up",
+          "type":"switch",
+          "data":"CHANNEL_UP_HEX...",
+          "enableAutoOff": true,
+          "onDuration": 1
+        },
+        {
+          "name":"Channel Down",
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 1,
+          "data":"CHANNEL_DOWN_HEX..."
+        },
+        {
+          "name":"Volume Up",
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 2.5,
+          "data": [
+            {
+              "data": "VOLUME_UP_HEX...",
+              "sendCount": 5,
+              "interval": 0.3
+            }
+          ]
+        },
+        {
+          "name":"Volume Down",
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 2.5,
+          "data": [
+            {
+              "data": "VOLUME_DOWN_HEX...",
+              "sendCount": 5,
+              "interval": 0.3
+            }
+          ]
+        },
+        {
+          "name":"Entertainment",
+          "type":"switch",
+          "enableAutoOff": true,
+          "onDuration": 1.5,
+          "data":[
+            {
+              "data": "HEX_1...",
+              "pause": 0.3
+            },
+            {
+              "data": "HEX_2...",
+              "pause": 0.3
+            },
+            {
+              "data": "HEX_3...",
+              "pause": 0.3
+            }
+          ]
+        },
+        {
+          "name":"Entertainment 2",
+          "type":"switch",
+          "data": [
+            {
+              "data": "2600500000012...",
+              "sendCount": 2,
+              "interval": 0.3,
+              "pause": 2
+            },
+            {
+              "data": "2600500000012...",
+              "sendCount": 2,
+              "interval": 5
+            }
+          ]
+        },
+        {
+          "name":"Entertainment 3",
+          "type":"switch",
+          "data": {
+            "on": [
+              {
+                "data": "ON_HEX_1...",
+                "pause": 0.3
+              },
+              {
+                "data": "ON_HEX_2...",
+                "sendCount": 2,
+                "interval": 0.1,
+                "pause": 0.3
+              }
+            ],
+            "off": [
+              {
+                "data": "OFF_HEX_1...",
+                "pause": 0.3
+              },
+              {
+                "data": "OF_HEX_2...",
+                "sendCount": 2,
+                "interval": 0.1,
+                "pause": 0.3
+              }
+            ]
+          }
+        },
+        {
+          "name":"Light",
+          "type":"light",
+          "defaultBrightness": 70,
+          "useLastKnownBrightness": true,
+          "enableAutoOff": true,
+          "onDuration": 10,
+          "data":{
+            "off":"2600500000012...",
+            "brightness10": "2600500000012...",
+            "brightness20": "2600500000012...",
+            "brightness30": "2600500000012...",
+            "brightness40": "2600500000012...",
+            "brightness50": "2600500000012...",
+            "brightness60": "2600500000012...",
+            "brightness70": "2600500000012...",
+            "brightness80": "2600500000012...",
+            "brightness90": "2600500000012...",
+            "brightness100": "2600500000012...",
+            "hue0": "2600500000012...",
+            "hue99": "2600500000012...",
+            "hue199": "2600500000012...",
+            "hue299": "2600500000012...",
+            "hue359": "2600500000012..."
+          }
+        },
+        {
+          "name":"Air Conditioner",
+          "type":"air-conditioner",
+          "ignoreTemperatureWhenOff": true,
+          "temperatureUpdateFrequency": 10,
+          "w1DeviceID":"26-0321544e531ff",
+          "turnOnWhenOff": false,
+          "allowResend": true,
+          "preventResendHex": true,
+          "defaultCoolTemperature": 21,
+          "defaultHeatTemperature": 23,
+          "data":{
+            "off":"2600500000012...",
+            "temperature30":{
+              "pseudo-mode":"heat",
+              "data":"2600500000012..."
+            },
+            "temperature16":{
+              "pseudo-mode":"cool",
+              "data":"2600500000012..."
+            }
+          }
+        },
+        {
+          "name":"Air Conditioner Advanced",
+          "type":"air-conditioner",
+          "temperatureFilePath": "/var/tmp/inside.txt",
+          "autoCoolTemperature": 23,
+          "autoHeatTemperature": 14,
+          "autoSwitch": "A/C Auto Switch",
+          "data":{
+            "off":"2600500000012...",
+            "heat30":{
+              "data":"2600500000012..."
+            },
+            "auto22":{
+              "data":"2600500000012..."
+            },
+            "cool16":{
+              "data":"2600500000012..."
+            }
+          }
+        },
+        {
+          "name":"A/C Auto Switch",
+          "type":"switch"
+        },
+        {
+          "name": "Fan",
+          "type": "fan",
+          "data": {
+            "on":"2600500000012...",
+            "off":"2600500000012...",
+            "swingToggle": "2600500000012...",
+            "fanSpeed10": "2600500000012...",
+            "fanSpeed20": "2600500000012...",
+            "fanSpeed30": "2600500000012...",
+            "fanSpeed40": "2600500000012...",
+            "fanSpeed50": "2600500000012...",
+            "fanSpeed60": "2600500000012...",
+            "fanSpeed70": "2600500000012...",
+            "fanSpeed80": "2600500000012...",
+            "fanSpeed90": "2600500000012...",
+            "fanSpeed100": "2600500000012..."
+          }
+        },
+        {
+          "name":"Garage Door",
+          "type":"garage-door-opener",
+          "openCloseDuration":8,
+          "data":{
+            "open":"2600500000012...",
+            "close":"2600500000012...",
+            "lock":"2600500000012...",
+            "unlock":"2600500000012..."
+          }
+        },
+        {
+          "name":"Blind",
+          "type":"window-covering",
+          "totalDurationOpen": 45,
+          "totalDurationClose": 40,
+          "data":{
+            "open":"2600500000012...",
+            "close":"2600500000012...",
+            "stop":"2600500000012..."
+          }
+        },
+        {
+          "name":"Blind Multi",
+          "type":"window-covering",
+          "totalDurationOpen": 5,
+          "totalDurationClose": 2,
+          "data":{
+            "open":"OPEN_HEX...",
+            "close":[
+              {
+                "data": "CLOSE_HEX_1...",
+                "sendCount": 2,
+                "interval": 0.3,
+                "pause": 0.3
+              },
+              {
+                "data": "CLOSE_HEX_2..."
+              }
+            ],
+            "stop":"STOP_HEX..."
+          }
+        },
+        {
+          "name":"TV",
+          "type":"tv",
+          "data": {
+            "off": "HEX...",
+            "on": "HEX...",
+            "remote": {
+              "select": "HEX...",
+              "arrowUp": "HEX...",
+              "arrowDown": "HEX...",
+              "arrowLeft": "HEX...",
+              "arrowRight": "HEX...",
+              "back": "HEX...",
+              "exit": "HEX...",
+              "playPause": "HEX...",
+              "info": "HEX..."
+            },
+            "powerMode": {
+              "show": "HEX..."
+            },
+            "volume": {
+              "up": "HEX...",
+              "down": "HEX..."
+            },
+            "inputs": [
+              {
+                "name": "INPUT 1",
+                "type": "hdmi",
+                "data": "HEX..."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

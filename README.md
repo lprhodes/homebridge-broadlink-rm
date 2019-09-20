@@ -16,6 +16,10 @@ This fork is built upon [AlexanderBabel's version](https://github.com/AlexanderB
     }
   }
 ```
+2. Added support for Raspberry Pi Wire-1 thermometers (i.e. ds18b20). You can find your devices ID using the command `ls /sys/bus/w1/devices`. Then update your air-conditioner config to include (using the device ID):
+```
+"w1DeviceID":"28-0321544e531ff",
+```
 
 If you want to use this fork, use this command: 
 
