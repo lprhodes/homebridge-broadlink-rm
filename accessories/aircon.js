@@ -391,7 +391,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
   addTemperatureCallbackToQueue (callback) {
     const { config, host, log, name, state } = this;
-    const { mqttURL, temperatureFilePath } = config;
+    const { mqttURL, temperatureFilePath, w1DeviceID } = config;
     
     // Clear the previous callback
     if (Object.keys(this.temperatureCallbackQueue).length > 1) {
@@ -409,6 +409,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // Read temperature from file
     if (temperatureFilePath) {
       this.updateTemperatureFromFile();
+
+      return;
+    }
+    
+    // Read temperature from W1 Device
+    if (w1DeviceID) {
+      this.updateTemperatureFromW1();
 
       return;
     }
@@ -468,6 +475,34 @@ class AirConAccessory extends BroadlinkRMAccessory {
     });
   }
 
+  updateTemperatureFromW1 () {
+    const { config, debug, host, log, name } = this;
+    const { w1DeviceID } = config;
+    var W1PATH = "/sys/bus/w1/devices";
+    var fsOptions = { "encoding":"utf8", "flag":"r" };
+    var fName = W1PATH + "/" + w1DeviceID + "/w1_slave";
+    
+    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 reading file: ${fName}`);
+
+    if (fs.existsSync(fName)) {
+      var fData = fs.readFileSync(fName, fsOptions).trim();
+      // Extract the numeric part
+      var tBeg = fData.indexOf("t=")+2;
+      if (tBeg >= 0) {
+        var tEnd = tBeg+1;
+        while (tEnd<fData.length && fData[tEnd]>='0' && fData[tEnd]<='9') {
+            tEnd++;
+        }
+        var temperature = fData.substring(tBeg, tEnd);
+      }
+      
+      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
+      
+      //Currently integer rounding occurs, so 22.9 is reported as 22. Round here to make the rounding accurate
+      this.onTemperature(temperature);
+    });
+  }
+  
   processQueuedTemperatureCallbacks (temperature) {
     if (Object.keys(this.temperatureCallbackQueue).length === 0) return;
 
