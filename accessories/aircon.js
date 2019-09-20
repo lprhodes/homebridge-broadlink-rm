@@ -490,7 +490,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         var fData = fs.readFileSync(fName, fsOptions).trim();
       } catch (err) {
         if (debug) log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromW1\n\nError reading from ${fName} ${err}`);
-        return
+        fData = "t=0000";
       }
       
       // Extract the numeric part
