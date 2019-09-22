@@ -58,11 +58,11 @@ class TVAccessory extends BroadlinkRMAccessory {
       this.autoOnTimeoutPromise.cancel();
       this.autoOnTimeoutPromise = null;
     }
-  }
   
-  if (this.pingGraceTimeout) {
+    if (this.pingGraceTimeout) {
       this.pingGraceTimeout.cancel();
       this.pingGraceTimeout = null;
+    }
   }
   
   checkAutoOnOff() {
