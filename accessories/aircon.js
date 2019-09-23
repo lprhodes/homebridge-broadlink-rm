@@ -73,11 +73,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
     config.heatTemperature = config.heatTemperature || 22;
 
 
-                // Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
-                if (config.replaceAutoMode && HeatingCoolingConfigKeys[state.targetHeatingCoolingState] === 'auto') {
-        log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
-                        config.replaceAutoMode = config.replaceAutoMode || 'cool';
-                }
+    // Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
+    if (config.replaceAutoMode && HeatingCoolingConfigKeys[state.targetHeatingCoolingState] === 'auto') {
+      log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
+      config.replaceAutoMode = config.replaceAutoMode || 'cool';
+    }
 
     // Set state default values
     // state.targetTemperature = state.targetTemperature || config.minTemperature;
@@ -241,7 +241,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-                const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
+    const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
 
     const { hexData, finalTemperature } = this.getTemperatureHexData(mode, temperature);
 
@@ -292,7 +292,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
                 let hexData = data[`temperature${temperature}`];
                 } else {
                         if (hexData['pseudo-mode']) {
-                                this.log(`${name} WARNING: Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
+                                this.log(`\x1b[36m[INFO] \x1b[0m${name} Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
                         }
                 }
 
@@ -374,13 +374,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
     log(`${name} onTemperature (${temperature})`);
 
     if (temperature > config.maxTemperature) {
-      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m (${maxTemperature}).`)
+      log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m (${maxTemperature}).`)
       temperature = config.maxTemperature
     }
 
     if (temperature < config.minTemperature) {
 
-      log(`\x1b[35m[INFO]\x1b[0m Reported temperature (${temperature}) is too low, setting to \x1b[33mminTemperature\x1b[0m (${minTemperature}).`)
+      log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too low, setting to \x1b[33mminTemperature\x1b[0m (${minTemperature}).`)
       temperature = config.minTemperature
 
     }
@@ -452,7 +452,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { config, debug, host, log, name, state } = this;
     const { temperatureFilePath } = config;
 
-    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile reading file: ${temperatureFilePath}`);
 
     fs.readFile(temperatureFilePath, 'utf8', (err, temperature) => {
       if (err) {
@@ -465,7 +465,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
 
       temperature = parseFloat(temperature);
-      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (parsed temperature: ${temperature})`);
 
       this.onTemperature(temperature);
     });
@@ -479,7 +479,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     var fName = W1PATH + "/" + w1DeviceID + "/w1_slave";
     var temperature;
 
-    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 reading file: ${fName}`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 reading file: ${fName}`);
 
     fs.readFile(fName, 'utf8', (err, data) => {
       if (err) {
@@ -494,7 +494,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         temperature = (state.currentTemperature || 0);
       }
 
-      if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
+      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} updateTemperatureFromW1 (parsed temperature: ${temperature})`);
       this.onTemperature(temperature);
     });
   }
@@ -606,7 +606,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     let temperature = this.mqttValuesTemp[identifier];
 
-    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value: ${temperature})`);
 
     try {
       const temperatureJSON = JSON.parse(temperature);
@@ -631,11 +631,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
       return;
     }
 
-    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value 2: ${temperature.trim()})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (raw value 2: ${temperature.trim()})`);
 
     temperature = parseFloat(temperature);
 
-    if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${temperature})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onMQTTMessage (parsed temperature: ${temperature})`);
 
     this.mqttValues[identifier] = temperature;
     this.updateTemperatureUI();
