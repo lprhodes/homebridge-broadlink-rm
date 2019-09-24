@@ -154,7 +154,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     return (!this.autoSwitchAccessory || (this.autoSwitchAccessory && this.autoSwitchAccessory.state && this.autoSwitchAccessory.state.switchState));
   }
 
-        setTargetTemperature (hexData, previousValue) {
+  setTargetTemperature (hexData, previousValue) {
     const { config, log, name, state } = this;
     const { preventResendHex, minTemperature, maxTemperature } = config;
 
@@ -173,7 +173,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     this.sendTemperature(state.targetTemperature, previousValue);
   }
 
-        async setTargetHeatingCoolingState (hexData, previousValue) {
+  async setTargetHeatingCoolingState (hexData, previousValue) {
     const { HeatingCoolingConfigKeys, HeatingCoolingStates, config, data, host, log, name, serviceManager, state, debug } = this;
     const { preventResendHex, defaultCoolTemperature, defaultHeatTemperature, replaceAutoMode } = config;
 
@@ -199,14 +199,12 @@ class AirConAccessory extends BroadlinkRMAccessory {
       log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
 
       if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
-
       this.updateServiceTargetHeatingCoolingState(HeatingCoolingStates[replaceAutoMode]);
 
       return;
     }
 
     let temperature;
-
     // Selecting a heating/cooling state allows a default temperature to be used for the given state.
     if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.HEAT) {
       temperature = defaultHeatTemperature;
@@ -226,7 +224,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { HeatingCoolingConfigKeys, HeatingCoolingStates, config, data, host, log, name, state, debug } = this;
     const { preventResendHex, defaultCoolTemperature, heatTemperature, ignoreTemperatureWhenOff, sendTemperatureOnlyWhenOff } = config;
 
-    log(`${name} Potential sendTemperature (${temperature})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Potential sendTemperature (${temperature})`);
 
     // If the air-conditioner is turned off then turn it on first and try this again
     if (this.checkTurnOnWhenOff()) {
@@ -234,47 +232,45 @@ class AirConAccessory extends BroadlinkRMAccessory {
       await this.turnOnWhenOffDelayPromise
     }
 
-    // Ignore Temperature if off - and set to ignore
+    // Ignore Temperature if off, staying off - and set to ignore
     if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
       log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true`);
-
       return;
     }
 
     const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
-
     const { hexData, finalTemperature } = this.getTemperatureHexData(mode, temperature);
-
     state.targetTemperature = finalTemperature;
-
-    const hasTemperatureChanged = (previousTemperature !== finalTemperature);
-
-    if (!hasTemperatureChanged) {
-      if (!state.firstTemperatureUpdate && state.currentHeatingCoolingState !== Characteristic.TargetHeatingCoolingState.OFF) {
-        if (preventResendHex) return;
-      }
-    }
-    state.firstTemperatureUpdate = false;
-
-    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && sendTemperatureOnlyWhenOff) {
-      return;
-    }
-
-    // Update the heating/cooling mode based on the pseudo-mode - if pressent.
+	
+	// Update the heating/cooling mode based on the pseudo-mode - if pressent.
     if (hexData['pseudo-mode']){
       let mode = hexData['pseudo-mode'];
       if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`)                
     }
 
-    //Set the mode
-    state.targetHeatingCoolingState = HeatingCoolingStates[mode];
-    this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
-    this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
-    this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
+    const hasTemperatureChanged = (previousTemperature !== finalTemperature);
+	const hasModeChanged = (state.currentHeatingCoolingState !== state.targetHeatingCoolingState || HeatingCoolingStates[mode] !== state.currentHeatingCoolingState)
+
+	//If sendTemperatureOnlyWhenOff and Off, set hasModeChanged to false so we only send Temperature
+    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && sendTemperatureOnlyWhenOff) {
+		if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} sendTemperatureOnlyWhenOff - sending only Temperature`);
+		hasModeChanged = false;
+    }
+
+	if (hasModeChanged){
+		//Set the mode
+		state.targetHeatingCoolingState = HeatingCoolingStates[mode];
+		this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
+		this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
+		this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
+    }
     
-    //Set the temperature
-    await this.performSend(hexData.data);
-    this.log(`${name} sentTemperature (${mode} - ${state.targetTemperature})`);
+	if(hasTemperatureChanged || (state.firstTemperatureUpdate && !preventResendHex)){
+		//Set the temperature
+		await this.performSend(hexData.data);
+		this.log(`${name} sentTemperature (${mode} - ${state.targetTemperature})`);
+		state.firstTemperatureUpdate = false;
+	}
   }
 
   getTemperatureHexData (mode, temperature) {
@@ -284,15 +280,15 @@ class AirConAccessory extends BroadlinkRMAccessory {
     let finalTemperature = temperature;
     let hexData = data[`${mode}${temperature}`];
 
-          if (!hexData) {
-                        // Mode based code not found, try mode-less
-                        this.log(`${name} No ${mode} HEX code found for ${temperature}`);
-                let hexData = data[`temperature${temperature}`];
-                } else {
-                        if (hexData['pseudo-mode']) {
-                                this.log(`\x1b[36m[INFO] \x1b[0m${name} Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
-                        }
-                }
+    if (!hexData) {
+        // Mode based code not found, try mode-less
+        this.log(`${name} No ${mode} HEX code found for ${temperature}`);
+        let hexData = data[`temperature${temperature}`];
+    } else {
+        if (hexData['pseudo-mode']) {
+            this.log(`\x1b[36m[INFO] \x1b[0m${name} Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
+        }
+    }
 
     // You may not want to set the hex data for every single mode...
     if (!hexData) {
