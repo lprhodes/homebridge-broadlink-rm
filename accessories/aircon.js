@@ -210,6 +210,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
 
     serviceManager.setCharacteristic(Characteristic.TargetTemperature, temperature);
+    serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
+    serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
   }
 
   // Thermostat
