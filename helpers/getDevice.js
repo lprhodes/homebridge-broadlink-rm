@@ -19,7 +19,7 @@ const startPing = (device, log) => {
           // Speed up rediscovery
           pingWait = 500;
         } else if (active && device.state !== 'active') {
-          if (device.state === 'inactive') console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
+          if (device.state === 'inactive') log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
           device.state = 'active';
           pingWait = pingFrequency;
