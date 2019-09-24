@@ -7,6 +7,7 @@ const pingTimeout = 10;
 
 const startPing = (device, log) => {
   device.state = 'unknown';
+  var pingWait = pingFrequency;
 
   setInterval(() => {
     try {
@@ -15,14 +16,17 @@ const startPing = (device, log) => {
           log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
 
           device.state = 'inactive';
+          // Speed up rediscovery
+          pingWait = 500;
         } else if (active && device.state !== 'active') {
           if (device.state === 'inactive') console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
           device.state = 'active';
+          pingWait = pingFrequency;
         }
       }, {timeout: pingTimeout})
     } catch (err) {}
-  }, pingFrequency);
+  }, pingWait);
 }
 
 const discoveredDevices = {};
