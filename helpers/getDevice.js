@@ -3,6 +3,7 @@ const broadlink = require('./broadlink')
 const delayForDuration = require('./delayForDuration')
 
 const pingFrequency = 5000;
+const pingTimeout = 10;
 
 const startPing = (device, log) => {
   device.state = 'unknown';
@@ -19,7 +20,7 @@ const startPing = (device, log) => {
 
           device.state = 'active';
         }
-      })
+      }, {timeout: pingTimeout})
     } catch (err) {}
   }, pingFrequency);
 }
