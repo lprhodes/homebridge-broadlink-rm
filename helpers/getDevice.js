@@ -7,7 +7,7 @@ const pingTimeout = 5;
 
 const startPing = (device, log) => {
   device.state = 'unknown';
-  var retryCount = 0;
+  var retryCount = 1;
 
   setInterval(() => {
     try {
