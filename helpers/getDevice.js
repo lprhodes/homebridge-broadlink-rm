@@ -36,6 +36,9 @@ const startPing = (device, log) => {
           device.state = 'active';
           retryCount = 0;
           pingWait = pingFrequency;
+        } else if (active && retryCount !== 0 ) {
+          //Acive -reset retry counter
+          retryCount = 0;
         }
       }, {timeout: pingTimeout})
     } catch (err) {}
