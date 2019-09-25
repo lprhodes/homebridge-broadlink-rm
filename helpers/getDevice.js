@@ -8,6 +8,7 @@ const pingTimeout = 10;
 const startPing = (device, log) => {
   device.state = 'unknown';
   var pingWait = pingFrequency;
+  var retryCount = 0;
 
   setInterval(() => {
     try {
@@ -17,16 +18,23 @@ const startPing = (device, log) => {
            throw err;
         }
         
-        if (!active && device.state === 'active') {
-          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
+        if (!active && device.state === 'active' && retryCount === 3) {
+          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable after three attempts.`);
 
           device.state = 'inactive';
           // Speed up rediscovery
+          retryCount = 0;
           pingWait = 500;
+        } else if (!active && device.state === 'active') {
+          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable. (attempt ${retryCount})`);
+
+          retryCount += 1;
+          pingWait = pingFrequency;
         } else if (active && device.state !== 'active') {
           if (device.state === 'inactive') log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
           device.state = 'active';
+          retryCount = 0;
           pingWait = pingFrequency;
         }
       }, {timeout: pingTimeout})
