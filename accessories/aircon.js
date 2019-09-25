@@ -244,7 +244,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     }
 
     const hasTemperatureChanged = (previousTemperature !== finalTemperature);
-    const hasModeChanged = (state.currentHeatingCoolingState !== state.targetHeatingCoolingState || HeatingCoolingStates[mode] !== state.currentHeatingCoolingState)
+    const hasModeChanged = ((state.currentHeatingCoolingState !== state.targetHeatingCoolingState) || (HeatingCoolingStates[mode] !== state.currentHeatingCoolingState))
 
     //If sendTemperatureOnlyWhenOff and Off, set hasModeChanged to false so we only send Temperature
     if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && sendTemperatureOnlyWhenOff) {
