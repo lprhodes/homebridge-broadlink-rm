@@ -3,24 +3,42 @@ const broadlink = require('./broadlink')
 const delayForDuration = require('./delayForDuration')
 
 const pingFrequency = 5000;
+const pingTimeout = 5;
 
 const startPing = (device, log) => {
   device.state = 'unknown';
+  var retryCount = 1;
 
   setInterval(() => {
     try {
-      ping.sys.probe(device.host.address, (active) => {
-        if (!active && device.state === 'active') {
-          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
+      ping.sys.probe(device.host.address, (active, err) => {
+        if(err){
+           log(`Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
+           throw err;
+        }
+        
+        if (!active && device.state === 'active' && retryCount === 2) {
+          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable after three attempts.`);
 
           device.state = 'inactive';
+          retryCount = 0;
+        } else if (!active && device.state === 'active') {
+          if(broadlink.debug) log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable. (attempt ${retryCount})`);
+
+          retryCount += 1;
         } else if (active && device.state !== 'active') {
-          if (device.state === 'inactive') console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
+          if (device.state === 'inactive') log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
           device.state = 'active';
+          retryCount = 0;
+        } else if (active && retryCount !== 0 ) {
+          //Acive - reset retry counter
+          retryCount = 0;
         }
-      })
-    } catch (err) {}
+      }, {timeout: pingTimeout})
+    } catch (err) {
+      log(`Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
+    }
   }, pingFrequency);
 }
 
