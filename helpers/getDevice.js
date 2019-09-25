@@ -26,7 +26,7 @@ const startPing = (device, log) => {
           retryCount = 0;
           pingWait = 500;
         } else if (!active && device.state === 'active') {
-          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable. (attempt ${retryCount})`);
+          if (debug) log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable. (attempt ${retryCount})`);
 
           retryCount += 1;
           pingWait = pingFrequency;
