@@ -29,7 +29,7 @@ const startPing = (device, log) => {
           if(broadlink.debug) log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable. (attempt ${retryCount})`);
 
           retryCount += 1;
-          pingWait = pingFrequency;
+          pingWait = 500;
         } else if (active && device.state !== 'active') {
           if (device.state === 'inactive') log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
@@ -39,6 +39,7 @@ const startPing = (device, log) => {
         } else if (active && retryCount !== 0 ) {
           //Acive -reset retry counter
           retryCount = 0;
+          pingWait = pingFrequency;
         }
       }, {timeout: pingTimeout})
     } catch (err) {}
