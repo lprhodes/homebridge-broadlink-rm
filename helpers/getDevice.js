@@ -11,7 +11,11 @@ const startPing = (device, log) => {
 
   setInterval(() => {
     try {
-      ping.sys.probe(device.host.address, (active) => {
+      ping.sys.probe(device.host.address, (active, err) => {
+        if(err){
+           log(`Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
+        }
+        
         if (!active && device.state === 'active') {
           log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
 
