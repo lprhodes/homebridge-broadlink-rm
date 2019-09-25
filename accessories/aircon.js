@@ -256,6 +256,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
       //Set the mode
       state.targetHeatingCoolingState = HeatingCoolingStates[mode];
       this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
+      // If Temperature hasn't changed, send hex now
+      if(!hasTemperatureChanged) {
+        await this.performSend(hexData.data);
+      }
       this.log(`${name} sentMode (${mode})`);
       this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
       this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
