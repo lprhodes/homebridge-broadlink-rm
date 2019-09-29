@@ -2,7 +2,9 @@
 
 # About this fork
 
-This fork is built upon [AlexanderBabel's version](https://github.com/AlexanderBabel/homebridge-broadlink-rm) which adds TV support to [lprhodes Broadlink RM Plugin](https://github.com/lprhodes/homebridge-broadlink-rm). This fork also addresses an issue updating the temperature from file. Devices appear as "Not Repsonding" on read errors. This fork will use a temperature of 0 instead of hanging. Now updated to replciate the airconditioner-pro accessory:
+This fork adds support for the TV type indroduced in iOS 12.2. I'm only give support for this specific accessory type!
+
+This fork also addresses an issue updating the temperature from file. Devices appear as "Not Repsonding" on read errors. This fork will use a temperature of 0 instead of hanging. Now updated to replciate the airconditioner-pro accessory:
 
   1. Added configuration to read hex codes for {mode}{temp} e.g.
 ```  
@@ -23,7 +25,7 @@ This fork is built upon [AlexanderBabel's version](https://github.com/AlexanderB
 
 If you want to use this fork, use this command: 
 
-`npm i -g git+https://github.com/kiwi-cam/homebridge-broadlinkrm-acfile.git`
+`npm i -g homebridge-broadlink-rm-tv`
 
 
 # Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
@@ -38,4 +40,6 @@ This plugin allows you to control your RM Mini and RM Pro with HomeKit using the
 Full documentation can be found [here](https://lprhodes.github.io/slate/).
 
 ## Thanks
-Thanks to @tattn (https://github.com/tattn/homebridge-rm-mini3), @PJCzx (https://github.com/PJCzx/homebridge-thermostat) @momodalo (https://github.com/momodalo/broadlinkjs) whose time and effort got me started.
+Original: Thanks to @tattn (https://github.com/tattn/homebridge-rm-mini3), @PJCzx (https://github.com/PJCzx/homebridge-thermostat) @momodalo (https://github.com/momodalo/broadlinkjs) whose time and effort got me started.
+
+In this fork: Thanks to @kiwi-cam (https://github.com/kiwi-cam) and @Cloudore (https://github.com/Cloudore) for your work!
