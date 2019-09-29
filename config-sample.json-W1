@@ -171,6 +171,14 @@
         {
           "name":"Air Conditioner",
           "type":"air-conditioner",
+          "ignoreTemperatureWhenOff": true,
+          "temperatureUpdateFrequency": 10,
+          "w1DeviceID":"26-0321544e531ff",
+          "turnOnWhenOff": false,
+          "allowResend": true,
+          "preventResendHex": true,
+          "defaultCoolTemperature": 21,
+          "defaultHeatTemperature": 23,
           "data":{
             "off":"2600500000012...",
             "temperature30":{
@@ -186,6 +194,7 @@
         {
           "name":"Air Conditioner Advanced",
           "type":"air-conditioner",
+          "temperatureFilePath": "/var/tmp/inside.txt",
           "autoCoolTemperature": 23,
           "autoHeatTemperature": 14,
           "autoSwitch": "A/C Auto Switch",
