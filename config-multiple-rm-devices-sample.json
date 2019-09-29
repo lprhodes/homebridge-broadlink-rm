@@ -1,0 +1,40 @@
+{
+  "bridge":{
+    "name":"Homebridge",
+    "username":"CD:22:3D:E3:CE:30",
+    "port":51826,
+    "pin":"031-45-156"
+  },
+  "description":"Homebridge",
+  "accessories":[
+
+  ],
+  "platforms":[
+    {
+      "platform":"BroadlinkRM",
+      "name":"Broadlink RM",
+      "accessories":[
+        {
+          "name":"Auto-off Switch",
+          "type":"switch",
+          "host":"192.168.1.5",
+          "enableAutoOff": true,
+          "onDuration": 5,
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012..."
+          }
+        },
+        {
+          "name":"TV On/Off",
+          "type":"switch",
+          "host":"192.168.1.8",
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012..."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-const getDevice = require('./getDevice');
+const { getDevice } = require('./getDevice');
 
 let closeClient = null;
 let timeout = null;
@@ -6,21 +6,24 @@ let getDataTimeout = null;
 
 const stop = (log) => {
   // Reset existing learn requests
-  if (closeClient) {
-    closeClient();
-    closeClient = null;
+  if (!closeClient) return;
 
-    log(`Learn IR (stopped)`);
-  }
+  closeClient();
+  closeClient = null;
+
+  log(`\x1b[35m[INFO]\x1b[0m Learn Code (stopped)`);
 }
 
-const start = (host, callback, turnOffCallback, log) => {
+const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   stop()
 
   // Get the Broadlink device
-  const device = getDevice({ host, log, learnOnly: true })
-  if (!device) return;
-  if (!device.enterLearning) return log(`Learn IR (IR learning not supported for device at ${host})`);
+  const device = getDevice({ host, log, learnOnly: true });
+  if (!device) {
+    return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (Couldn't learn code, device not found)`);
+  }
+
+  if (!device.enterLearning) return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (IR learning not supported for device at ${host})`);
 
   let onRawData;
 
@@ -32,37 +35,42 @@ const start = (host, callback, turnOffCallback, log) => {
     getDataTimeout = null;
 
     device.removeListener('rawData', onRawData);
+    device.cancelLearn();
   };
 
   onRawData = (message) => {
+    if (!closeClient) return;
+
     const hex = message.toString('hex');
-    log(`Learn IR (learned hex code: ${hex})`);
-    log(`Learn IR (complete)`);
+    log(`\x1b[35m[RESULT]\x1b[0m Learn Code (learned hex code: ${hex})`);
+    log(`\x1b[35m[INFO]\x1b[0m Learn Code (complete)`);
 
     closeClient();
-    closeClient = null
 
-    turnOffCallback()
+    turnOffCallback();
   };
 
   device.on('rawData', onRawData);
 
   device.enterLearning()
-  log(`Learn IR (ready)`);
+  log(`Learn Code (ready)`);
 
-  callback();
+  if (callback) callback();
 
   getDataTimeout = setTimeout(() => {
     getData(device);
   }, 1000)
 
+  if (disableTimeout) return;
+
   // Timeout the client after 10 seconds
   timeout = setTimeout(() => {
-    log('Learn IR (stopped - 10s timeout)')
-    closeClient()
-    closeClient = null
+    log('\x1b[35m[INFO]\x1b[0m Learn Code (stopped - 10s timeout)');
+    device.cancelLearn();
 
-    turnOffCallback()
+    closeClient();
+
+    turnOffCallback();
   }, 10000); // 10s
 }
 
@@ -74,7 +82,7 @@ const getData = (device) => {
 
   getDataTimeout = setTimeout(() => {
     getData(device);
-  }, 1000)
+  }, 1000);
 }
 
 module.exports = { start, stop }

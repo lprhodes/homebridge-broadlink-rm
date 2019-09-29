@@ -1,70 +1,83 @@
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const sendData = require('../helpers/sendData');
-const BroadlinkRMAccessory = require('./accessory');
+const delayForDuration = require('../helpers/delayForDuration');
+const SwitchAccessory = require('./switch');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
-class SwitchRepeatAccessory extends BroadlinkRMAccessory {
+class SwitchRepeatAccessory extends SwitchAccessory {
+
+  checkStateWithPing () { }
+
+  setDefaults () {
+    super.setDefaults();
+
+    const { config } = this;
+
+    config.interval = config.interval || 1;
+    config.sendCount = config.sendCount || 1;
+  }
+
+  reset () {
+    super.reset();
+
+    // Clear Timeouts
+    if (this.intervalTimeoutPromise) {
+      this.intervalTimeoutPromise.cancel();
+      this.intervalTimeoutPromise = null;
+    }
+  }
 
   async setSwitchState (hexData) {
-    const { host } = this;
+    await catchDelayCancelError(async () => { 
+      this.reset();
 
-    if (this.switchState) {
-      this.performSend(host, hexData);
-    } else {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
+      if (!hexData) {
+        this.checkAutoOnOff();
 
-      this.sendCount = 0;
-    }
-  }
-
-  performSend (host, hexData) {
-    const { config, log } = this;
-    let { disableAutomaticTurnOff, interval, sendCount } = config;
-
-    this.sendCount = this.sendCount || 0;
-    interval = interval || 1;
-
-    sendData({ host, hexData, log });
-
-    this.sendCount++;
-
-    if (this.sendCount >= sendCount) {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
-
-      this.sendCount = 0;
-
-      if (!disableAutomaticTurnOff) {
-        setTimeout(() => {
-          this.switchService.setCharacteristic(Characteristic.On, 0);
-        }, 100);
+        return;
       }
 
-      return;
-    }
+      const { config, host, log, name, state, debug } = this;
+      let { interval, onSendCount, offSendCount, sendCount  } = config;
 
-    this.performSendTimeout = setTimeout(() => {
-      this.performSend(host, hexData);
-    }, interval * 1000);
+      if (state.switchState && onSendCount) sendCount = onSendCount;
+      if (!state.switchState && offSendCount) sendCount = offSendCount;
+    
+      // Itterate through each hex config in the array
+      for (let index = 0; index < sendCount; index++) {
+        sendData({ host, hexData, log, name, debug });
+
+        if (index < sendCount - 1) {
+          this.intervalTimeoutPromise = delayForDuration(interval);
+          await this.intervalTimeoutPromise;
+        }
+      }
+
+      this.checkAutoOnOff();
+    })
   }
 
-  getServices () {
-    const services = super.getServices();
-    const { data, name } = this;
+  setupServiceManager () {
+    const { data, log, name, config, serviceManagerType } = this;
 
-    const service = new Service.Switch(name);
-    this.addNameService(service);
+    setTimeout(() => {
+      log(`\x1b[33m[Warning] \x1b[0m${name}: The "switch-repeat" accessory is now deprecated and shall be removed in the future. Check out the updated "switch" documentation at http://github.com/lprhodes/homebridge-broadlink-rm`);
+    }, 1600)
 
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.On,
-      propertyName: 'switchState',
-      onHex: data,
-      setValuePromise: this.setSwitchState.bind(this)
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
+
+    this.serviceManager.addToggleCharacteristic({
+      name: 'switchState',
+      type: Characteristic.On,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        onData: (typeof data === 'object') ? data.on : data,
+        offData: (typeof data === 'object') ? data.off : undefined,
+        setValuePromise: this.setSwitchState.bind(this)
+      }
     });
-
-    services.push(service);
-
-    this.switchService = service;
-
-    return services;
   }
 }
 

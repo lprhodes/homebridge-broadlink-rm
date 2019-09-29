@@ -1,73 +1,87 @@
+const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const sendData = require('../helpers/sendData');
-const BroadlinkRMAccessory = require('./accessory');
+const delayForDuration = require('../helpers/delayForDuration')
+const SwitchAccessory = require('./switch');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
-class SwitchMultiAccessory extends BroadlinkRMAccessory {
+class SwitchMultiAccessory extends SwitchAccessory {
 
-  async setSwitchState () {
-    const { data, host } = this;
+  constructor (log, config = {}, serviceManagerType) {    
+    super(log, config, serviceManagerType);
 
-    this.sendIndex = this.sendIndex || 0
+    const { data } = this
 
-    if (this.switchState) {
-      this.performSend(host, data);
-    } else {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout)
+    if (!Array.isArray(data)) return log('The "switch-multi" type requires the config value for "data" to be an array of hex codes.')
+  }
 
-      this.sendIndex = 0
+  checkStateWithPing () { }
+
+  setDefaults () {
+    super.setDefaults();
+
+    const { config } = this;
+
+    config.interval = config.interval || 1;
+  }
+
+  reset () {
+    super.reset();
+
+    // Clear Timeouts
+    if (this.intervalTimeoutPromise) {
+      this.intervalTimeoutPromise.cancel();
+      this.intervalTimeoutPromise = null;
     }
   }
 
-  performSend (host, hexData) {
-    const { config, log } = this;
-    let { disableAutomaticTurnOff, interval, sendCount } = config;
+  async setSwitchState (hexData) {
+    const { config, host, log, name, state, debug } = this;
+    let { interval } = config;
 
-    if (!Array.isArray(hexData)) return log('The "switch-multi" type requires the config value for "data" an array of hex strings.')
-
-    if (!interval) interval = 1;
-
-    sendData({ host, hexData: hexData[this.sendIndex], log });
-
-    if (this.sendIndex >= hexData.length -1) {
-      if (this.performSendTimeout) clearTimeout(this.performSendTimeout);
-
-      this.sendIndex = 0;
-
-      if (!disableAutomaticTurnOff) {
-        setTimeout(() => {
-          this.switchService.setCharacteristic(Characteristic.On, 0);
-        }, 100);
-      }
+    if (!hexData) {
+      this.checkAutoOnOff();
 
       return;
     }
+    
+    await catchDelayCancelError(async () => { 
+      // Itterate through each hex config in the array
+      for (let index = 0; index < hexData.length; index++) {
+        const currentHexData = hexData[index]
 
-    this.performSendTimeout = setTimeout(() => {
-      this.sendIndex++;
+        sendData({ host, hexData: currentHexData, log, name, debug });
 
-      this.performSend(host, hexData);
-    }, interval * 1000);
-  }
-
-  getServices () {
-    const services = super.getServices();
-    const { data, name } = this;
-
-    const service = new Service.Switch(name);
-    this.addNameService(service);
-
-    this.createToggleCharacteristic({
-      service,
-      characteristicType: Characteristic.On,
-      propertyName: 'switchState',
-      onHex: data,
-      setValuePromise: this.setSwitchState.bind(this)
+        if (index < currentHexData.length - 1) {
+          this.intervalTimeoutPromise = delayForDuration(interval);
+          await this.intervalTimeoutPromise;
+        }
+      }
     })
 
-    services.push(service);
+    this.checkAutoOnOff();
+  }
 
-    this.switchService = service;
+  setupServiceManager () {
+    const { data, log, name, config, serviceManagerType } = this;
 
-    return services;
+    setTimeout(() => {
+      log(`\x1b[33m[Warning] \x1b[0m${name}: The "switch-multi" accessory is now deprecated and shall be removed in the future. Check out the updated "switch" documentation at http://github.com/lprhodes/homebridge-broadlink-rm`);
+    }, 1600)
+    
+    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
+
+    this.serviceManager.addToggleCharacteristic({
+      name: 'switchState',
+      type: Characteristic.On,
+      getMethod: this.getCharacteristicValue,
+      setMethod: this.setCharacteristicValue,
+      bind: this,
+      props: {
+        onData: Array.isArray(data) ? data : data.on,
+        offData: Array.isArray(data) ? undefined : data.off,
+        setValuePromise: this.setSwitchState.bind(this)
+      }
+    });
   }
 }
 

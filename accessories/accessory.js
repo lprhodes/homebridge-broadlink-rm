@@ -1,85 +1,83 @@
+const uuid = require('uuid');
+
+const { HomebridgeAccessory } = require('homebridge-platform-helper');
+
 const sendData = require('../helpers/sendData');
+const delayForDuration = require('../helpers/delayForDuration');
+const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
-class BroadlinkRMAccessory {
+class BroadlinkRMAccessory extends HomebridgeAccessory {
 
-  constructor (log, config = {}) {
-    const { host, name, data } = config;
+  constructor (log, config = {}, serviceManagerType) {
+    if (!config.name) config.name = "Unknown Accessory"
 
-    this.log = log;
-    this.config = config;
+    config.resendDataAfterReload = config.resendHexAfterReload;
 
-    this.host = host;
-    this.name = name;
-    this.data = data;
+    super(log, config, serviceManagerType);
+    if (config.debug) this.debug = true
+
+
+    this.manufacturer = 'Broadlink';
+    this.model = 'RM Mini or Pro';
+    this.serialNumber = uuid.v4();
   }
 
-  identify (callback) {
-    this.log(`Identify requested for ${this.name}`);
-
-    callback();
+  performSetValueAction ({ host, data, log, name, debug }) {
+    sendData({ host, hexData: data, log, name, debug });
   }
+  reset () {
+    // Clear Multi-hex timeouts
+    if (this.intervalTimeoutPromise) {
+      this.intervalTimeoutPromise.cancel();
+      this.intervalTimeoutPromise = null;
+    }
 
-  getName (name, callback) {
-		this.log(`getName: ${name}`);
-
-		callback(null, name);
-	}
-
-  addNameService (service) {
-    const { name } = this
-
-    service.getCharacteristic(Characteristic.Name).on('get', this.getName.bind(this, name));
-  }
-
-  async setCharacteristicValue (props, on, callback) {
-    try {
-      const { propertyName, onHex, offHex, setValuePromise } = props;
-      const { host, log } = this;
-
-      const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-      log(`set${capitalizedPropertyName}: ${on}`);
-
-      this[propertyName] = on;
-
-      const hexData = on ? onHex : offHex;
-
-      if (setValuePromise) {
-        await setValuePromise(hexData);
-      } else if (hexData) {
-        sendData({ host, hexData, log });
-      }
-
-      callback(null, this[propertyName]);
-    } catch (err) {
-      console.log('setCharacteristicValue err', err)
-
-      callback(err)
+    if (this.pauseTimeoutPromise) {
+      this.pauseTimeoutPromise.cancel();
+      this.pauseTimeoutPromise = null;
     }
   }
 
-  getCharacteristicValue (propertyName, callback) {
-    const { log } = this;
+  async performSend (data, actionCallback) {
+    const { debug, config, host, log, name } = this;
 
-    const capitalizedPropertyName = propertyName.charAt(0).toUpperCase() + propertyName.slice(1);
-    log(`get${capitalizedPropertyName}: ${this[propertyName] || 0}`);
+    if (typeof data === 'string') {
+      sendData({ host, hexData: data, log, name, debug });
 
-    callback(null, this[propertyName]);
+      return;
+    }
+
+    await catchDelayCancelError(async () => {
+      // Itterate through each hex config in the array
+      for (let index = 0; index < data.length; index++) {
+        const { pause } = data[index];
+
+        await this.performRepeatSend(data[index], actionCallback);
+
+        if (pause) {
+          this.pauseTimeoutPromise = delayForDuration(pause);
+          await this.pauseTimeoutPromise;
+        }
+      }
+    });
   }
 
-  createToggleCharacteristic ({ service, characteristicType, onHex, offHex, propertyName, setValuePromise }) {
-    service.getCharacteristic(characteristicType)
-      .on('set', this.setCharacteristicValue.bind(this, { propertyName, onHex, offHex, setValuePromise }))
-      .on('get', this.getCharacteristicValue.bind(this, propertyName));
-  }
+  async performRepeatSend (parentData, actionCallback) {
+    const { host, log, name, debug } = this;
+    let { data, interval, sendCount } = parentData;
 
-  getServices () {
-    const informationService = new Service.AccessoryInformation();
-    informationService
-      .setCharacteristic(Characteristic.Manufacturer, 'Broadlink')
-      .setCharacteristic(Characteristic.Model, 'RM Mini or Pro')
-      .setCharacteristic(Characteristic.SerialNumber, this.host);
+    sendCount = sendCount || 1
+    if (sendCount > 1) interval = interval || 0.1;
 
-    return [ informationService ];
+    // Itterate through each hex config in the array
+    for (let index = 0; index < sendCount; index++) {
+      sendData({ host, hexData: data, log, name, debug });
+
+      if (interval && index < sendCount - 1) {
+        this.intervalTimeoutPromise = delayForDuration(interval);
+        await this.intervalTimeoutPromise;
+      }
+    }
   }
 }
 
