@@ -1,6 +1,6 @@
 {
-  "name": "homebridge-broadlink-rm-tv",
-  "version": "3.5.7",
+  "name": "homebridge-broadlink-rm-acfile",
+  "version": "1.3.0",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "scripts": {
@@ -17,11 +17,11 @@
     "homebridge": ">=0.2.0"
   },
   "author": {
-    "name": "AlexanderBabel"
+    "name": "kiwi-cam"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:AlexanderBabel/homebridge-broadlink-rm.git"
+    "url": "git@github.com:kiwi-cam/homebridge-broadlink-rm-acfile.git"
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.6.0",

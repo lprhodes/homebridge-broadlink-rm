@@ -1,9 +1,30 @@
-# Homebridge Broadlink RM [TV Fork]
+# Homebridge Broadlink RM [TV+AC File Fork]
 
 # About this fork
-This fork adds support for the TV type indroduced in iOS 12.2. I'm only give support for this specific accessory type! If you want to use this fork, use this command:
 
-`npm i -g homebridge-broadlink-rm-tv`
+This fork is built upon [AlexanderBabel's version](https://github.com/AlexanderBabel/homebridge-broadlink-rm) which adds TV support to [lprhodes Broadlink RM Plugin](https://github.com/lprhodes/homebridge-broadlink-rm). This fork also addresses an issue updating the temperature from file. Devices appear as "Not Repsonding" on read errors. This fork will use a temperature of 0 instead of hanging. Now updated to replciate the airconditioner-pro accessory:
+
+  1. Added configuration to read hex codes for {mode}{temp} e.g.
+```  
+	"data":{
+  	"off":"2600500000012...",
+    "heat30":{
+    	"data":"2600500000012..."
+    },
+    "cool16":{
+    	"data":"2600500000012..."
+    }
+  }
+```
+2. Added support for Raspberry Pi Wire-1 thermometers (i.e. ds18b20). You can find your devices ID using the command `ls /sys/bus/w1/devices`. Then update your air-conditioner config to include (using the device ID):
+```
+"w1DeviceID":"28-0321544e531ff",
+```
+
+If you want to use this fork, use this command: 
+
+`npm i -g git+https://github.com/kiwi-cam/homebridge-broadlinkrm-acfile.git`
+
 
 # Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
 
@@ -11,19 +32,6 @@ This fork adds support for the TV type indroduced in iOS 12.2. I'm only give sup
 Welcome to the Broadlink RM Mini and Broadlink RM Pro plugin for [Homebridge](https://github.com/nfarina/homebridge).
 
 This plugin allows you to control your RM Mini and RM Pro with HomeKit using the Home app and Siri.
-
-
-## Like this plugin?
-
-If you like this plugin and want to show your support then please star the Github repo, or better yet; buy me a drink using [Paypal](https://paypal.me/lprhodes) or [crypto currency](https://goo.gl/bEn1RW).
-
-Working on open source projects like this is full-time for me so every bit helps.
-
-Thank you, sincerely!
-
-## Newsletter
-
-You can keep informed about HomeKit, homebridge and homebridge plugins by subscribing to my [Works with](http://workswith.io) newsletter.
 
 ## Documentation
 
