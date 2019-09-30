@@ -8,8 +8,8 @@ This fork also addresses an issue updating the temperature from file. Devices ap
 
   1. Added configuration to read hex codes for {mode}{temp} e.g.
 ```  
-	"data":{
-  	"off":"2600500000012...",
+  "data":{
+    "off":"2600500000012...",
     "heat30":{
     	"data":"2600500000012..."
     },
