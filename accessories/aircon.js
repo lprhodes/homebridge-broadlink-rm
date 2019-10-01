@@ -218,7 +218,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         await this.performSend(data.cool);        
       } else if (data.auto && mode === 'auto'){
         await this.performSend(data.auto);
-      } else {
+      } else if (hexData) {
         //Just send the provided temperature hex if node mode codes are set
         await this.performSend(hexData);
       }
