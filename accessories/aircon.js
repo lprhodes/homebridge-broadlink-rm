@@ -186,12 +186,18 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       return;
     }
+    
+    if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
+      
+    // If the air-conditioner is turned off then turn it on first and try this again
+    if (this.checkTurnOnWhenOff()) {
+      this.turnOnWhenOffDelayPromise = delayForDuration(.3);
+      await this.turnOnWhenOffDelayPromise
+    } 
 
     // Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
     if (replaceAutoMode && targetHeatingCoolingState === 'auto') {
       log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
-
-      if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
       this.updateServiceTargetHeatingCoolingState(HeatingCoolingStates[replaceAutoMode]);
 
       return;
@@ -200,8 +206,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     let temperature = state.targetTemperature;
     let mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
     
-    if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
-
     if (state.currentHeatingCoolingState !== state.targetHeatingCoolingState){
       // Selecting a heating/cooling state allows a default temperature to be used for the given state.
       if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.HEAT) {
@@ -240,12 +244,6 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { preventResendHex, defaultCoolTemperature, heatTemperature, ignoreTemperatureWhenOff, sendTemperatureOnlyWhenOff } = config;
 
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Potential sendTemperature (${temperature})`);
-
-    // If the air-conditioner is turned off then turn it on first and try this again
-    if (this.checkTurnOnWhenOff()) {
-      this.turnOnWhenOffDelayPromise = delayForDuration(.3);
-      await this.turnOnWhenOffDelayPromise
-    }
 
     // Ignore Temperature if off, staying off - and set to ignore
     if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
@@ -311,9 +309,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { on } = data;
 
     if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && config.turnOnWhenOff) {
-      log(`${name} sendTemperature (sending "on" hex before sending temperature)`);
+      log(`${name} sending "on" hex before sending temperature`);
 
-      if (on) await this.performSend(on);
+      if (on) {
+        await this.performSend(on);
+      } else {
+        log(`\x1b[31m[CONFIG ERROR] \x1b[0m ${name} No On Hex configured, but turnOnWhenOff enabled`);
+      }
 
       return true;
     }
