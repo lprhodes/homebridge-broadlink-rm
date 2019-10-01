@@ -1,6 +1,6 @@
 {
   "name": "homebridge-broadlink-rm-tv",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "scripts": {
