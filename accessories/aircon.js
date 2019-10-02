@@ -347,8 +347,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     log(`${name} monitorTemperature`);
 
-    device.on('temperature', this.onTemperature.bind(this));
-    device.checkTemperature();
+    // this call appears to be creating duplicate calls and delaying status refreshes
+    // device.on('temperature', this.onTemperature.bind(this));
+    // device.checkTemperature();
 
     this.updateTemperatureUI();
     if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
