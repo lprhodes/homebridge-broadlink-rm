@@ -186,29 +186,53 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       return;
     }
+    
+    if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
+      
+    // If the air-conditioner is turned off then turn it on first and try this again
+    if (this.checkTurnOnWhenOff()) {
+      this.turnOnWhenOffDelayPromise = delayForDuration(.3);
+      await this.turnOnWhenOffDelayPromise
+    } 
 
     // Perform the auto -> cool/heat conversion if `replaceAutoMode` is specified
     if (replaceAutoMode && targetHeatingCoolingState === 'auto') {
       log(`${name} setTargetHeatingCoolingState (converting from auto to ${replaceAutoMode})`);
-
-      if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
       this.updateServiceTargetHeatingCoolingState(HeatingCoolingStates[replaceAutoMode]);
 
       return;
     }
 
-    let temperature;
-    // Selecting a heating/cooling state allows a default temperature to be used for the given state.
-    if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.HEAT) {
-      temperature = defaultHeatTemperature;
-    } else if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.COOL) {
-      temperature = defaultCoolTemperature;
-    } else {
-      temperature = state.targetTemperature;
+    let temperature = state.targetTemperature;
+    let mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
+    
+    if (state.currentHeatingCoolingState !== state.targetHeatingCoolingState){
+      // Selecting a heating/cooling state allows a default temperature to be used for the given state.
+      if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.HEAT) {
+        temperature = defaultHeatTemperature;
+      } else if (state.targetHeatingCoolingState === Characteristic.TargetHeatingCoolingState.COOL) {
+        temperature = defaultCoolTemperature;
+      }
+      
+      //Set the mode, and send the mode hex
+      this.updateServiceCurrentHeatingCoolingState(state.targetHeatingCoolingState);
+      if (data.heat && mode === 'heat'){
+        await this.performSend(data.heat);        
+      } else if (data.cool && mode === 'cool'){
+        await this.performSend(data.cool);        
+      } else if (data.auto && mode === 'auto'){
+        await this.performSend(data.auto);
+      } else if (hexData) {
+        //Just send the provided temperature hex if node mode codes are set
+        await this.performSend(hexData);
+      }
+      
+      this.log(`${name} sentMode (${mode})`);
+      
+      //Force sending Temperature if temperature hasn't changed in the mode change
+      if (state.targetTemperature === temperature) this.sendTemperature(temperature);
     }
-
-    if (previousValue === Characteristic.TargetHeatingCoolingState.OFF) this.previouslyOff = true;
-
+    
     serviceManager.setCharacteristic(Characteristic.TargetTemperature, temperature);
     serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
     serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
@@ -221,19 +245,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Potential sendTemperature (${temperature})`);
 
-    // If the air-conditioner is turned off then turn it on first and try this again
-    if (this.checkTurnOnWhenOff()) {
-      this.turnOnWhenOffDelayPromise = delayForDuration(.3);
-      await this.turnOnWhenOffDelayPromise
-    }
-
     // Ignore Temperature if off, staying off - and set to ignore
     if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
       log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true`);
       return;
     }
 
-    const mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
+    let mode = HeatingCoolingConfigKeys[state.targetHeatingCoolingState];
     const { hexData, finalTemperature } = this.getTemperatureHexData(mode, temperature);
     state.targetTemperature = finalTemperature;
 
@@ -241,31 +259,10 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (hexData['pseudo-mode']){
       let mode = hexData['pseudo-mode'];
       if (mode) assert.oneOf(mode, [ 'heat', 'cool', 'auto' ], `\x1b[31m[CONFIG ERROR] \x1b[33mpseudo-mode\x1b[0m should be one of "heat", "cool" or "auto"`)
-    }
-
-    const hasTemperatureChanged = (previousTemperature !== finalTemperature);
-    const hasModeChanged = ((state.currentHeatingCoolingState !== state.targetHeatingCoolingState) || (HeatingCoolingStates[mode] !== state.currentHeatingCoolingState))
-
-    //If sendTemperatureOnlyWhenOff and Off, set hasModeChanged to false so we only send Temperature
-    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && sendTemperatureOnlyWhenOff) {
-      if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} sendTemperatureOnlyWhenOff - sending only Temperature`);
-      hasModeChanged = false;
-    }
-
-    if (hasModeChanged){
-      //Set the mode
-      state.targetHeatingCoolingState = HeatingCoolingStates[mode];
       this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates[mode]);
-      // If Temperature hasn't changed, send hex now
-      if(!hasTemperatureChanged) {
-        await this.performSend(hexData.data);
-      }
-      this.log(`${name} sentMode (${mode})`);
-      this.serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
-      this.serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
     }
- 
-    if(hasTemperatureChanged || (state.firstTemperatureUpdate && !preventResendHex)){
+
+    if((previousTemperature !== finalTemperature) || (state.firstTemperatureUpdate && !preventResendHex)){
       //Set the temperature
       await this.performSend(hexData.data);
       this.log(`${name} sentTemperature (${state.targetTemperature})`);
@@ -312,9 +309,13 @@ class AirConAccessory extends BroadlinkRMAccessory {
     const { on } = data;
 
     if (state.currentHeatingCoolingState === Characteristic.TargetHeatingCoolingState.OFF && config.turnOnWhenOff) {
-      log(`${name} sendTemperature (sending "on" hex before sending temperature)`);
+      log(`${name} sending "on" hex before sending temperature`);
 
-      if (on) await this.performSend(on);
+      if (on) {
+        await this.performSend(on);
+      } else {
+        log(`\x1b[31m[CONFIG ERROR] \x1b[0m ${name} No On Hex configured, but turnOnWhenOff enabled`);
+      }
 
       return true;
     }
@@ -330,8 +331,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     if (pseudoDeviceTemperature !== undefined) return;
 
-    //Force w1 and file devices to a 5 minute refresh
-    if (w1DeviceID || temperatureFilePath) config.temperatureUpdateFrequency = 300;
+    //Force w1 and file devices to a 10 minute refresh
+    if (w1DeviceID || temperatureFilePath) config.temperatureUpdateFrequency = 600;
 
     const device = getDevice({ host, log });
 
@@ -346,8 +347,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     log(`${name} monitorTemperature`);
 
-    device.on('temperature', this.onTemperature.bind(this));
-    device.checkTemperature();
+    // this call appears to be creating duplicate calls and delaying status refreshes
+    // device.on('temperature', this.onTemperature.bind(this));
+    // device.checkTemperature();
 
     this.updateTemperatureUI();
     if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
