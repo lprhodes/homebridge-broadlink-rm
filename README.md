@@ -35,6 +35,9 @@ key | description | example | default
 w1DeviceID (optional) | Updates device current temperature from a Raspberry Pi Wire-1 thermometers (i.e. ds18b20). Value is the Device ID | 28-0321544e531ff | 
 
 #### "data" key-value object
+The device can be setup to manage modes in one of two ways. If your AC unit accepts a hexcade to change mode only (without temperature details) you can set the mode keys (heat/cool) and then the temperatureX values to change the teperature. If your AC unit sends hexcodes that contain the mode AND temperature you can use the modeX codes alone.
+
+When the mode is changed the mode hexcodes are sent first - if set. Then the modeX code is sent to set the temperature, if it is set. If a matching modeX code can't be found, the temperatureX code is sent.  If neither of these temperature codes are found either defaultHeatTemperature or defaultCoolTemperature codes will be used depending on if the target Temperature is higher or lower than the current temperature.
 
 key | description
 --- | -----------
