@@ -246,7 +246,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} Potential sendTemperature (${temperature})`);
 
     // Ignore Temperature if off, staying off - and set to ignore
-    if (!state.currentHeatingCoolingState && !state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
+    if (!state.targetHeatingCoolingState && ignoreTemperatureWhenOff) {
       log(`${name} Ignoring sendTemperature due to "ignoreTemperatureWhenOff": true`);
       return;
     }
