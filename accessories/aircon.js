@@ -335,7 +335,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (pseudoDeviceTemperature !== undefined) return;
 
     //To avoid high disk IO set w1 and file temperature updates to a minimum of every 1 minute.
-    if ((w1DeviceID || temperatureFilePath) && config.temperatureUpdateFrequency < 60){
+    if (temperatureFilePath && config.temperatureUpdateFrequency < 60){
       log(`\x1b[36m[INFO]\x1b[0m ${name} temperatureUpdateFrequency below Disk IO minimum of 60, forced to 60 seconds.`);
       config.temperatureUpdateFrequency = 60;
     }
@@ -362,7 +362,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
   }
 
   onTemperature (temperature) {
-    const { config, host, log, name, state } = this;
+    const { config, host, log, debug, name, state } = this;
     const { minTemperature, maxTemperature, temperatureAdjustment } = config;
 
     // onTemperature is getting called twice. No known cause currently.
@@ -373,7 +373,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
     state.currentTemperature = temperature;
 
-    log(`${name} onTemperature (${temperature})`);
+    if (debug) log(`\x1b[34m[DEBUG]\x1b[0m ${name} onTemperature (${temperature})`);
 
     if (temperature > config.maxTemperature) {
       log(`\x1b[36m[INFO]\x1b[0m Reported temperature (${temperature}) is too high, setting to \x1b[33mmaxTemperature\x1b[0m (${maxTemperature}).`)
