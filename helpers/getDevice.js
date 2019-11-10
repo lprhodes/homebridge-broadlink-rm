@@ -13,8 +13,8 @@ const startPing = (device, log) => {
     try {
       ping.sys.probe(device.host.address, (active, err) => {
         if(err){
-           log(`Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
-           throw err;
+           log(`\x1b[31m[ERROR] \x1b[0m Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
+           active = false;
         }
         
         if (!active && device.state === 'active' && retryCount === 2) {
@@ -37,7 +37,7 @@ const startPing = (device, log) => {
         }
       }, {timeout: pingTimeout})
     } catch (err) {
-      log(`Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
+      log(`\x1b[31m[ERROR] \x1b[0m Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
     }
   }, pingFrequency);
 }
