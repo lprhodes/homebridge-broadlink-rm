@@ -18,7 +18,7 @@ const startPing = (device, log) => {
         }
         
         if (!active && device.state === 'active' && retryCount === 2) {
-          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable after three attempts.`);
+          log(`\x1b[31m[ERROR] \x1b[0m Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable after three attempts.`);
 
           device.state = 'inactive';
           retryCount = 0;
