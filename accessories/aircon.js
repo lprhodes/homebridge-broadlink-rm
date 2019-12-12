@@ -436,8 +436,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
     // If the device is no longer available, use previous tempeature
     const device = getDevice({ host, log });
 
-    if (!device || device.state === 'inactive') {
-      if (device && device.state === 'inactive') {
+    if (!device || device.state !== 'active') {
+      if (device && device.state !== 'active') {
         log(`${name} addTemperatureCallbackToQueue (device no longer active, using existing temperature)`);
       }
 

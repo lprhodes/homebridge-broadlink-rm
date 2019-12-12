@@ -51,7 +51,6 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
       // Itterate through each hex config in the array
       for (let index = 0; index < data.length; index++) {
         const { pause } = data[index];
-
         await this.performRepeatSend(data[index], actionCallback);
 
         if (pause) {
@@ -65,7 +64,7 @@ class BroadlinkRMAccessory extends HomebridgeAccessory {
   async performRepeatSend (parentData, actionCallback) {
     const { host, log, name, debug } = this;
     let { data, interval, sendCount } = parentData;
-
+    
     sendCount = sendCount || 1
     if (sendCount > 1) interval = interval || 0.1;
 

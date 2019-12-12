@@ -101,7 +101,7 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     const { data, host, log, name, debug } = this;
     this.stateChangeInProgress = true;
     this.reset();
-
+    
     if (hexData) await this.performSend(hexData);
     
     this.checkAutoOnOff();
