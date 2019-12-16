@@ -283,7 +283,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (!hexData) {
         // Mode based code not found, try mode-less
         this.log(`${name} No ${mode} HEX code found for ${temperature}`);
-        let hexData = data[`temperature${temperature}`];
+        hexData = data[`temperature${temperature}`];
     } else {
         if (hexData['pseudo-mode']) {
             this.log(`\x1b[36m[INFO] \x1b[0m${name} Configuration found for ${mode}${temperature} with pseudo-mode. Pseudo-mode will replace the configured mode.`);
