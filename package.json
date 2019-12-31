@@ -1,10 +1,10 @@
 {
   "name": "homebridge-broadlink-rm",
-  "version": "3.5.5",
+  "version": "4.0.0",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "scripts": {
-    "release": "release-it"
+    "release": "release-it",
   },
   "keywords": [
     "homebridge-plugin",
@@ -13,8 +13,8 @@
     "rm mini 3"
   ],
   "engines": {
-    "node": ">=7.6.0",
-    "homebridge": ">=0.2.0"
+    "node": ">=12.14.0",
+    "homebridge": ">=0.4.50"
   },
   "author": {
     "name": "lprhodes"
@@ -24,17 +24,17 @@
     "url": "git@github.com:lprhodes/homebridge-broadlink-rm.git"
   },
   "dependencies": {
-    "broadlinkjs-rm": "^0.6.0",
-    "chai": "^4.1.2",
-    "find-key": "^2.0.1",
-    "github-version-checker": "^1.2.0",
-    "homebridge-platform-helper": "1.1.1",
+    "broadlinkjs-rm": "0.7.0",
+    "find-key": "^2.1.3",
+    "github-version-checker": "^2.1.2",
+    "homebridge-platform-helper": "1.2.0",
     "ping": "^0.2.2",
-    "uuid": "^3.2.1"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "hap-nodejs": "^0.4.41",
-    "mocha": "^5.0.1",
-    "release-it": "^7.2.1"
+    "chai": "^4.2.0",
+    "hap-nodejs": "^0.5.4",
+    "mocha": "^6.2.2",
+    "release-it": "^12.4.3"
   }
 }

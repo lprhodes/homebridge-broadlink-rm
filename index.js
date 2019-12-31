@@ -1,10 +1,12 @@
 const BroadlinkRMPlatform = require('./platform')
 
 module.exports = (homebridge) => {
-  global.Service = homebridge.hap.Service;
-  global.Characteristic = homebridge.hap.Characteristic;
+  Accessory = homebridge.platformAccessory;
+  Service = homebridge.hap.Service;
+  Characteristic = homebridge.hap.Characteristic;
+  UUIDGen = homebridge.hap.uuid;
 
   BroadlinkRMPlatform.setHomebridge(homebridge);
 
-  homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform);
+  homebridge.registerPlatform("homebridge-broadlink-rm", "BroadlinkRM", BroadlinkRMPlatform, false);
 }

@@ -16,6 +16,9 @@ const log = (message, more) => {
 };
 
 const setup = (config) => {
+  if (!config) config = {}
+  if (!config.homebridgeDirectory) config.homebridgeDirectory = '/tmp/'
+
   const platform = new BroadlinkRMPlatform(log, config);
 
   const device = new FakeDevice()
