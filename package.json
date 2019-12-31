@@ -5,6 +5,7 @@
   "license": "ISC",
   "scripts": {
     "release": "release-it",
+    "test": "mocha"
   },
   "keywords": [
     "homebridge-plugin",
