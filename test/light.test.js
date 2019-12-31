@@ -621,7 +621,7 @@ describe('lightAccessory', () => {
 
     // Check that only one code has been sent
     sentHexCodeCount = device.getSentHexCodeCount();
-    expect(sentHexCodeCount).to.equal(2);
+    expect(sentHexCodeCount).to.equal(1);
   });
 
 
