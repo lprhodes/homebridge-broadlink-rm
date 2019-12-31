@@ -24,10 +24,6 @@
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
 
-"@types/node@^7.0.5":
-  version "7.0.57"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.57.tgz#eed149b2c75cdbd7b9823c3fd64ecddbdc68ed9c"
-
 JSONStream@^1.0.4:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.2.tgz#c102371b6ec3a7cf3b847ca00c20bb0fce4c6dea"
@@ -680,11 +676,9 @@ braces@^2.3.1:
     split-string "^3.0.2"
     to-regex "^3.0.1"
 
-broadlinkjs-rm@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/broadlinkjs-rm/-/broadlinkjs-rm-0.6.0.tgz#f173b87b8641657fcd830af368419da90f16bf7c"
-  dependencies:
-    "@types/node" "^7.0.5"
+broadlinkjs-rm@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/broadlinkjs-rm/-/broadlinkjs-rm-0.7.0.tgz#11cf66e8e558b34a8c2340375a3b7525bef295ba"
 
 browser-stdout@1.3.1:
   version "1.3.1"
@@ -1356,8 +1350,8 @@ extend-shallow@^3.0.0, extend-shallow@^3.0.2:
     is-extendable "^1.0.1"
 
 extend@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.1.tgz#a755ea7bc1adfcc5a31ce7e762dbaadc5e636444"
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
 
 external-editor@^2.1.0:
   version "2.1.0"
@@ -1743,9 +1737,9 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-homebridge-platform-helper@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.1.0.tgz#ad2d4a93468adf9b0cdb5e4328c055219f5b686f"
+homebridge-platform-helper@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/homebridge-platform-helper/-/homebridge-platform-helper-1.1.1.tgz#a7304e52ad1f95c32a4b27b0d7ec9a253a15fb91"
   dependencies:
     mqtt "^2.17.0"
     node-persist "^2.0.10"
