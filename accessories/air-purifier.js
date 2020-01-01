@@ -61,8 +61,7 @@ class AirPurifierAccessory extends FanAccessory {
       bind: this,
       props: {
         onData: targetStateManual,
-        offData: targetStateAuto,
-        setValuePromise: this.setSwitchState.bind(this)
+        offData: targetStateAuto
       }
     });
 
