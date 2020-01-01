@@ -14,7 +14,8 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
   setDefaults () {
     const { config } = this;
-    config.pingFrequency = config.pingFrequency || 1;
+    config.pingFrequency = config.pingFrequency || 2;
+    config.pingFrequency = Math.max(config.pingFrequency, 2);
 
     config.offDuration = config.offDuration || 60;
     config.onDuration = config.onDuration || 60;
@@ -69,17 +70,31 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   }
 
   pingCallback (active) {
-    const { config, state, serviceManager } = this;
+    let { debug, config, log, name, state, serviceManager } = this;
+    debug = true
+
+    const previousState = state.switchState
+    const newState = active ? true : false;
+
+    // Only update Homkit if the switch state haven changed.
+    const hasStateChanged = (previousState === newState)
+    if (debug) log(`${name} pingCallback: state ${hasStateChanged ? 'not changed, ignoring' : 'changed'} (device ${newState ? 'active' : 'inactive'})`);
+
+    if (hasStateChanged) return
 
     if (config.pingIPAddressStateOnly) {
-      state.switchState = active ? true : false;
+      if (debug) log(`${name} pingCallback: UI updated only`);
+
+      state.switchState = newState
+
       serviceManager.refreshCharacteristicUI(Characteristic.On);
 
       return;
     }
     
-    const value = active ? true : false;
-    serviceManager.setCharacteristic(Characteristic.On, value);
+    if (debug) log(`${name} pingCallback: UI updated and command sent`);
+
+    serviceManager.setCharacteristic(Characteristic.On, newState);
   }
 
   async setSwitchState (hexData) {

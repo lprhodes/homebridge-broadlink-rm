@@ -1,5 +1,3 @@
-const ping = require('ping');
-
 const pingIPAddress = function (ipAddress, interval, callback) {
   performPing(this.isActive, callback)
   

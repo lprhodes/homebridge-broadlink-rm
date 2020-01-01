@@ -1,26 +1,28 @@
-const ping = require('ping');
 const broadlink = require('./broadlink')
 const delayForDuration = require('./delayForDuration')
 
-const pingFrequency = 5000;
+const ping = require('net-ping').createSession({
+  retries: 3,
+  timeout: 1000
+});
+
+const pingFrequency = 5000; // 5s
 
 const startPing = (device, log) => {
   device.state = 'unknown';
 
   setInterval(() => {
-    try {
-      ping.sys.probe(device.host.address, (active) => {
-        if (!active && device.state === 'active') {
-          log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
+    ping.pingHost(device.host.address, (error, target) => {
+      if (error && device.state === 'active') {
+        log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
 
-          device.state = 'inactive';
-        } else if (active && device.state !== 'active') {
-          if (device.state === 'inactive') log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
+        device.state = 'inactive';
+      } else if (!error && device.state !== 'active') {
+        if (device.state === 'inactive') log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
-          device.state = 'active';
-        }
-      })
-    } catch (err) {}
+        device.state = 'active';
+      }
+    })
   }, pingFrequency);
 }
 
