@@ -681,7 +681,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       .setProps({
         minValue: minTemperature,
         maxValue: maxTemperature,
-        minStep: 1
+        minStep: 0.1
       });
   }
 }
