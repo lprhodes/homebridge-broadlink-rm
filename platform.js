@@ -20,6 +20,7 @@ const classTypes = {
   'fan': Accessory.Fan,
   'outlet': Accessory.Outlet,
   'light': Accessory.Light,
+  'window': Accessory.Window,
   'window-covering': Accessory.WindowCovering,
 }
 
