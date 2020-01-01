@@ -15,7 +15,7 @@ const startPing = (device, log) => {
 
           device.state = 'inactive';
         } else if (active && device.state !== 'active') {
-          if (device.state === 'inactive') console.log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
+          if (device.state === 'inactive') log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) has been re-discovered.`);
 
           device.state = 'active';
         }
