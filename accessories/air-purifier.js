@@ -34,7 +34,7 @@ class AirPurifierAccessory extends FanAccessory {
     } = data || {};
 
     // Defaults
-    if (showSwingMode !== false) showSwingMode = true
+    if (showLockPhysicalControls !== false) showLockPhysicalControls = true
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
     if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
 

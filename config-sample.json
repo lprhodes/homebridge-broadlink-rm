@@ -208,6 +208,7 @@
         {
           "name":"Air Purifier",
           "type":"air-purifier",
+          "showLockPhysicalControls": true,
           "data":{
             "on":"2600500000012...",
             "off":"2600500000012...",
