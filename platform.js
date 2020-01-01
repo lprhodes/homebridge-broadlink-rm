@@ -59,6 +59,9 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
     // Itterate through the config accessories
     config.accessories.forEach((accessory) => {
+      // Optionally hide the accessory from Homekit
+      if (accessory.ignore === true) return
+
       if (!accessory.type) throw new Error(`Each accessory must be configured with a "type". e.g. "switch"`);
 
       if (!classTypes[accessory.type]) throw new Error(`homebridge-broadlink-rm doesn't support accessories of type "${accessory.type}".`);
