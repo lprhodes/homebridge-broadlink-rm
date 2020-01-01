@@ -18,6 +18,8 @@ const stop = (log, device) => {
   if (currentDevice) currentDevice.cancelLearn();
 
   setTimeout(() => {
+  if (!closeClient) return;
+
     closeClient();
     closeClient = null;
     isClosingClient = false;
