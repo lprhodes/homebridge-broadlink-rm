@@ -9,6 +9,7 @@ const { discoverDevices } = require('./helpers/getDevice');
 
 const classTypes = {
   'air-conditioner': Accessory.AirCon,
+  'air-purifier': Accessory.AirPurifier,
   'learn-ir': Accessory.LearnCode,
   'learn-code': Accessory.LearnCode,
   'switch': Accessory.Switch,

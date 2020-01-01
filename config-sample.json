@@ -206,6 +206,29 @@
           "type":"switch"
         },
         {
+          "name":"Air Purifier",
+          "type":"air-purifier",
+          "data":{
+            "on":"2600500000012...",
+            "off":"2600500000012...",
+            "targetStateManual": "2600500000012...",
+            "targetStateAuto": "2600500000012...",
+            "lockControls": "2600500000012...",
+            "unlockControls": "2600500000012...",
+            "swingToggle": "2600500000012...",
+            "fanSpeed10": "2600500000012...",
+            "fanSpeed20": "2600500000012...",
+            "fanSpeed30": "2600500000012...",
+            "fanSpeed40": "2600500000012...",
+            "fanSpeed50": "2600500000012...",
+            "fanSpeed60": "2600500000012...",
+            "fanSpeed70": "2600500000012...",
+            "fanSpeed80": "2600500000012...",
+            "fanSpeed90": "2600500000012...",
+            "fanSpeed100": "2600500000012..."
+          }
+        },
+        {
           "name": "Fan",
           "type": "fan",
           "data": {

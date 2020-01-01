@@ -1,4 +1,5 @@
 const AirCon = require('./aircon');
+const AirPurifier = require('./air-purifier');
 const LearnCode = require('./learnCode');
 const Outlet = require('./outlet');
 const Switch = require('./switch');
@@ -14,6 +15,7 @@ const WindowCovering = require('./windowCovering');
 
 module.exports = {
   AirCon,
+  AirPurifier,
   LearnCode,
   Switch,
   SwitchMulti,
