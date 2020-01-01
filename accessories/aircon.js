@@ -335,6 +335,9 @@ class AirConAccessory extends BroadlinkRMAccessory {
     if (temperatureFilePath) return;
     if (pseudoDeviceTemperature !== undefined) return;
 
+    // Ensure a minimum of a 60 seconds update frequency 
+    const temperatureUpdateFrequency = Math.max(60, config.temperatureUpdateFrequency);
+
     const device = getDevice({ host, log });
 
     // Try again in a second if we don't have a device yet
@@ -352,7 +355,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
     device.checkTemperature();
 
     this.updateTemperatureUI();
-    if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), config.temperatureUpdateFrequency * 1000)
+    if (!config.isUnitTest) setInterval(this.updateTemperatureUI.bind(this), temperatureUpdateFrequency * 1000)
   }
 
   onTemperature (temperature) {
@@ -454,7 +457,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       if (temperature === undefined || temperature.trim().length === 0) {
         log(`\x1b[31m[ERROR] \x1b[0m${name} updateTemperatureFromFile (no temperature found)`);
         
-        return;
+        temperature = (state.currentTemperature || 0);
       }
 
       if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} updateTemperatureFromFile (file content: ${temperature.trim()})`);
