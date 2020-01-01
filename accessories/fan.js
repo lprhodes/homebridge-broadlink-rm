@@ -74,7 +74,7 @@ class FanAccessory extends SwitchAccessory {
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
     let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection } = config;
-    const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
+    const { on, off, clockwise, counterClockwise, swingToggle, swingOn, swingOff } = data || {};
 
     // Defaults
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
@@ -103,8 +103,8 @@ class FanAccessory extends SwitchAccessory {
         setMethod: this.setCharacteristicValue,
         bind: this,
         props: {
-          onData: swingToggle,
-          offData: swingToggle,
+          onData: swingOn || swingToggle,
+          offData: swingOff || swingToggle,
         }
       });
     }
