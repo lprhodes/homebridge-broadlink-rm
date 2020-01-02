@@ -1,14 +1,30 @@
 const broadlink = require('./broadlink')
 const delayForDuration = require('./delayForDuration')
 
-const ping = require('net-ping').createSession({
-  retries: 3,
-  timeout: 1000
-});
-
 const pingFrequency = 5000; // 5s
 
 const startPing = (device, log) => {
+  let ping
+
+  try {
+    const ping = require('net-ping').createSession({
+      retries: 3,
+      timeout: 1000
+    });
+  } catch (err) {
+
+    if (err.message.includes('was compiled against a different Node.js version')) {
+      log(`Broadlink RM won't detect device failures due to a version conflict with "net-ping". Please run "npm r homebridge-broadlink-rm -g && npm i homebridge-broadlink-rm -g" to resolve.`);
+    } else if (err.message.includes('Operation not permitted')) {
+      log(`Broadlink RM won't detect device failures due to a permissions issues with "net-ping".\n\nTo fix:\n\n 1. Run "which node" to determine your node path.\n2. Run "sudo setcap cap_net_raw+ep /path/to/node".\n\nNote: Replacing /path/to/node with the path you found in the first step.`);
+    } else {
+      log(err.message);
+    }
+
+    return
+  }
+
+
   device.state = 'unknown';
 
   setInterval(() => {
