@@ -7,7 +7,7 @@ const startPing = (device, log) => {
   let ping
 
   try {
-    const ping = require('net-ping').createSession({
+    ping = require('net-ping').createSession({
       retries: 3,
       timeout: 1000
     });
