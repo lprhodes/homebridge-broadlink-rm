@@ -30,7 +30,7 @@ const startPing = (device, log) => {
   setInterval(() => {
     ping.pingHost(device.host.address, (error, target) => {
       if (error && device.state === 'active') {
-        log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable.`);
+        log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable. (${target}, ${error.message})`);
 
         device.state = 'inactive';
       } else if (!error && device.state !== 'active') {
