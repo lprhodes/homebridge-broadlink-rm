@@ -9,7 +9,7 @@ const startPing = (device, log) => {
   try {
     ping = require('net-ping').createSession({
       retries: 3,
-      timeout: 1000
+      timeout: 2000
     });
   } catch (err) {
 
