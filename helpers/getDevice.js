@@ -3,8 +3,10 @@ const delayForDuration = require('./delayForDuration')
 
 const pingFrequency = 5000; // 5s
 
-const startPing = (device, log) => {
-  let ping
+let ping
+
+const setupPing = (log) => {
+  if (ping) return
 
   try {
     ping = require('net-ping').createSession({
@@ -12,7 +14,6 @@ const startPing = (device, log) => {
       timeout: 2000
     });
   } catch (err) {
-
     if (err.message.includes('was compiled against a different Node.js version')) {
       log(`Broadlink RM won't detect device failures due to a version conflict with "net-ping". Please run "npm r homebridge-broadlink-rm -g && npm i homebridge-broadlink-rm -g" to resolve.`);
     } else if (err.message.includes('Operation not permitted')) {
@@ -20,10 +21,13 @@ const startPing = (device, log) => {
     } else {
       log(err.message);
     }
-
-    return
   }
+}
 
+const startPing = (device, log) => {
+  setupPing()
+
+  if (!ping) return
 
   device.state = 'unknown';
 
