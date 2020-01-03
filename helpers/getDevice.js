@@ -25,7 +25,7 @@ const setupPing = (log) => {
 }
 
 const startPing = (device, log) => {
-  setupPing()
+  setupPing(log)
 
   if (!ping) return
 
