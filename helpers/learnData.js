@@ -17,13 +17,15 @@ const stop = (log) => {
 const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   stop()
 
+  log(`\x1b[35m[INFO]\x1b[0m Learn Code initializing (${host})`);
+
   // Get the Broadlink device
   const device = getDevice({ host, log, learnOnly: true });
   if (!device) {
     return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (Couldn't learn code, device not found)`);
   }
 
-  if (!device.enterLearning) return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (IR learning not supported for device at ${host})`);
+  if (!device.enterLearning) return log(`\x1b[31m[ERROR]\x1b[0m Learn Code (IR learning not supported for device at ${host}))`);
 
   let onRawData;
 
