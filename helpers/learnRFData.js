@@ -72,19 +72,17 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
     getDataTimeout = null;
 
     log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 1 of 2)`);
-
-    if (device.enterLearning) {
-      return device.enterLearning();
-    }
-
     log(`\x1b[35m[ACTION]\x1b[0m Keep holding that button!`)
 
     getDataTimeout2 = setTimeout(() => {
       getData2(device);
     }, 1000);
+
+
+    return device.enterLearning();
   };
 
-  onRawData2 = (message) => {
+  onRawData2 = () => {
     if (!closeClient) return;
 
     if (getDataTimeout2) clearTimeout(getDataTimeout2);
