@@ -83,7 +83,7 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
         log('');
         log(`**************************************************************************************************************`);
-        log(`You added more than TVs in your configuration!`);
+        log(`You added more than one TV in your configuration!`);
         log(`Due to a HomeKit limitation you need to add any additional TV to the Home app by using the Add Accessory function.`);
         log(`There you'll find your additional TVs and you can use the same PIN as you using for this HomeBridge instance.`);
         log(`**************************************************************************************************************`);
