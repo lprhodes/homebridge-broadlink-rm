@@ -1,6 +1,7 @@
 const fs = require('fs');
 const http = require('http');
 const unzip = require('unzip');
+const bonjour = require('bonjour')();
 
 const ServiceManager = require('../helpers/serviceManager');
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
@@ -18,28 +19,44 @@ class ImportAccessory extends BroadlinkRMAccessory {
         super(log, config, serviceManagerType);
 
         this.tmpPath = "/tmp/BLImport";
+        this.state = false;
+        this.bonjourBrowser = null;
     }
 
     toggleImport(props, on, callback) {
         if (on) {
-            let bonjour = require('bonjour')();
-
-            bonjour.find({type: 'http'}, this.serviceDiscovered.bind(this));
+            this.bonjourBrowser = bonjour.find({type: 'http'}, this.serviceDiscovered.bind(this));
+            this.state = true;
 
             console.log("Import listener started, go to the app and click on 'Share to other phones in WLAN'");
         } else {
-            callback();
+            if (this.bonjourBrowser !== null) {
+                this.bonjourBrowser.stop();
+            }
+            this.state = false;
+
+            console.log("Import listener stopped");
         }
+
+        callback();
     }
 
     serviceDiscovered(service) {
         if (service.port === 48815) {
+            const { config, serviceManager } = this;
+
             this
                 .initiateDownload("http://" + service.host + ":" + service.port)
                 .then(this.extractArchive.bind(this))
                 .then(this.extractCodes.bind(this))
-                .then(this.printCodes.bind(this))
+                .then((codes) => {
+                    serviceManager.setCharacteristic(Characteristic.On, false);
+
+                    console.log("Codes:", codes);
+                })
                 .catch((error) => {
+                    serviceManager.setCharacteristic(Characteristic.On, false);
+
                     console.log("Import failed: ", error);
                 });
         }
@@ -114,10 +131,6 @@ class ImportAccessory extends BroadlinkRMAccessory {
 
             resolve(hexCodes);
         })
-    }
-
-    printCodes(codes) {
-        console.log("Codes:", codes);
     }
 
     convertToHex(code) {
