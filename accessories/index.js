@@ -2,6 +2,7 @@ const AirCon = require('./aircon');
 const AirPurifier = require('./air-purifier');
 const HumidifierDehumidifier = require('./humidifier-dehumidifier');
 const LearnCode = require('./learnCode');
+const ImportAccessory = require('./importCode');
 const Outlet = require('./outlet');
 const Switch = require('./switch');
 const SwitchMulti = require('./switchMulti');
@@ -19,6 +20,7 @@ module.exports = {
   AirPurifier,
   HumidifierDehumidifier,
   LearnCode,
+  ImportAccessory,
   Switch,
   SwitchMulti,
   SwitchMultiRepeat,
