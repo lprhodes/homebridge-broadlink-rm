@@ -15,7 +15,7 @@ const stop = (log) => {
 }
 
 const start = (host, callback, turnOffCallback, log, disableTimeout) => {
-  stop()
+  stop(log);
 
   log(`\x1b[35m[INFO]\x1b[0m Learn Code initializing (${host})`);
 
