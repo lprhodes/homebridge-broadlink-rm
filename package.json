@@ -28,7 +28,7 @@
     "chai": "^4.2.0",
     "find-key": "^2.0.1",
     "github-version-checker": "^1.2.0",
-    "homebridge-platform-helper": "/Users/lukerhodes/Dev/homebridge-platform-helper",
+    "homebridge-platform-helper": "lprhodes/homebridge-platform-helper#feature/typescript",
     "net-ping": "^1.2.3",
     "ping": "^0.2.2",
     "uuid": "^3.3.3"
