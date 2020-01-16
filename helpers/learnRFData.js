@@ -43,7 +43,6 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   currentDevice = device
 
   let onRawData;
-  let onRawData2;
   let onRawData3;
 
   closeClient = (err) => {
@@ -61,7 +60,6 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
 
     device.removeListener('rawRFData', onRawData);
-    device.removeListener('rawRFData2', onRawData2);
     device.removeListener('rawData', onRawData3);
   };
 
@@ -78,25 +76,22 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
       getData2(device);
     }, 1000);
 
+    // Temporary work-around. 
+    setTimeout(() => {
+      log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 2 of 2)`)
+      log(`\x1b[35m[ACTION]\x1b[0m Press the RF button multiple times with a pause between them.`);
+
+      getDataTimeout3 = setTimeout(() => {
+        getData3(device);
+      }, 1000);
+    }, 8000)
+
 
     return device.enterLearning();
   };
 
-  onRawData2 = () => {
-    if (!closeClient) return;
-
-    if (getDataTimeout2) clearTimeout(getDataTimeout2);
-    getDataTimeout = null;
-
-    log(`\x1b[35m[INFO]\x1b[0m Scan RF (found frequency - 2 of 2)`)
-    log(`\x1b[35m[ACTION]\x1b[0m Press the RF button multiple times with a pause between them.`);
-
-    getDataTimeout3 = setTimeout(() => {
-      getData3(device);
-    }, 1000);
-  };
-
   onRawData3 = (message) => {
+    console.log('!!! onRawData3')
     if (!closeClient) return;
 
     const hex = message.toString('hex');
@@ -111,7 +106,6 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
   };
 
   device.on('rawRFData', onRawData);
-  device.on('rawRFData2', onRawData2);
   device.on('rawData', onRawData3);
 
   device.enterRFSweep();
@@ -136,7 +130,7 @@ const start = (host, callback, turnOffCallback, log, disableTimeout) => {
 
       turnOffCallback();
     }, 1000);
-  }, 20 * 1000); // 20s
+  }, 60 * 1000); // 20s
 }
 
 const getData = (device) => {
