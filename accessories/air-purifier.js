@@ -2,7 +2,7 @@ const FanAccessory = require('./fan');
 
 class AirPurifierAccessory extends FanAccessory {
 
-  serviceType () { return SService.AirPurifier }
+  serviceType () { return Service.AirPurifier }
 
   async setSwitchState (hexData, previousValue) {
     super.setSwitchState(hexData, previousValue);

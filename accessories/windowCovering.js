@@ -6,7 +6,7 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class WindowCoveringAccessory extends BroadlinkRMAccessory {
 
-  serviceType () { return ervice.WindowCovering }
+  serviceType () { return Service.WindowCovering }
 
   setDefaults () {
     const { config, state } = this;
