@@ -1,4 +1,3 @@
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const delayForDuration = require('../helpers/delayForDuration');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const ping = require('../helpers/ping')
@@ -6,8 +5,10 @@ const BroadlinkRMAccessory = require('./accessory');
 
 class SwitchAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config = {}, serviceManagerType) {    
-    super(log, config, serviceManagerType);
+  serviceType () { return Service.Switch }
+
+  constructor (log, config = {}) {   
+    super(log, config);
 
     if (!config.isUnitTest) this.checkPing(ping)
   }
@@ -139,13 +140,11 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     });
   }
 
-  setupServiceManager () {
-    const { data, name, config, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { data } = this;
     const { on, off } = data || { };
     
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,

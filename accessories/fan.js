@@ -1,8 +1,7 @@
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-
 const SwitchAccessory = require('./switch');
 
 class FanAccessory extends SwitchAccessory {
+  serviceType () { return Service.Thermostat }
 
   async setSwitchState (hexData, previousValue) {
     const { config, state, serviceManager } = this;
@@ -71,8 +70,8 @@ class FanAccessory extends SwitchAccessory {
     this.checkAutoOnOff();
   }
 
-  setupServiceManager () {
-    const { config, data, name, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { config, data } = this;
     let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection } = config;
     const { on, off, clockwise, counterClockwise, swingToggle, swingOn, swingOff } = data || {};
 
@@ -80,9 +79,7 @@ class FanAccessory extends SwitchAccessory {
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
     if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Fanv2, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,
@@ -96,7 +93,7 @@ class FanAccessory extends SwitchAccessory {
     });
 
     if (showSwingMode) {
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'swingMode',
         type: Characteristic.SwingMode,
         getMethod: this.getCharacteristicValue,
@@ -109,7 +106,7 @@ class FanAccessory extends SwitchAccessory {
       });
     }
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
       type: Characteristic.RotationSpeed,
       getMethod: this.getCharacteristicValue,
@@ -121,7 +118,7 @@ class FanAccessory extends SwitchAccessory {
     });
 
     if (showRotationDirection) {
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'rotationDirection',
         type: Characteristic.RotationDirection,
         getMethod: this.getCharacteristicValue,

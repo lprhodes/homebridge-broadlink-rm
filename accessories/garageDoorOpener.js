@@ -1,9 +1,10 @@
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
 class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
+
+  serviceType () { return Service.Thermostat }
 
   correctReloadedState (state) {
     state.doorTargetState = state.doorCurrentState;
@@ -117,13 +118,11 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   
   // Service Manager Setup
 
-  setupServiceManager () {
+  configureServiceManager (serviceManager) {
     const { data, name, serviceManagerType } = this;
     const { close, open, lock, unlock } = data || {};
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.GarageDoorOpener, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'doorCurrentState',
       type: Characteristic.CurrentDoorState,
       bind: this,
@@ -134,7 +133,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'doorTargetState',
       type: Characteristic.TargetDoorState,
       getMethod: this.getCharacteristicValue,
@@ -147,7 +146,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'lockCurrentState',
       type: Characteristic.LockCurrentState,
       bind: this,
@@ -158,7 +157,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'lockTargetState',
       type: Characteristic.LockTargetState,
       getMethod: this.getCharacteristicValue,

@@ -1,8 +1,8 @@
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-
 const FanAccessory = require('./fan');
 
 class HumidifierDehumidifierAccessory extends FanAccessory {
+  
+  serviceType () { return Service.HumidifierDehumidifier }
 
   setDefaults () {
     super.setDefaults();
@@ -53,8 +53,8 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     serviceManager.refreshCharacteristicUI(Characteristic.TargetRelativeHumidity);
   }
 
-  setupServiceManager () {
-    const { config, data, name, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { config, data } = this;
     let {
       showLockPhysicalControls,
       showSwingMode,
@@ -78,9 +78,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
     if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.HumidifierDehumidifier, this.log);
-    
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,
@@ -93,7 +91,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'currentRelativeHumidity',
       type: Characteristic.CurrentRelativeHumidity,
       getMethod: this.getCharacteristicValue,
@@ -102,7 +100,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       props: { }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'targetRelativeHumidity',
       type: Characteristic.TargetRelativeHumidity,
       getMethod: this.getCharacteristicValue,
@@ -112,7 +110,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     });
 
     
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'currentState',
       type: Characteristic.CurrentHumidifierDehumidifierState,
       getMethod: this.getCharacteristicValue,
@@ -121,7 +119,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       props: { }
     });
     
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'targetState',
       type: Characteristic.TargetHumidifierDehumidifierState,
       getMethod: this.getCharacteristicValue,
@@ -135,7 +133,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     });
 
     if (showLockPhysicalControls) {
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'lockPhysicalControls',
         type: Characteristic.LockPhysicalControls,
         getMethod: this.getCharacteristicValue,
@@ -149,7 +147,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
     }
 
     if (showSwingMode) {
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'swingMode',
         type: Characteristic.SwingMode,
         getMethod: this.getCharacteristicValue,
@@ -162,7 +160,7 @@ class HumidifierDehumidifierAccessory extends FanAccessory {
       });
     }
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
       type: Characteristic.RotationSpeed,
       getMethod: this.getCharacteristicValue,

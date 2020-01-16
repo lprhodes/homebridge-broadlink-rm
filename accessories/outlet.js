@@ -1,9 +1,9 @@
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 
-const delayForDuration = require('../helpers/delayForDuration')
 const SwitchAccessory = require('./switch');
 
 class OutletAccessory extends SwitchAccessory {
+
+  serviceType () { return Service.Outlet }
 
   pingCallback (active) {
     const { config, state, serviceManager } = this;
@@ -28,13 +28,11 @@ class OutletAccessory extends SwitchAccessory {
     callback(null, value)
   }
 
-  setupServiceManager () {
-    const { data, name, config, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { data } = this;
     const { on, off } = data || { };
-    
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Outlet, this.log);
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,
@@ -47,13 +45,13 @@ class OutletAccessory extends SwitchAccessory {
       }
     });
 
-    this.serviceManager.addSetCharacteristic({
+    serviceManager.addSetCharacteristic({
       name: 'outletInUse',
       type: Characteristic.OutletInUse,
       method: this.setOutletInUse.bind(this)
     });
 
-    this.serviceManager.addGetCharacteristic({
+    serviceManager.addGetCharacteristic({
       name: 'outletInUse',
       type: Characteristic.OutletInUse,
       method: this.getCharacteristicValue.bind(this, { propertyName: 'outletInUse' })

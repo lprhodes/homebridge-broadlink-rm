@@ -1,11 +1,12 @@
 const { assert } = require('chai');
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');;
 const delayForDuration = require('../helpers/delayForDuration');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError')
 
 const SwitchAccessory = require('./switch');
 
 class LightAccessory extends SwitchAccessory {
+  
+  serviceType () { return Service.Lightbulb }
 
   setDefaults () {
     super.setDefaults();
@@ -165,13 +166,11 @@ class LightAccessory extends SwitchAccessory {
     return foundValues
   }
 
-  setupServiceManager () {
-    const { data, name, config, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { data } = this;
     const { on, off } = data || { };
-    
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Lightbulb, this.log);
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,
@@ -184,7 +183,7 @@ class LightAccessory extends SwitchAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'brightness',
       type: Characteristic.Brightness,
       getMethod: this.getCharacteristicValue,
@@ -197,7 +196,7 @@ class LightAccessory extends SwitchAccessory {
     });
 
     if (this.dataKeys('hue').length > 0) {
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'hue',
         type: Characteristic.Hue,
         getMethod: this.getCharacteristicValue,
@@ -209,7 +208,7 @@ class LightAccessory extends SwitchAccessory {
         }
       });
 
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'saturation',
         type: Characteristic.Saturation,
         getMethod: this.getCharacteristicValue,

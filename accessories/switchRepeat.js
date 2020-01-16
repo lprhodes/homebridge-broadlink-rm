@@ -1,10 +1,11 @@
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const SwitchAccessory = require('./switch');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
 class SwitchRepeatAccessory extends SwitchAccessory {
+
+  serviceType () { return Service.Switch }
 
   checkStateWithPing () { }
 
@@ -57,16 +58,14 @@ class SwitchRepeatAccessory extends SwitchAccessory {
     })
   }
 
-  setupServiceManager () {
-    const { data, log, name, config, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { data, log, name, serviceManagerType } = this;
 
     setTimeout(() => {
       log(`\x1b[33m[Warning] \x1b[0m${name}: The "switch-repeat" accessory is now deprecated and shall be removed in the future. Check out the updated "switch" documentation at http://github.com/lprhodes/homebridge-broadlink-rm`);
     }, 1600)
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,

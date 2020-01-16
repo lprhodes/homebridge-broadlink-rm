@@ -4,15 +4,15 @@ const fs = require('fs');
 const findKey = require('find-key');
 
 const delayForDuration = require('../helpers/delayForDuration');
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const { getDevice } = require('../helpers/getDevice');
 const BroadlinkRMAccessory = require('./accessory');
 
 class AirConAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config = {}, serviceManagerType) {    
-    super(log, config, serviceManagerType);
+  serviceType () { return Service.Thermostat }
+
+  constructor (log, config = {}) {    
+    super(log, config);
 
     // Characteristic isn't defined until runtime so we set these the instance scope
     const HeatingCoolingStates = {
@@ -616,13 +616,11 @@ class AirConAccessory extends BroadlinkRMAccessory {
   
   // Service Manager Setup
 
-  setupServiceManager () {
-    const { config, name, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { config } = this;
     const { minTemperature, maxTemperature } = config;
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Thermostat, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'currentHeatingCoolingState',
       type: Characteristic.CurrentHeatingCoolingState,
       getMethod: this.getCharacteristicValue,
@@ -633,7 +631,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'targetTemperature',
       type: Characteristic.TargetTemperature,
       getMethod: this.getCharacteristicValue,
@@ -645,7 +643,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'targetHeatingCoolingState',
       type: Characteristic.TargetHeatingCoolingState,
       getMethod: this.getCharacteristicValue,
@@ -657,21 +655,21 @@ class AirConAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addGetCharacteristic({
+    serviceManager.addGetCharacteristic({
       name: 'currentTemperature',
       type: Characteristic.CurrentTemperature,
       method: this.getCurrentTemperature,
       bind: this
     })
 
-    this.serviceManager.addGetCharacteristic({
+    serviceManager.addGetCharacteristic({
       name: 'temperatureDisplayUnits',
       type: Characteristic.TemperatureDisplayUnits,
       method: this.getTemperatureDisplayUnits,
       bind: this
     })
 
-    this.serviceManager
+    serviceManager
       .getCharacteristic(Characteristic.TargetTemperature)
       .setProps({
         minValue: minTemperature,
@@ -679,7 +677,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
         minStep: 1
       });
 
-    this.serviceManager
+    serviceManager
       .getCharacteristic(Characteristic.CurrentTemperature)
       .setProps({
         minValue: minTemperature,

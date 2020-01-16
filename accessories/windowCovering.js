@@ -1,11 +1,12 @@
 const { assert } = require('chai');
 
 const delayForDuration = require('../helpers/delayForDuration');
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 const BroadlinkRMAccessory = require('./accessory');
 
 class WindowCoveringAccessory extends BroadlinkRMAccessory {
+
+  serviceType () { return ervice.WindowCovering }
 
   setDefaults () {
     const { config, state } = this;
@@ -196,12 +197,9 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
     });
   }
 
-  setupServiceManager () {
-    const { data, log, name, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.WindowCovering, log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'currentPosition',
       type: Characteristic.CurrentPosition,
       bind: this,
@@ -212,7 +210,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'positionState',
       type: Characteristic.PositionState,
       bind: this,
@@ -223,7 +221,7 @@ class WindowCoveringAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'targetPosition',
       type: Characteristic.TargetPosition,
       bind: this,
