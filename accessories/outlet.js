@@ -9,13 +9,14 @@ class OutletAccessory extends SwitchAccessory {
     const { config, state, serviceManager } = this;
     const newState = active ? true : false;
 
+    const previousState = state.outletInUse;
+
     // Only update Homkit if the switch state haven changed.
-    if (previousState === newState) return
+    if (previousState != undefined && previousState === newState) return
 
+    state.outletInUse = newState;
     if (config.pingIPAddressStateOnly) {
-      state.outletInUse = newState;
       serviceManager.refreshCharacteristicUI(Characteristic.OutletInUse)
-
       return
     }
     
