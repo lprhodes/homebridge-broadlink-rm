@@ -13,7 +13,7 @@ const sendData = async ({host, hexData, log, name, debug}) => {
   // Check for pronto code
   if (hexData.substring(0, 4) === '0000') {
     if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} sendHex (Converting Pronto code "${hexData}" to Broadlink code)`);
-    hexData = convertProntoCode(hexData);
+    hexData = convertProntoCode(hexData, log)
     if (debug) log(`\x1b[33m[DEBUG]\x1b[0m ${name} sendHex (Pronto code successfuly converted: "${hexData}")`);
 
     if (!hexData) {

@@ -5,11 +5,31 @@ const SwitchAccessory = require('./switch');
 class FanAccessory extends SwitchAccessory {
 
   async setSwitchState (hexData, previousValue) {
+    const { config, state, serviceManager } = this;
+
     if (!this.state.switchState) {
       this.lastFanSpeed = undefined;
     }
 
+    // Reset the fan speed back to the default speed when turned off
+    if (this.state.switchState === false && config && config.alwaysResetToDefaults) {
+      this.setDefaults();
+      serviceManager.setCharacteristic(Characteristic.RotationSpeed, state.fanSpeed);
+    }
+
     super.setSwitchState(hexData, previousValue);
+  }
+
+  setDefaults () {
+    super.setDefaults();
+  
+    let { config, state } = this;
+
+    // Reset the fan speed back to the default speed when turned off
+    // This will also be called whenever homebridge is restarted
+    if (config && config.alwaysResetToDefaults) {
+      state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
+    }
   }
 
   async setFanSpeed (hexData) {
@@ -30,7 +50,6 @@ class FanAccessory extends SwitchAccessory {
     })
 
     if (foundSpeeds.length === 0) {
-
       return log(`${name} setFanSpeed: No fan speed hex codes provided.`)
     }
 
@@ -55,7 +74,7 @@ class FanAccessory extends SwitchAccessory {
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
     let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection } = config;
-    const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
+    const { on, off, clockwise, counterClockwise, swingToggle, swingOn, swingOff } = data || {};
 
     // Defaults
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
@@ -84,8 +103,8 @@ class FanAccessory extends SwitchAccessory {
         setMethod: this.setCharacteristicValue,
         bind: this,
         props: {
-          onData: swingToggle,
-          offData: swingToggle,
+          onData: swingOn || swingToggle,
+          offData: swingOff || swingToggle,
         }
       });
     }

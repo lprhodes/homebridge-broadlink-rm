@@ -13,9 +13,9 @@ class TVAccessory extends BroadlinkRMAccessory {
 
   setDefaults() {
     const { config } = this;
-    config.pingFrequency = config.pingFrequency || 1;
     config.pingGrace = config.pingGrace || 10;
-
+    config.pingFrequency = Math.max(config.pingFrequency, 2);
+    
     config.offDuration = config.offDuration || 60;
     config.onDuration = config.onDuration || 60;
 
@@ -82,22 +82,37 @@ class TVAccessory extends BroadlinkRMAccessory {
     ping(pingIPAddress, pingFrequency, this.pingCallback.bind(this));
   }
 
-  pingCallback(active) {
-    const { config, state, serviceManager } = this;
-    
+  pingCallback (active) {
+    let { debug, config, log, name, state, serviceManager } = this;
+    //debug = true
+
+    const previousState = state.switchState
+    const newState = active ? true : false;
+
+    //Ping Grace period check
     if (this.stateChangeInProgress){ 
       return; 
     }
+    
+    // Only update Homkit if the switch state haven changed.
+    const hasStateChanged = (previousState === newState)
+    if (debug || !hasStateChanged) log(`${name} pingCallback: state ${hasStateChanged ? 'not changed, ignoring' : 'changed'} (device ${newState ? 'active' : 'inactive'})`);
 
+    if (hasStateChanged) return
+    
     if (config.pingIPAddressStateOnly) {
-      state.switchState = active ? true : false;
+      if (debug) log(`${name} pingCallback: UI updated only`);
+
+      state.switchState = newState
+
       serviceManager.refreshCharacteristicUI(Characteristic.Active);
 
       return;
     }
+    
+    if (debug) log(`${name} pingCallback: UI updated and command sent`);
 
-    const value = active ? true : false;
-    serviceManager.setCharacteristic(Characteristic.Active, value);
+    serviceManager.setCharacteristic(Characteristic.Active, newState);
   }
 
   async setSwitchState(hexData) {

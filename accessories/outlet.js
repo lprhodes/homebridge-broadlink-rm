@@ -1,4 +1,3 @@
-const ping = require('ping');
 const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 
 const delayForDuration = require('../helpers/delayForDuration')
@@ -8,16 +7,19 @@ class OutletAccessory extends SwitchAccessory {
 
   pingCallback (active) {
     const { config, state, serviceManager } = this;
+    const newState = active ? true : false;
+
+    // Only update Homkit if the switch state haven changed.
+    if (previousState === newState) return
 
     if (config.pingIPAddressStateOnly) {
-      state.outletInUse = active ? true : false;
+      state.outletInUse = newState;
       serviceManager.refreshCharacteristicUI(Characteristic.OutletInUse)
 
       return
     }
     
-    const value = active ? true : false;
-    serviceManager.setCharacteristic(Characteristic.OutletInUse, value);
+    serviceManager.setCharacteristic(Characteristic.OutletInUse, newState);
   }
 
   setOutletInUse (value, callback) {

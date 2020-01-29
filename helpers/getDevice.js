@@ -1,21 +1,46 @@
-const ping = require('ping');
 const broadlink = require('./broadlink')
 const delayForDuration = require('./delayForDuration')
 
-const pingFrequency = 5000;
 const pingTimeout = 3;
 const pingRetries = 3;
+const pingFrequency = 5000; // 5s
+
+let ping
+
+const setupPing = (log) => {
+  if (ping) return
+
+  try {
+    ping = require('net-ping').createSession({
+      retries: 3,
+      timeout: 2000
+    });
+  } catch (err) {
+    if (err.message.includes('was compiled against a different Node.js version')) {
+      log(`Broadlink RM won't detect device failures due to a version conflict with "net-ping". Please run "npm r homebridge-broadlink-rm -g && npm i homebridge-broadlink-rm -g" to resolve.`);
+    } else if (err.message.includes('Operation not permitted')) {
+      log(`Broadlink RM won't detect device failures due to a permissions issues with "net-ping".\n\nTo fix:\n\n 1. Run "which node" to determine your node path.\n2. Run "sudo setcap cap_net_raw+ep /path/to/node".\n\nNote: Replacing /path/to/node with the path you found in the first step.`);
+    } else {
+      log(err.message);
+    }
+  }
+}
 
 const startPing = (device, log) => {
+  setupPing(log)
+
+  if (!ping) return
+
   device.state = 'unknown';
   var retryCount = 0;
 
   setInterval(() => {
     try {
-      ping.sys.probe(device.host.address, (active, err) => {
+      ping.pingHost(device.host.address, (err, target) => {
         if(err){
-           log(`\x1b[31m[ERROR] \x1b[0m Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
-           active = false;
+          active = false;
+        }else{
+          active = true;
         }
         
         if(active){ 
@@ -27,12 +52,12 @@ const startPing = (device, log) => {
         }else{
           if(retryCount > pingRetries && device.state !== 'offline'){
             //Last attempt, mark offline
-            log(`\x1b[31m[ERROR] \x1b[0m Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable after three attempts.`);
+            log(`\x1b[31m[ERROR] \x1b[0m Broadlink RM device is no longer reachable after three attempts (${target}, ${err.message}).`);
 
             device.state = 'offline';
           }else if(retryCount <= pingRetries){
             //Inital Attempts
-            if(broadlink.debug) log(`Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}) is no longer reachable. (attempt ${retryCount})`);
+            if(broadlink.debug) log(`Broadlink RM device is no longer reachable. (${target}, ${err.message}, attempt: ${retryCount})`);
 
             device.state = 'inactive';
             retryCount += 1;
@@ -40,7 +65,7 @@ const startPing = (device, log) => {
         }     
       }, {timeout: pingTimeout})
     } catch (err) {
-      log(`\x1b[31m[ERROR] \x1b[0m Error pinging Broadlink RM device at ${device.host.address} (${device.host.macAddress || ''}): ${err}`);
+      log(`\x1b[31m[ERROR] \x1b[0m Error pinging Broadlink RM device (${target}, ${err.message})`);
     }
   }, pingFrequency);
 }
