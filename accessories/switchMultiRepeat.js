@@ -1,4 +1,3 @@
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const sendData = require('../helpers/sendData');
 const delayForDuration = require('../helpers/delayForDuration');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
@@ -7,8 +6,10 @@ const SwitchAccessory = require('./switch');
 
 class SwitchMultiAccessory extends SwitchAccessory {
 
-  constructor (log, config = {}, serviceManagerType) {
-    super(log, config, serviceManagerType);
+  serviceType () { return Service.Switch }
+
+  constructor (log, config = {}) {   
+    super(log, config);
 
     const { data } = this
 
@@ -90,16 +91,14 @@ class SwitchMultiAccessory extends SwitchAccessory {
     }
   }
 
-  setupServiceManager () {
-    const { data, log, name, config, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { data, log, name } = this;
 
     setTimeout(() => {
       log(`\x1b[33m[Warning] \x1b[0m${name}: The "switch-multi-repeat" accessory is now deprecated and shall be removed in the future. Check out the updated "switch" documentation at http://github.com/lprhodes/homebridge-broadlink-rm`);
     }, 1600)
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,

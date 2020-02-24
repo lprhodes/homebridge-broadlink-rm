@@ -1,20 +1,20 @@
 const learnData = require('../helpers/learnData');
 const learnRFData = require('../helpers/learnRFData');
-const ServiceManager = require('../helpers/serviceManager');
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 
 const BroadlinkRMAccessory = require('./accessory');
 
 class LearnIRAccessory extends BroadlinkRMAccessory {
 
-  constructor (log, config = {}, serviceManagerType) {    
+  serviceType () { return Service.Switch }
+
+  constructor (log, config = {}) {    
 
     // Set a default name for the accessory
     if (!config.name) config.name = 'Learn Code';
     config.persistState = false;
 
 
-    super(log, config, serviceManagerType);
+    super(log, config);
   }
 
   toggleLearning (props, on, callback) {
@@ -46,13 +46,8 @@ class LearnIRAccessory extends BroadlinkRMAccessory {
     }
   }
 
-  setupServiceManager () {
-    const { data, name, config, serviceManagerType } = this;
-    const { on, off } = data || { };
-
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Switch, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+  configureServiceManager (serviceManager) {
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,

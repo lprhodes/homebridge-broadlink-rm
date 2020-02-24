@@ -1,9 +1,10 @@
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError')
 
 class LockAccessory extends BroadlinkRMAccessory {
+
+  serviceType () { return Service.LockMechanism }
 
   correctReloadedState (state) {
     state.lockTargetState = state.lockCurrentState;
@@ -89,13 +90,11 @@ class LockAccessory extends BroadlinkRMAccessory {
   
   // Service Manager Setup
 
-  setupServiceManager () {
-    const { data, name, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { data } = this;
     const { lock, unlock } = data || {};
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.LockMechanism, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'lockCurrentState',
       type: Characteristic.LockCurrentState,
       bind: this,
@@ -106,7 +105,7 @@ class LockAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'lockTargetState',
       type: Characteristic.LockTargetState,
       getMethod: this.getCharacteristicValue,

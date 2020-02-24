@@ -1,14 +1,17 @@
-const ping = require('ping');
+let ping
 
 const pingIPAddress = (ipAddress, interval, callback) => {
+  if (!ping) {
+    ping = require('net-ping').createSession({
+      retries: 0,
+      timeout: 1000
+    });
+  }
+
   setInterval(() => {
-    try {
-      ping.sys.probe(ipAddress, (isActive) => {
-        callback(isActive)
-      })
-    } catch (err) {
-      callback(false)
-    }
+    ping.pingHost(ipAddress, (error) => {
+      callback(!error)
+    })
   }, interval * 1000);
 }
 

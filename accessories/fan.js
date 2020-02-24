@@ -1,15 +1,34 @@
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
-
 const SwitchAccessory = require('./switch');
 
 class FanAccessory extends SwitchAccessory {
+  serviceType () { return Service.Thermostat }
 
   async setSwitchState (hexData, previousValue) {
+    const { config, state, serviceManager } = this;
+
     if (!this.state.switchState) {
       this.lastFanSpeed = undefined;
     }
 
+    // Reset the fan speed back to the default speed when turned off
+    if (this.state.switchState === false && config && config.alwaysResetToDefaults) {
+      this.setDefaults();
+      serviceManager.setCharacteristic(Characteristic.RotationSpeed, state.fanSpeed);
+    }
+
     super.setSwitchState(hexData, previousValue);
+  }
+
+  setDefaults () {
+    super.setDefaults();
+  
+    let { config, state } = this;
+
+    // Reset the fan speed back to the default speed when turned off
+    // This will also be called whenever homebridge is restarted
+    if (config && config.alwaysResetToDefaults) {
+      state.fanSpeed = (config.defaultFanSpeed !== undefined) ? config.defaultFanSpeed : 100;
+    }
   }
 
   async setFanSpeed (hexData) {
@@ -30,7 +49,6 @@ class FanAccessory extends SwitchAccessory {
     })
 
     if (foundSpeeds.length === 0) {
-
       return log(`${name} setFanSpeed: No fan speed hex codes provided.`)
     }
 
@@ -52,18 +70,16 @@ class FanAccessory extends SwitchAccessory {
     this.checkAutoOnOff();
   }
 
-  setupServiceManager () {
-    const { config, data, name, serviceManagerType } = this;
+  configureServiceManager (serviceManager) {
+    const { config, data } = this;
     let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection } = config;
-    const { on, off, clockwise, counterClockwise, swingToggle } = data || {};
+    const { on, off, clockwise, counterClockwise, swingToggle, swingOn, swingOff } = data || {};
 
     // Defaults
     if (showSwingMode !== false && hideSwingMode !== true) showSwingMode = true
     if (showRotationDirection !== false && hideRotationDirection !== true) showRotationDirection = true
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.Fanv2, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'switchState',
       type: Characteristic.On,
       getMethod: this.getCharacteristicValue,
@@ -77,20 +93,20 @@ class FanAccessory extends SwitchAccessory {
     });
 
     if (showSwingMode) {
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'swingMode',
         type: Characteristic.SwingMode,
         getMethod: this.getCharacteristicValue,
         setMethod: this.setCharacteristicValue,
         bind: this,
         props: {
-          onData: swingToggle,
-          offData: swingToggle,
+          onData: swingOn || swingToggle,
+          offData: swingOff || swingToggle,
         }
       });
     }
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'fanSpeed',
       type: Characteristic.RotationSpeed,
       getMethod: this.getCharacteristicValue,
@@ -102,7 +118,7 @@ class FanAccessory extends SwitchAccessory {
     });
 
     if (showRotationDirection) {
-      this.serviceManager.addToggleCharacteristic({
+      serviceManager.addToggleCharacteristic({
         name: 'rotationDirection',
         type: Characteristic.RotationDirection,
         getMethod: this.getCharacteristicValue,

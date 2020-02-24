@@ -9,6 +9,8 @@ const { discoverDevices } = require('./helpers/getDevice');
 
 const classTypes = {
   'air-conditioner': Accessory.AirCon,
+  'air-purifier': Accessory.AirPurifier,
+  'humidifier-dehumidifier': Accessory.HumidifierDehumidifier,
   'learn-ir': Accessory.LearnCode,
   'learn-code': Accessory.LearnCode,
   'switch': Accessory.Switch,
@@ -20,6 +22,7 @@ const classTypes = {
   'fan': Accessory.Fan,
   'outlet': Accessory.Outlet,
   'light': Accessory.Light,
+  'window': Accessory.Window,
   'window-covering': Accessory.WindowCovering,
 }
 
@@ -58,6 +61,9 @@ const BroadlinkRMPlatform = class extends HomebridgePlatform {
 
     // Itterate through the config accessories
     config.accessories.forEach((accessory) => {
+      // Optionally hide the accessory from Homekit
+      if (accessory.ignore === true) return
+
       if (!accessory.type) throw new Error(`Each accessory must be configured with a "type". e.g. "switch"`);
 
       if (!classTypes[accessory.type]) throw new Error(`homebridge-broadlink-rm doesn't support accessories of type "${accessory.type}".`);

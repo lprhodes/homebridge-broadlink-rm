@@ -1,9 +1,10 @@
 const delayForDuration = require('../helpers/delayForDuration');
 const BroadlinkRMAccessory = require('./accessory');
-const ServiceManagerTypes = require('../helpers/serviceManagerTypes');
 const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
 class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
+
+  serviceType () { return Service.Thermostat }
 
   correctReloadedState (state) {
     state.doorTargetState = state.doorCurrentState;
@@ -69,6 +70,11 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
     log(`${name} setDoorCurrentState: opened`);
     serviceManager.setCharacteristic(Characteristic.CurrentDoorState, Characteristic.CurrentDoorState.OPEN);
 
+    // If the autoCloseDelay is set to 0, set the state to closed immediately.
+    if (autoCloseDelay === 0) {
+      serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.CLOSED);
+    }
+
     if (!autoCloseDelay) return;
 
     log(`${name} automatically closing in ${autoCloseDelay}s`);
@@ -76,6 +82,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
     await this.autoCloseTimeoutPromise;
 
     serviceManager.setCharacteristic(Characteristic.TargetDoorState, Characteristic.TargetDoorState.CLOSED);
+
     this.close()
   }
 
@@ -111,13 +118,11 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
   
   // Service Manager Setup
 
-  setupServiceManager () {
+  configureServiceManager (serviceManager) {
     const { data, name, serviceManagerType } = this;
     const { close, open, lock, unlock } = data || {};
 
-    this.serviceManager = new ServiceManagerTypes[serviceManagerType](name, Service.GarageDoorOpener, this.log);
-
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'doorCurrentState',
       type: Characteristic.CurrentDoorState,
       bind: this,
@@ -128,7 +133,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'doorTargetState',
       type: Characteristic.TargetDoorState,
       getMethod: this.getCharacteristicValue,
@@ -141,7 +146,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'lockCurrentState',
       type: Characteristic.LockCurrentState,
       bind: this,
@@ -152,7 +157,7 @@ class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
       }
     });
 
-    this.serviceManager.addToggleCharacteristic({
+    serviceManager.addToggleCharacteristic({
       name: 'lockTargetState',
       type: Characteristic.LockTargetState,
       getMethod: this.getCharacteristicValue,
