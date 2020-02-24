@@ -11,12 +11,15 @@ class SwitchAccessory extends BroadlinkRMAccessory {
     super(log, config);
 
     if (!config.isUnitTest) this.checkPing(ping)
+    
   }
 
   setDefaults () {
     const { config } = this;
+    
     config.pingFrequency = config.pingFrequency || 2;
     config.pingFrequency = Math.max(config.pingFrequency, 2);
+    config.pingGrace = config.pingGrace || 10;
 
     config.offDuration = config.offDuration || 60;
     config.onDuration = config.onDuration || 60;
@@ -37,6 +40,8 @@ class SwitchAccessory extends BroadlinkRMAccessory {
   reset () {
     super.reset();
 
+    this.stateChangeInProgress = true;
+    
     // Clear Timeouts
     if (this.delayTimeoutPromise) {
       this.delayTimeoutPromise.cancel();
@@ -52,12 +57,19 @@ class SwitchAccessory extends BroadlinkRMAccessory {
       this.autoOnTimeoutPromise.cancel();
       this.autoOnTimeoutPromise = null
     }
+    
+    if (this.pingGraceTimeout) {
+      this.pingGraceTimeout.cancel();
+      this.pingGraceTimeout = null;
+    }
   }
 
   checkAutoOnOff () {
     this.reset();
+    this.checkPingGrace();
     this.checkAutoOn();
     this.checkAutoOff();
+    
   }
   
   checkPing (ping) {
@@ -83,6 +95,10 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
     if (hasStateChanged) return
 
+    if (this.stateChangeInProgress){ 
+      return; 
+    }
+    
     if (config.pingIPAddressStateOnly) {
       if (debug) log(`${name} pingCallback: UI updated only`);
 
@@ -100,14 +116,30 @@ class SwitchAccessory extends BroadlinkRMAccessory {
 
   async setSwitchState (hexData) {
     const { data, host, log, name, debug } = this;
-
+    this.stateChangeInProgress = true;
     this.reset();
 
     if (hexData) await this.performSend(hexData);
-
+    
     this.checkAutoOnOff();
   }
 
+  async checkPingGrace () {
+    await catchDelayCancelError(async () => {
+      const { config, log, name, state, serviceManager } = this;
+      
+      let { pingGrace } = config;
+
+      if (pingGrace) {
+
+        this.pingGraceTimeoutPromise = delayForDuration(pingGrace);
+        await this.pingGraceTimeoutPromise;
+
+        this.stateChangeInProgress = false;
+      }
+    });
+  }
+    
   async checkAutoOff () {
     await catchDelayCancelError(async () => {
       const { config, log, name, state, serviceManager } = this;
