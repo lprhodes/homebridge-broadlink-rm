@@ -185,6 +185,8 @@ class AirConAccessory extends BroadlinkRMAccessory {
       this.updateServiceCurrentHeatingCoolingState(HeatingCoolingStates.off);
       await this.performSend(data.off);
 
+      serviceManager.refreshCharacteristicUI(Characteristic.CurrentHeatingCoolingState);
+      serviceManager.refreshCharacteristicUI(Characteristic.TargetHeatingCoolingState);
       return;
     }
     
@@ -232,7 +234,7 @@ class AirConAccessory extends BroadlinkRMAccessory {
 
       //Force Temperature send
       delayForDuration(0.25).then(() => {
-        this.sendTemperature(temperature, state.currentTemperature);
+        this.sendTemperature(state.targetTemperature, state.currentTemperature);
         serviceManager.refreshCharacteristicUI(Characteristic.TargetTemperature);
       });
     }
