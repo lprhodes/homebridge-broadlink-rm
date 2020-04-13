@@ -25,7 +25,7 @@
     "url": "git@github.com:AlexanderBabel/homebridge-broadlink-rm.git"
   },
   "dependencies": {
-    "broadlinkjs-rm": "^0.7.5",
+    "broadlinkjs-rm": "^0.7.6",
     "chai": "^4.2.0",
     "find-key": "^2.0.1",
     "github-version-checker": "^1.2.0",
