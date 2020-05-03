@@ -1,4 +1,4 @@
-# Homebridge Broadlink RM
+# Homebridge Broadlink RM (https://github.com/lprhodes/homebridge-broadlink-rm) fork with RM4  devices support.
 
 ## Introduction
 Welcome to the Broadlink RM Mini and Broadlink RM Pro plugin for [Homebridge](https://github.com/nfarina/homebridge).
