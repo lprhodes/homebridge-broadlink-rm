@@ -1,3 +1,3 @@
-const BroadlinkJS = require('broadlinkjs-rm');
+const BroadlinkJS = require('def-broadlinkjs-rm');
 
 module.exports = new BroadlinkJS()
