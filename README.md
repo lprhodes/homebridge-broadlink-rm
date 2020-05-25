@@ -10,6 +10,9 @@ If you want to use this fork, use this command:
 
 `npm i -g homebridge-broadlink-rm-tv`
 
+There's been a lot of work done on the main fork to support some newer Broadlink devices. I (kiwi-cam) have had trouble getting this fork updated to include this support. As a temporary resolution I've created a new fork homebridge-broadlink-rm-pro which adds new Broadlink device support (Thanks to @Defensor7). The new fork can be installed using: 
+
+`npm i -g homebridge-broadlink-rm-pro`
 
 # Homebridge Broadlink RM [[Original](https://github.com/lprhodes/homebridge-broadlink-rm)]
 
