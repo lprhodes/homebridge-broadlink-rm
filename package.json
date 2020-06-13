@@ -17,11 +17,11 @@
     "homebridge": ">=0.2.0"
   },
   "author": {
-    "name": "lprhodes"
+    "name": "nora0706"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:lprhodes/homebridge-broadlink-rm.git"
+    "url": "git@github.com:nora0706/homebridge-broadlink-rm.git"
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.7.6",
@@ -34,6 +34,7 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
+    "hap-nodejs": "^0.7.3",
     "mocha": "^6.2.2",
     "release-it": "^12.4.3"
   }

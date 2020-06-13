@@ -184,6 +184,15 @@
           }
         },
         {
+          "name":"Air Conditioner 2",
+          "type":"air-conditioner2",
+          "data":{
+            "off":"2600500000012...",
+            "heat30":"2600500000012...",
+            "cool16":"2600500000012..."
+          }
+        },
+        {
           "name":"Air Conditioner Advanced",
           "type":"air-conditioner",
           "autoCoolTemperature": 23,
