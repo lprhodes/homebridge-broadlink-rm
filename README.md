@@ -4,7 +4,7 @@
 
 This fork enhance the setting for Air Conditioner accessory. You may check the `air-conditioner2` part in config-simple.json for more ideas.
 
-### Aircon Accessory
+### Aircon2 Accessory
 
 #### "data" key-value object
 
