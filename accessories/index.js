@@ -1,4 +1,5 @@
 const AirCon = require('./aircon');
+const AirCon2 = require('./aircon2');
 const AirPurifier = require('./air-purifier');
 const HumidifierDehumidifier = require('./humidifier-dehumidifier');
 const LearnCode = require('./learnCode');
@@ -16,6 +17,7 @@ const WindowCovering = require('./windowCovering');
 
 module.exports = {
   AirCon,
+  AirCon2,
   AirPurifier,
   HumidifierDehumidifier,
   LearnCode,

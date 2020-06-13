@@ -4,7 +4,7 @@ const catchDelayCancelError = require('../helpers/catchDelayCancelError');
 
 class GarageDoorOpenerAccessory extends BroadlinkRMAccessory {
 
-  serviceType () { return Service.Thermostat }
+  serviceType () { return Service.GarageDoorOpener }
 
   correctReloadedState (state) {
     state.doorTargetState = state.doorCurrentState;
