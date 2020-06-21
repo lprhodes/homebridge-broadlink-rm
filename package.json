@@ -1,8 +1,9 @@
 {
+  "displayName": "Broadlink RM",
   "name": "homebridge-broadlink-rm",
   "version": "3.6.22",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge: https://github.com/nfarina/homebridge",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "scripts": {
     "release": "release-it"
   },
@@ -21,7 +22,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:lprhodes/homebridge-broadlink-rm.git"
+    "url": "git@github.com/lprhodes/homebridge-broadlink-rm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lprhodes/homebridge-broadlink-rm/issues"
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.7.6",
@@ -34,6 +38,7 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
+    "homebridge": "^1",
     "mocha": "^6.2.2",
     "release-it": "^12.4.3"
   }
