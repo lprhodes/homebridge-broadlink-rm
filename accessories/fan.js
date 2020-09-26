@@ -1,7 +1,7 @@
 const SwitchAccessory = require('./switch');
 
 class FanAccessory extends SwitchAccessory {
-  serviceType () { return Service.Thermostat }
+  serviceType () { return Service.Fanv2 }
 
   async setSwitchState (hexData, previousValue) {
     const { config, state, serviceManager } = this;
