@@ -66,6 +66,67 @@ class FanAccessory extends SwitchAccessory {
     // Get the closest speed's hex data
     hexData = data[`fanSpeed${closest}`];
 
+    // Check if the device is configured with combined fan and swing mode hex codes
+    // e.g. fanSpeedX : { swingOn/swingOff:  }
+    if (typeof hexData === 'object' &&  hexData !== null) {
+      log('Determining hex code by decoding fanSpeed object');
+      if ('swingMode' in state) {
+        log(`Using swingMode of ${state['swingMode']}`);
+        hexData = state['swingMode'] === Characteristic.SwingMode.SWING_ENABLED ? hexData['swingOn'] : hexData['swingOff'];
+      } else {
+        log(`Using swingMode of 0`);
+        hexData = hexData['swingOff'];
+      }
+    }
+
+    if (!hexData) {
+      log('Could not find hex codes for fanSpeed, please check the config.json file')
+      return;
+    }
+
+    await this.performSend(hexData);
+
+    this.checkAutoOnOff();
+  }
+
+  // Determine the hex codes for the requested swing mode and send the
+  // IR signals to execute it.
+  // hexData: hex codes for swing modes from the config file
+  //
+  // NOTE: This handler is designed to keep the plugin backwards compatible
+  // while also allowing for combined fan speed and swing mode hex codes.
+  // This handler function is called by setCharacteristicValue which
+  // is the main handler registered with homebridge. setCharacteristicValue()
+  // calls this handler with hex code from config. We need to know if homebridge
+  // requested to turn on/off swing so we can decipher the hex code acccordingly. 
+  // If values in config for swingOn, swingOff are set as "on" and "off"
+  // respectively the handler will decipher the hex codes for swing mode from
+  // the fanSpeed object.
+  async setSwingMode (hexData) {
+    const { data, log, state } = this;
+
+    const currSpeed = state['fanSpeed'];
+    const fanSpeedObj = currSpeed ? data["fanSpeed" + currSpeed] : undefined;
+
+    // config.swingOn: "on" and config.swingOff: "off" to support combined
+	  // speed + swing values
+    if (hexData === "off") { // requested value off
+      if (fanSpeedObj['swingOff']) {
+        hexData = fanSpeedObj['swingOff'];
+      } else {
+        log(`Could not locate value for fanSpeed${currSpeed}.swingOff in config.json`);
+		    return;
+      }
+    }
+    if (hexData === "on") {
+      if (fanSpeedObj['swingOn']) {
+        hexData = fanSpeedObj['swingOn'];
+      } else {
+        log(`Could not locate value for fanSpeed${currSpeed}.swingOn in config.json`);
+		    return;
+      }
+    }
+
     await this.performSend(hexData);
 
     this.checkAutoOnOff();
@@ -115,6 +176,7 @@ class FanAccessory extends SwitchAccessory {
         props: {
           onData: swingOn || swingToggle,
           offData: swingOff || swingToggle,
+          setValuePromise: this.setSwingMode.bind(this)
         }
       });
     }

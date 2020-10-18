@@ -39,5 +39,23 @@ Add under the data section of the fan accessory in config.json as shown in the c
 |--|--|--|--|
 | stepSize | Increments of fan speed. This will update Home app UI so that fan speed increases in steps. If your fan support 4 speeds and the step size should be 100/4 = 25. | 25 | 1 |
 
+##### Combined fan speed and swing modes
+Some fans (e.g. Lasko tower fan) with remotes that have a display, generate unique hex codes for a combination of each speed and swing mode. If you have such a device, you can record each hex code in the config.json as shown below.
+
+config.json
+```
+{
+	"name": "fan", // choose name of your choice
+	"type": "fan",
+	"swingOn": "on", // this has to be "on"
+	"swingOff": "off", // this has to be "off"
+	"data": {
+		"fanSpeed50": {
+			"swingOn": "26008a002828123f282a...", // replace with hex codes to turn on swing at the corresponding speed
+			"swingOff": "26008a002828123f282a..." // replace with hex codes to turn off swing at the corresponding speed
+		}
+	}
+}
+```
 ## Thanks
 Thanks to @lprhodes (https://github.com/lprhodes/homebridge-broadlink-rm), @kiwi-cam (https://github.com/kiwi-cam/homebridge-broadlink-rm), @tattn (https://github.com/tattn/homebridge-rm-mini3), @PJCzx (https://github.com/PJCzx/homebridge-thermostat) @momodalo (https://github.com/momodalo/broadlinkjs) whose time and effort got me started.
