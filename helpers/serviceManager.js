@@ -52,9 +52,16 @@ class ServiceManager {
     this.addCharacteristic({ name, type, getSet: 'set', method, bind, props })
   }
 
-  addToggleCharacteristic ({ name, type, getMethod, setMethod, bind, props }) {
+  addToggleCharacteristic ({ name, type, getMethod, setMethod, bind, props,
+    characteristicProps }) {
     this.addGetCharacteristic({ name, type, method: getMethod, bind, props }) 
     this.addSetCharacteristic({ name, type, method: setMethod, bind, props }) 
+
+    // Allow setting of HAP defined characteristic properties for improved
+    // representation of accessory in Homekit and Home app
+    if (characteristicProps) {
+	    this.getCharacteristic(type).setProps(characteristicProps)
+	  }
   }
 
   getCharacteristicTypeForName (name) {

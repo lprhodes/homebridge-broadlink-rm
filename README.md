@@ -25,5 +25,19 @@ Thank you!
 ### Orignial
 Full documentation can be found [here](https://lprhodes.github.io/slate/).
 
+### Enhancements
+
+#### Fan Accessory
+##### Fan speed step size property
+Improves user experience of changing fan speeds to pre-defined steps in the Home app.
+
+<img src="https://j.gifs.com/L7oJQX.gif" alt="Home app fan speed UI in action" width="150"/>
+
+
+Add under the data section of the fan accessory in config.json as shown in the config-sample.json
+| key | description | example | default |
+|--|--|--|--|
+| stepSize | Increments of fan speed. This will update Home app UI so that fan speed increases in steps. If your fan support 4 speeds and the step size should be 100/4 = 25. | 25 | 1 |
+
 ## Thanks
 Thanks to @lprhodes (https://github.com/lprhodes/homebridge-broadlink-rm), @kiwi-cam (https://github.com/kiwi-cam/homebridge-broadlink-rm), @tattn (https://github.com/tattn/homebridge-rm-mini3), @PJCzx (https://github.com/PJCzx/homebridge-thermostat) @momodalo (https://github.com/momodalo/broadlinkjs) whose time and effort got me started.

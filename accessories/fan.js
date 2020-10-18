@@ -71,6 +71,16 @@ class FanAccessory extends SwitchAccessory {
     this.checkAutoOnOff();
   }
 
+  // Read "stepSize" from the config file if present else
+  // set it to a default value.
+  getFanSpeedStepSize() {
+    const step = this.data['stepSize']
+
+    // since fan speed is % based in the plugin the default
+    // step size is set to 1.
+    return isNaN(step) || step > 100 || step < 1 ? 1 : step
+  }
+
   setupServiceManager () {
     const { config, data, name, serviceManagerType } = this;
     let { showSwingMode, showRotationDirection, hideSwingMode, hideRotationDirection } = config;
@@ -117,6 +127,11 @@ class FanAccessory extends SwitchAccessory {
       bind: this,
       props: {
         setValuePromise: this.setFanSpeed.bind(this)
+      },
+      characteristicProps: {
+		    minStep: this.getFanSpeedStepSize(),
+		    minValue: 0,
+		    maxVlue: 100
       }
     });
 
