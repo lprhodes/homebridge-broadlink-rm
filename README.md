@@ -16,6 +16,9 @@ If you want to use this fork, use this command:
 
 This plugin can be used in conjunction with other forks of Broadlink RM plugin. This enables one to use this plugin for some accessories while other plugin for other accessories with the same Broadlink IR Blaster.
 
+## What's new
+For updates to the plugin please review the [changelog](https://github.com/newt10/homebridge-broadlink-rm-enhanced/blob/master/Changelog.md)
+
 ## Like this plugin?
 
 Please consider testing it and providing feedback. This project is built on top of the labor of many folks so please feel free to show your support to them as well.
