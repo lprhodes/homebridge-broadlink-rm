@@ -27,7 +27,16 @@ Thank you!
 ### Orignial
 Full documentation can be found [here](https://lprhodes.github.io/slate/).
 
+Use [config-sample.json](https://github.com/newt10/homebridge-broadlink-rm-enhanced/blob/master/config-sample.json) file for plugin specific config changes.
+
 ### Enhancements
+
+The platform has been renamed compared to the original so that you can install this plugin alongside the original plugin or other forks.
+```
+{
+	"platform": "BroadlinkRM-Enhanced"
+}
+```
 
 #### Fan Accessory
 ##### Fan speed step size property

@@ -11,8 +11,8 @@
   ],
   "platforms":[
     {
-      "platform":"BroadlinkRM",
-      "name":"Broadlink RM",
+      "platform":"BroadlinkRM-Enhanced",
+      "name":"Broadlink RM Enhanced",
       "accessories":[
         {
           "name":"Auto-off Switch",
