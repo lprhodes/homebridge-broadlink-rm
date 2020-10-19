@@ -1,4 +1,4 @@
-# Homebridge Broadlink RM Community
+# Homebridge Broadlink RM Enhanced
 
 ## Introduction
 Welcome to the Broadlink RM Mini and Broadlink RM Pro plugin for [Homebridge](https://github.com/nfarina/homebridge).
@@ -8,11 +8,13 @@ This is a fork of the [original plugin by Luke Rhodes] (https://github.com/lprho
 ### About this fork
 I am working on upgrades to the accessory specifications in this repository. For starters I am focused on fan, air-conditioners and heater accessories to help improve the user experience of the devices like portable ACs, Lasko tower fans and tower heaters, etc.
 
-I eventually would like to add multiple contibuters who can review and integrate PRs hence the "community" tag here so more people can collectively extend the accessories.
+I eventually would like to add multiple contibuters who can review and integrate PRs so more people can collectively extend the accessories.
 
 If you want to use this fork, use this command:
 
-`npm i -g homebridge-broadlink-rm-community`
+`npm i -g homebridge-broadlink-rm-enhanced`
+
+This plugin can be used in conjunction with other forks of Broadlink RM plugin. This enables one to use this plugin for some accessories while other plugin for other accessories with the same Broadlink IR Blaster.
 
 ## Like this plugin?
 

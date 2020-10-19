@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-broadlink-rm",
+  "name": "homebridge-broadlink-rm-enhanced",
   "version": "3.6.18",
   "description": "Broadlink RM plugin (including the mini and pro) for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
@@ -10,18 +10,20 @@
     "homebridge-plugin",
     "broadlink",
     "rm pro 3",
-    "rm mini 3"
+    "rm mini 3",
+    "lasko",
+    "tower fan"
   ],
   "engines": {
     "node": ">=7.6.0",
     "homebridge": ">=0.2.0"
   },
   "author": {
-    "name": "lprhodes"
+    "name": "newt10"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:lprhodes/homebridge-broadlink-rm.git"
+    "url": "git@github.com:newt10/homebridge-broadlink-rm-enhanced.git"
   },
   "dependencies": {
     "broadlinkjs-rm": "^0.7.5",
