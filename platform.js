@@ -24,6 +24,7 @@ const classTypes = {
   'light': Accessory.Light,
   'window': Accessory.Window,
   'window-covering': Accessory.WindowCovering,
+  'heater-cooler': Accessory.HeaterCooler
 }
 
 let homebridgeRef

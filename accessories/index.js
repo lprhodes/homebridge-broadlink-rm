@@ -13,6 +13,7 @@ const Lock = require('./lock');
 const Light = require('./light');
 const Window = require('./window');
 const WindowCovering = require('./windowCovering');
+const HeaterCooler = require('./heater-cooler');
 
 module.exports = {
   AirCon,
@@ -29,5 +30,6 @@ module.exports = {
   Lock,
   Light,
   Window,
-  WindowCovering
+  WindowCovering,
+  HeaterCooler
 }

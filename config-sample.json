@@ -296,6 +296,67 @@
           }
         },
         {
+          "name": "My Portable AC",
+          "type": "heater-cooler",
+          "coolingThresholdTemperature": 70,
+          "minTemperature": 60,
+          "maxTemperature": 84,
+          "temperatureUnits": "F",
+          "fanStepSize": 50,
+          "data": {
+            "cool": {
+              "on": "Hex code to set device to cool mode or turn or device",
+              "off": "Hex code to turn off device",
+              "temperatureCodes": {
+                "67": {
+                  "rotationSpeed50": {
+                    "swingDnd": "Hex code to set AC to 67 F at fan speed of 50%",
+                    "swingToggle": "Hex code to toggle swing mode of AC at 67 F, fan speed of 50%"
+                  },
+                  "rotationSpeed100": {
+                    "swingDnd": "Hex code to set AC to 67 F at fan speed of 100%",
+                    "swingToggle":"Hex code to toggle swing mode of AC at 67 F, fan speed of 100%"
+                  }
+                },
+                "68": {
+                  "rotationSpeed50": {
+                    "swingDnd": "Hex code to set AC to 68 F at fan speed of 50%",
+                    "swingToggle": "Hex code to toggle swing mode of AC at 68 F, fan speed of 50%"
+                  },
+                  "rotationSpeed100": {
+                    "swingDnd": "Hex code to set AC to 68 F at fan speed of 100%",
+                    "swingToggle":"Hex code to toggle swing mode of AC at 68 F, fan speed of 100%"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "My Heater",
+          "type": "heater-cooler",
+          "heatingThresholdTemperature": 67,
+          "minTemperature": 63,
+          "maxTemperature": 82,
+          "temperatureUnits": "F",
+          "data": {
+              "heat": {
+                  "on": "Hex code to set device to heat mode or turn on heater",
+                  "off": "Hex code to turn off device",
+                  "temperatureCodes": {
+                      "72": {
+                          "swingOn": "Hex code to set device to 72 F with swing enabled",
+                          "swingOff": "Hex code to set device to 72 F with swing disabled"
+                      },
+                      "73": {
+                          "swingOn": "Hex code to set device to 73 F with swing enabled",
+                          "swingOff": "Hex code to set device to 73 F with swing disabled"
+                      }
+                  }
+              }
+          }
+        },
+        {
           "name":"Blind Multi",
           "type":"window-covering",
           "totalDurationOpen": 5,
