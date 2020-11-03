@@ -1,5 +1,8 @@
 # Changelog
 
+## Release 3.6.21
+1. New accessory type - heater-cooler for better representation of standalone ACs and heaters
+
 ## Release 3.6.20
 1. Documentation updates and addition of changelog for better readability
 
