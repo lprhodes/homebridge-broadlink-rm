@@ -1,6 +1,6 @@
 # Homebridge Broadlink RM [TV+AC File Fork]
 
-# Please use the fork of [kiwi-cam](https://github.com/kiwi-cam/homebridge-broadlink-rm). This fork is inactive due to not using this plugin anymore.
+### Please use the fork of [kiwi-cam](https://github.com/kiwi-cam/homebridge-broadlink-rm). This fork is inactive due to not using this plugin anymore.
 
 # About this fork
 
